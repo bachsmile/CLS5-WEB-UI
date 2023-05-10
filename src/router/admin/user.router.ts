@@ -42,15 +42,53 @@ export default [
   {
     path: '/organization',
     name: 'admin-organization',
-    redirect: { name: 'admin-organization-permistion' },
+    redirect: { name: 'admin-organization-permission' },
     children: [
       {
-        path: 'permistion',
-        name: 'admin-organization-permistion',
+        path: 'permission',
+        name: 'admin-organization-permission',
         requireAuth: {
-          permissionKey: 'UserManaging',
+          permissionKey: 'UserTypeManaging',
+          permissionValue: 1,
         },
-        component: () => import('@/pages/admin/organization/permission/Permission.vue'),
+        component: () => import('@/pages/admin/organization/permission/Index.vue'),
+        redirect: { name: 'admin-organization-permission-list' },
+        children: [
+          {
+            path: '',
+            name: 'admin-organization-permission-list',
+            component: () => import('@/pages/admin/organization/permission/Permission.vue'),
+          },
+          {
+            path: 'add',
+            name: 'admin-organization-permission-add',
+            requireAuth: {
+              permissionKey: 'UserTypeManaging',
+              permissionValue: 2,
+            },
+            breadcrumb: [
+              {
+                title: 'usertype-management',
+                to: { name: 'admin-organization-permission' },
+              },
+              {
+                title: 'add',
+
+                active: true,
+              },
+            ],
+            component: () => import('@/pages/admin/organization/permission/Edit/EditPermission.vue'),
+          },
+          {
+            path: 'edit/:id',
+            name: 'admin-organization-permission-edit',
+            requireAuth: {
+              permissionKey: 'UserTypeManaging',
+              permissionValue: 4,
+            },
+            component: () => import('@/pages/admin/organization/permission/Edit/EditPermission.vue'),
+          },
+        ],
       },
       {
         path: 'users',
@@ -77,7 +115,7 @@ export default [
               pageTitle: 'users.add-user.title',
               breadcrumb: [
                 {
-                  title: 'users.user.title-table.user-list',
+                  title: 'user-list',
                   to: { name: 'admin-organization-users' },
                 },
                 {
@@ -101,11 +139,11 @@ export default [
               pageTitle: 'users.add-user.title',
               breadcrumb: [
                 {
-                  title: 'users.user.title-table.user-list',
+                  title: 'user-list',
                   to: { name: 'admin-organization-users' },
                 },
                 {
-                  title: 'common.add',
+                  title: 'add',
 
                   active: true,
                 },
@@ -116,6 +154,48 @@ export default [
               },
             },
             component: () => import('@/pages/admin/organization/users/profile/Profile.vue'),
+          },
+          {
+            path: 'import-file',
+            meta: {
+              requireAuth: {
+                permissionKey: 'UserManaging',
+                permissionValue: 1,
+              },
+              breadcrumb: [
+                {
+                  title: 'user-list',
+                  to: { name: 'admin-organization-users-manager' },
+                },
+                {
+                  title: 'title-import-file',
+                  active: true,
+                },
+              ],
+            },
+            name: 'admin-organization-user-import-file-update-user-infor',
+            component: () => import('@/pages/admin/organization/users/import-file/UpdateUserInfor.vue'),
+          },
+          {
+            path: 'import-file-title',
+            meta: {
+              requireAuth: {
+                permissionKey: 'UserManaging',
+                permissionValue: 1,
+              },
+              breadcrumb: [
+                {
+                  title: 'user-list',
+                  to: { name: 'admin-organization-users-manager' },
+                },
+                {
+                  title: 'title-import-file',
+                  active: true,
+                },
+              ],
+            },
+            name: 'admin-organization-user-import-file-update-user-title',
+            component: () => import('@/pages/admin/organization/users/import-file/UpdateUserTitle.vue'),
           },
         ],
       },
@@ -190,13 +270,34 @@ export default [
                   to: { name: 'admin-organization-user-groups' },
                 },
                 {
-                  title: 'common.title-import-file',
+                  title: 'title-import-file',
                   active: true,
                 },
               ],
             },
-            name: 'admin-organization-user-groups-edit',
+            name: 'admin-organization-user-groups-import',
             component: () => import('@/pages/admin/organization/user-groups/import-file/ImportFileAddGroup.vue'),
+          },
+          {
+            path: 'add-user/import-file',
+            meta: {
+              requireAuth: {
+                permissionKey: 'UserGroupManaging',
+                permissionValue: 4,
+              },
+              breadcrumb: [
+                {
+                  title: 'list-group-user',
+                  to: { name: 'admin-organization-user-groups' },
+                },
+                {
+                  title: 'title-import-file',
+                  active: true,
+                },
+              ],
+            },
+            name: 'admin-organization-user-groups-import-user',
+            component: () => import('@/pages/admin/organization/user-groups/import-file/ImportFileAddUserToGroup.vue'),
           },
         ],
         component: () => import('@/pages/admin/organization/user-groups/Index.vue'),

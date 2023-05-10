@@ -27,7 +27,7 @@ const totalRecord = ref<number>(0)
 const headers = reactive([
   { text: '', value: 'checkbox' },
   { text: t('group-capacity-name'), value: 'name' },
-  { text: t('common.description'), value: 'description' },
+  { text: t('description'), value: 'description' },
   { text: '', value: 'actions', width: 150 },
 ])
 

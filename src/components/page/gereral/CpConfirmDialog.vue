@@ -24,8 +24,8 @@ interface Emit {
 const props = withDefaults(defineProps<Props>(), ({
   type: 0,
   variant: 'outlined',
-  buttonOkName: 'common.ok-title',
-  buttonCancleName: 'common.cancel-title',
+  buttonOkName: 'ok-title',
+  buttonCancleName: 'cancel-title',
   isHideFooter: false,
 }))
 

@@ -12,10 +12,16 @@ export const useImportFileStore = defineStore('importFile', () => {
   const config = reactive<Config>({ table: { header: [] } })
 
   const paramsImport = reactive({
-    validData: [],
-    invalidData: [],
+    validData: <any>[],
+    invalidData: <any>[],
   })
+  const $reset = () => {
+    paramsImport.validData = []
+    paramsImport.invalidData = []
+    type.value = undefined
+  }
   const customKeyError = ref<string>('errors')
+  const refTableValid = ref()
 
   /** method */
   const checkDataError = (data: any) => {
@@ -25,7 +31,7 @@ export const useImportFileStore = defineStore('importFile', () => {
           if (item[customKeyError.value]) {
             item.messageErr = ''
             item[customKeyError.value].forEach((err: any) => {
-              item.messageErr += `${t(`${err.message}`)} <br> `
+              item.messageErr += `${t(err.location)} ${t(`${err.message}`)} <br> `
             })
           }
         }
@@ -37,72 +43,83 @@ export const useImportFileStore = defineStore('importFile', () => {
   }
 
   const getValidData = async (listData: Array<object>, paramExtend?: object) => {
+    window.showAllPageLoading('COMPONENT')
     const model = {
       listLocal: [],
       listExcel: listData,
       isSave: false,
       isValidate: true,
-      type: 2,
+      type: type.value,
       ...paramExtend,
     }
-
-    const res = await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => value)
-
-    checkDataError(res.data)
-
-    const validData = res.data.filter((item: any) => item.isSuccess === true)
-    if (validData) {
-      validData.forEach((element: never, id: number) => {
-        (element as any).key = id
+    paramsImport.validData = []
+    paramsImport.invalidData = []
+    await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => {
+      checkDataError(value.data)
+      const validData = value.data.filter((item: any) => item.isSuccess === true)
+      if (validData) {
+        validData.forEach((element: never, id: number) => {
+          (element as any).key = id
+        })
+        paramsImport.validData = validData
+      }
+      const inValidData = value.data.filter((item: any) => item.isSuccess === false)
+      if (inValidData) {
+        inValidData.forEach((element: never, id: number) => {
+          (element as any).key = id
+        })
+        paramsImport.invalidData = inValidData
+      }
+      nextTick(() => {
+        if (refTableValid.value?.items.length)
+          refTableValid.value.checkedAll()
       })
-      paramsImport.validData = validData
-    }
-    const inValidData = res.data.filter((item: any) => item.isSuccess === false)
-    if (inValidData) {
-      inValidData.forEach((element: never, id: number) => {
-        (element as any).key = id
-      })
-      paramsImport.invalidData = inValidData
-    }
+    })
+    window.hideAllPageLoading()
 
     // showaddComponent = validData.length > 0
   }
 
   const checkInvalidData = async () => {
+    window.showAllPageLoading('COMPONENT')
     const model = {
       listLocal: paramsImport.validData,
       listExcel: paramsImport.invalidData,
       isSave: false,
       isValidate: true,
-      type: 2,
+      type: type.value,
       ...config?.importFile?.paramsImport,
     }
-
-    const res = await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => value)
-
-    checkDataError(res.data)
-
-    const validData = res.data.filter((item: any) => item.isSuccess === true)
-    if (validData.length) {
-      validData.forEach((element: never, id: number) => {
-        paramsImport.validData.push(element)
+    paramsImport.validData = []
+    paramsImport.invalidData = []
+    await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => {
+      checkDataError(value.data)
+      const validData = value.data.filter((item: any) => item.isSuccess === true)
+      if (validData.length) {
+        validData.forEach((element: never, id: number) => {
+          paramsImport.validData.push(element)
+        })
+        paramsImport.validData.forEach((element: any, id: number) => {
+          (element as any).key = id
+        })
+      }
+      const inValidData = value.data.filter((item: any) => item.isSuccess === false)
+      if (inValidData) {
+        inValidData.forEach((element: never, id: number) => {
+          (element as any).key = id
+        })
+        paramsImport.invalidData = inValidData
+      }
+      nextTick(() => {
+        if (refTableValid.value?.items.length)
+          refTableValid.value.checkedAll()
       })
-      paramsImport.validData.forEach((element: any, id: number) => {
-        (element as any).key = id
-      })
-    }
-    const inValidData = res.data.filter((item: any) => item.isSuccess === false)
-    if (inValidData) {
-      inValidData.forEach((element: never, id: number) => {
-        (element as any).key = id
-      })
-      paramsImport.invalidData = inValidData
-    }
-
-    // this.showaddComponent = this.validData.length > 0
+      window.hideAllPageLoading()
+    })
   }
 
   const fileChange = (event: any) => {
+    console.log(123312)
     const input = event.target.files[0]
     const listData: any = []
     readXlsxFile(input).then(rows => {
@@ -134,14 +151,13 @@ export const useImportFileStore = defineStore('importFile', () => {
         list.listData.push(item)
       }
     })
-
     let model = {
       listExcel: list.listData,
       isSave: true,
       isValidate: false,
       typeUpdate: 2,
+      type: type.value,
     }
-
     if (!ObjectUtil.isEmpty(type.value)) {
       model = {
         ...model,
@@ -154,7 +170,7 @@ export const useImportFileStore = defineStore('importFile', () => {
     const res = await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => value)
 
     if (res?.data && res?.code === 200) {
-      toast('SUCCESS', res?.message)
+      toast('SUCCESS', t(res?.message))
 
       list.listIndex.reverse().forEach(item => {
         paramsImport.validData.splice(item, 1)
@@ -163,9 +179,9 @@ export const useImportFileStore = defineStore('importFile', () => {
         return 'back'
     }
     else {
-      toast('ERROR', res?.message)
+      toast('ERROR', t(res?.message))
     }
   }
 
-  return { getValidData, checkInvalidData, checkDataError, paramsImport, fileChange, config, type, updateFromFile, customKeyError }
+  return { refTableValid, getValidData, checkInvalidData, checkDataError, paramsImport, fileChange, config, type, updateFromFile, customKeyError, $reset }
 })

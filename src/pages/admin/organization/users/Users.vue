@@ -8,31 +8,31 @@ import toast from '@/plugins/toast'
 
 // mock api
 
-import { fetchData } from '@/mock/users/index'
-
 window.showAllPageLoading('COMPONENT')
-const CpHeaderPageAction = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpHeaderPageUserAction.vue'))
+const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
 const CpUserFilter = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpUserFilter.vue'))
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
 const CmAccodion = defineAsyncComponent(() => import('@/components/common/CmAccodion.vue'))
 const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/gereral/CpConfirmDialog.vue'))
 const CpModalUpdateStatus = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpModalUpdateStatus.vue'))
+const CpCustomInfo = defineAsyncComponent(() => import('@/components/page/gereral/CpCustomInfo.vue'))
 
 /** params */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
-const disabledDelete = ref(false)
+const refTableUserList = ref()
+
 const isShowFilter = ref(true)
 const route = useRoute()
 const router = useRouter()
 
 const headers = reactive([
-  { text: '', value: 'checkbox' },
-  { text: t('common.surname-name'), value: 'fullName' },
-  { text: t('common.role'), value: 'userTypeName' },
-  { text: t('common.status-name'), value: 'statusName', type: 'custom' },
-  { text: t('report.join-date'), value: 'registeredDate', type: 'custom' },
-  { text: t('common.organization'), value: 'organization', type: 'menu', width: 300 },
+  { text: '', value: 'checkbox', width: 50 },
+  { text: t('surname-name'), value: 'fullName' },
+  { text: t('role'), value: 'userTypeName' },
+  { text: t('status-name'), value: 'statusName', type: 'custom' },
+  { text: t('join-date'), value: 'registeredDate', type: 'custom' },
+  { text: t('organization'), value: 'organization', type: 'menu', width: 300 },
   { text: '', value: 'actions', width: 150 },
 ])
 
@@ -76,7 +76,7 @@ const data = reactive({
   testingCode: '',
 })
 
-const queryParam = reactive({
+let queryParam = reactive({
   groupUser: [],
   keyword: '',
   modeAdd: null,
@@ -91,8 +91,10 @@ const queryParam = reactive({
   titleList: [],
   userTypeList: null,
 })
+const disabledDelete = computed(() => !data.listId.length)
 
 /** ***************************** Method *****************************/
+
 // Function to handle when click button Delete
 const deleteItem = (id: number) => {
   data.deleteIds = [id as never]
@@ -117,6 +119,8 @@ const deleteAction = async () => {
     .then(async (value: any) => {
       toast('SUCCESS', value?.message)
       await fectchListUsers()
+      data.deleteIds = []
+      data.listId = []
     })
     .catch(() => {
       toast('ERROR', t('USR_DeleteFail'))
@@ -174,9 +178,8 @@ const handleRefreshStatus = async (status: number) => {
     })
 }
 
-const confirmDialogStatus = (event: any, status: any) => {
-  if (event)
-    handleRefreshStatus(status)
+const confirmDialogStatus = (status: any) => {
+  handleRefreshStatus(status)
 }
 
 const updateDialogVisibleStatus = (event: any) => {
@@ -201,8 +204,9 @@ const copyTestingCode = () => {
 }
 
 const selectedRows = (e: any) => {
+  console.log(e)
+
   data.listId = e
-  disabledDelete.value = e.length > 0
 }
 
 // click pagination
@@ -278,7 +282,13 @@ const handleSearch = async (value: any) => {
 
 //  fillter header
 const handleFilterCombobox = (dataFilter: any) => {
-  //
+  console.log(dataFilter)
+
+  queryParam = {
+    ...queryParam,
+    ...dataFilter,
+  }
+  fectchListUsers()
 }
 
 // hàm trả về các loại action từ header filter
@@ -295,8 +305,70 @@ const handleClickBtn = (type: string) => {
       break
   }
 }
+const actionAddFromFile = () => {
+  console.log('actionAddFromFile')
+}
+const actionAddFromApi = () => {
+  console.log('actionAddFromApi')
+}
+
+const exportExcel = async () => {
+  console.log('exportExcel')
+  window.showAllPageLoading()
+  const params = {
+    statusIds: queryParam.statusList,
+    userTypeIds: queryParam.userTypeList,
+    keyword: queryParam.keyword,
+    startDate: queryParam.timeFrom,
+    endDate: queryParam.timeTo,
+    modeAdd: queryParam.modeAdd,
+    orStructure: queryParam.orStructure,
+    groupUser: queryParam.groupUser,
+  }
+  await MethodsUtil.dowloadSampleFile(
+    ApiUser.exportUserToExcel,
+    'POST',
+    'Danh sách người dùng.xlsx',
+    params,
+  )
+  window.hideAllPageLoading()
+}
 
 /** ***************************** end Method *****************************/
+/**
+ * action
+ */
+const actionAdd = [
+  {
+    title: t('add-from-file'),
+    icon: 'tabler:file-plus',
+    action: actionAddFromFile,
+  },
+  {
+    title: t('add-from-api'),
+    icon: 'tabler:folder-plus',
+    action: actionAddFromApi,
+  },
+
+]
+const actionUpdate = [
+  {
+    title: t('Update-user-info'),
+    icon: 'tabler:folder-plus',
+    action: () => {
+      router.push({ name: 'admin-organization-user-import-file-update-user-infor' })
+    },
+  },
+  {
+    title: t('update-tile-from-file'),
+    icon: 'tabler:folder-plus',
+    action: () => {
+      router.push({ name: 'admin-organization-user-import-file-update-user-title' })
+    },
+  },
+
+]
+
 // watch
 watch(() => route.path, value => {
   // console.log(value)
@@ -309,7 +381,17 @@ window.hideAllPageLoading()
 
 <template>
   <div>
-    <CpHeaderPageAction />
+    <CpActionHeaderPage
+      :title-aprove="t('browse-user')"
+      :title="t('user-list')"
+      is-update-btn
+      is-export-btn
+      is-approve-btn
+      :action-add="actionAdd"
+      :action-update="actionUpdate"
+      @exportExcel="exportExcel"
+      @click="router.push({ name: 'admin-organization-users-profile-add', params: { tab: 'infor' } })"
+    />
   </div>
   <div
     v-if="isShowFilter"
@@ -328,6 +410,7 @@ window.hideAllPageLoading()
   </div>
   <div>
     <CmTable
+      ref="refTableUserList"
       :headers="headers"
       :items="items"
       :total-record="totalRecord"
@@ -336,7 +419,9 @@ window.hideAllPageLoading()
     >
       <template #rowItem="{ col, context }">
         <div v-if="col === 'fullName'">
-          {{ StringUtil.formatFullName(context.firstName, context.lastName) }}
+          <CpCustomInfo
+            :context="context"
+          />
         </div>
         <div v-if="col === 'organization'">
           <CmAccodion
@@ -390,8 +475,8 @@ window.hideAllPageLoading()
   <CpConfirmDialog
     :is-dialog-visible="data.isShowDialogPasword"
     :type="data.typeDialogRessetPass"
-    :confirmation-msg="data.showPassword === true ? t('users.user.action-modal.new-passworded') : t('common.confirm-modal.title')"
-    :confirmation-msg-sub-title="!data.showPassword === true ? t('users.user.action-modal.waning-password') : ''"
+    :confirmation-msg="data.showPassword === true ? t('new-passworded') : t('title')"
+    :confirmation-msg-sub-title="!data.showPassword === true ? t('waning-password') : ''"
     :is-hide-footer="data.showPassword"
     @confirm="confirmDialogResetPass"
     @update:isDialogVisible="updateDialogVisibleResset"
@@ -400,11 +485,11 @@ window.hideAllPageLoading()
       v-if="data.showPassword"
       #sub-title
     >
-      <div>{{ t('users.user.action-modal.new-password') }}</div>
+      <div>{{ t('new-password') }}</div>
       <div class="value-coppy">
         <span class="text-red">{{ data.testingCode }}</span>
         <span
-          :title="t('users.user.action-modal.coppy')"
+          :title="t('coppy')"
           class="icon-coppy"
           @click.stop.prevent="copyTestingCode"
         >

@@ -14,6 +14,15 @@ html {
   block-size: 100%;
   inline-size: 100%;
 }
+#loading-modal {
+  position: absolute;
+  display: block;
+  background: var(--initial-loader-bg, #fff);
+  block-size: 100%;
+  inline-size: 100%;
+  height: 100%;
+  z-index: 999;
+}
 
 .loading-logo {
   position: absolute;

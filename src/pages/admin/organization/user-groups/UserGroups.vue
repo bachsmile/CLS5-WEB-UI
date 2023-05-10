@@ -8,7 +8,6 @@ import toast from '@/plugins/toast'
 import router from '@/router'
 
 const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/gereral/CpConfirmDialog.vue'))
-
 const CpHeaderACtion = defineAsyncComponent(() => import('@/components/page/Admin/organization/user-group/CpHeaderAction.vue'))
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
@@ -23,31 +22,26 @@ const TABLE = Object.freeze({
 
 const headers = reactive([
   { text: '', value: 'checkbox' },
-  { text: t('common.name'), value: 'name', type: 'custom' },
-  { text: t('report.number-user-in-group'), value: 'numberUser' },
-  { text: t('common.number-course-group'), value: 'numberCourse' },
-  { text: t('common.description'), value: 'description' },
+  { text: t('name'), value: 'name', type: 'custom' },
+  { text: t('number-user-in-group'), value: 'numberUser' },
+  { text: t('number-course-group'), value: 'numberCourse' },
+  { text: t('description'), value: 'description' },
   { text: '', value: 'actions', width: 150 },
 ])
 
 const items = ref([])
 const totalRecord = ref<number>()
-
 const params = reactive<Params>({
   search: '',
   pageNumber: 1,
   pageSize: 10,
 })
-
 const fetchData = async () => {
   const { data } = await MethodsUtil.requestApiCustom(ApiGroupUser.ListGroup, TYPE_REQUEST.GET, params)
-
   items.value = data.listData
   totalRecord.value = data.totalRecord
 }
-
 fetchData()
-
 watch(params, val => {
   if (val.search) {
     params.pageNumber = 1
@@ -71,7 +65,6 @@ const editGroupUser = (id: number) => {
 // Xóa từng item
 const listId = ref<number[]>([])
 const isShowModalConfirmDelete = ref(false)
-
 const showModalConfirmDelete = (val: number[]) => {
   listId.value = val
   isShowModalConfirmDelete.value = true
@@ -101,11 +94,17 @@ const listItemButtonGroup = [
     title: 'Thêm từ tập tin',
     icon: 'file-plus',
     key: 'importFile',
+    action: () => {
+      router.push({ name: 'admin-organization-user-groups-import' })
+    },
   },
   {
     title: 'Thêm người dùng từ tập tin',
     icon: 'file-plus',
     key: 'importFileUser',
+    action: () => {
+      router.push({ name: 'admin-organization-user-groups-import-user' })
+    },
   },
 ]
 </script>

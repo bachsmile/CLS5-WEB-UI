@@ -126,8 +126,6 @@ const handleChangeDistrict = async (districtId: any) => {
 }
 
 onMounted(async () => {
-  console.log(country.value)
-
   if (window._.isEmpty(country.value))
     await fetchCountry()
   if (window._.isEmpty(provinces.value))

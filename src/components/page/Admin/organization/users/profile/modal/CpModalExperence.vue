@@ -59,8 +59,6 @@ const DATA_LABEL = Object.freeze({
 
 const fetchNameSchools = async () => {
   await MethodsUtil.requestApiCustom(ApiUser.fetchNameSchools, TYPE_REQUEST.GET).then((value: any) => {
-    console.log(value)
-
     data.nameSchoolsCombobox = value.data
   })
 }
@@ -70,7 +68,6 @@ fetchNameSchools()
 // get bằng cấp trình độ '
 const fetchDegrees = async () => {
   await MethodsUtil.requestApiCustom(ApiUser.fetchDegrees, TYPE_REQUEST.GET).then((value: any) => {
-    console.log(value)
     data.degreesCombobox = value.data
   })
 }
@@ -107,7 +104,6 @@ const myFormExperence = ref(null)
  */
 
 const addExperience = () => {
-  console.log('experience', values)
   if (props?.experienceData?.isEdit === false)
     emit('update:profile', window._.clone(values), false)
 
@@ -119,13 +115,8 @@ const onConfirmation = () => {
   const form: any = myFormExperence.value
   if (form) {
     form.validate().then((success: any) => {
-      console.log(success)
-      if (success.valid) {
-        console.log(success)
+      if (success.valid)
         addExperience()
-      }
-
-      console.log(values)
     })
   }
 }
@@ -135,7 +126,6 @@ watch(() => props.isDialogVisible, value => {
     resetForm()
 })
 watch(() => props.experienceData, value => {
-  console.log('props:', value)
   setValues(value)
 }, { deep: true })
 </script>
@@ -255,7 +245,7 @@ watch(() => props.experienceData, value => {
           >
             <CmTextArea
               :field="field"
-              :text="t('common.description')"
+              :text="t('description')"
             />
           </Field>
         </VCol>

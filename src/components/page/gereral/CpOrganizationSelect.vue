@@ -6,14 +6,17 @@ import { comboboxStore } from '@/stores/combobox'
 interface Props {/** ** Interface */
   modelValue?: any
   orgStructs?: Array<any>
-  valueFormat?: string
+  valueFormat?: 'id' | 'node' | undefined
   excludeId?: number
   maxItem?: number
+  typeOrg?: number
+  maxHeight?: number
   customKey?: string
   multiple?: boolean
   parentId?: number
   appendToBody?: boolean
   closeOnSelect?: boolean
+  error?: boolean
   bgColor?: string
   text?: string
   placeholder?: string
@@ -26,11 +29,14 @@ interface Emit {
 const props = withDefaults(defineProps<Props>(), ({
   multiple: false,
   closeOnSelect: false,
+  error: false,
   customKey: 'id',
   label: undefined,
   bgColor: 'white',
   text: undefined,
   placeholder: 'Chọn',
+  valueFormat: 'id',
+  typeOrg: 0, // 0: get all, 1: có cả title
 }))
 
 const emit = defineEmits<Emit>()
@@ -38,7 +44,7 @@ const emit = defineEmits<Emit>()
 /** ** Khởi tạo store */
 const store = comboboxStore()
 const { organizations } = storeToRefs(store)
-const { fetchTOrgStructCombobox } = store
+const { fetchTOrgStructCombobox, fetchTOrgStructTitleCombobox } = store
 const organizationsValue = ref<any>(props.modelValue)
 
 const options = ref()
@@ -61,13 +67,13 @@ const handleChangeSelect = (data: any) => {
 }
 
 onMounted(async () => {
-  if (window._.isEmpty(organizations.value)) {
+  if (!props.typeOrg)
     await fetchTOrgStructCombobox()
-    await getAllOrgStruct()
-  }
-  else {
-    await getAllOrgStruct()
-  }
+
+  else
+    await fetchTOrgStructTitleCombobox()
+
+  await getAllOrgStruct()
 })
 </script>
 
@@ -80,9 +86,11 @@ onMounted(async () => {
   <div>
     <CmSelectTree
       v-model="organizationsValue"
+      :max-height="maxHeight"
+      :is-error="error"
       :options="options"
       :placeholder="props.placeholder"
-      value-format="id"
+      :value-format="valueFormat"
       :close-on-select="closeOnSelect"
       :multiple="multiple"
       :normalizer-custom-type="[props.customKey, 'name', 'children']"

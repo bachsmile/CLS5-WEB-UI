@@ -5,7 +5,6 @@ import { validatorStore } from '@/stores/validatator'
 import { profileUserManagerStore } from '@/stores/admin/users/profile/profile'
 import CmtextArea from '@/components/common/CmtextArea.vue'
 
-window.showAllPageLoading('COMPONENT')
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
 const CpModalEducation = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/modal/CpModalEducation.vue'))
 const CpModalExperence = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/modal/CpModalExperence.vue'))
@@ -20,6 +19,7 @@ const storeValidate = validatorStore()
 const { Field, Form } = storeValidate
 const storeProfileUserManager = profileUserManagerStore()
 const { values } = storeToRefs(storeProfileUserManager)
+const valuesComponent = ref(computed(() => values.value))
 
 /**
  * lib
@@ -81,7 +81,7 @@ const fetchModalEducation = () => {
 }
 
 const removeEducation = (index: any) => {
-  values.value.listEducationUser.splice(index, 1)
+  valuesComponent.value?.listEducationUser.splice(index, 1)
 }
 
 // reset education modal
@@ -109,8 +109,8 @@ const addExperiences = () => {
 }
 
 // delete experience item
-const removeExperience = index => {
-  values.value.listExperienceUser.splice(index, 1)
+const removeExperience = (index: any) => {
+  valuesComponent.value.listExperienceUser.splice(index, 1)
 }
 
 // reset education modal
@@ -156,12 +156,10 @@ const actionItemEdit = (dataAction: any, index: any, dataResend?: any) => {
 const actionItemDelete = (dataAction: any, index: any, dataResend?: any) => {
   switch (dataResend) {
     case 'EDUCATION':
-      console.log('actionItemDelete', dataAction, index)
       removeEducation(index)
 
       break
     case 'EXPERENCE':
-      console.log('actionItemDelete', dataAction, index)
       removeExperience(index)
 
       break
@@ -206,37 +204,26 @@ const updateDialogVisible = (event: any, type?: any) => {
  * update profile
  */
 const handleUpdataProfile = (education: any, edit: boolean) => {
-  console.log('education', education)
-  console.log('edit', edit)
-  console.log('dataProfile', values.value.listEducationUser.length)
-  console.log('dataProfile', values.value.listEducationUser)
-
-  if (edit) { values.value.listEducationUser[education?.index] = education }
+  if (edit) { valuesComponent.value.listEducationUser[education?.index] = education }
   else {
-    if (!values.value.listEducationUser || values.value.listEducationUser === null)
-      values.value.listEducationUser = []
-    values.value.listEducationUser[values.value.listEducationUser.length] = education
+    if (!valuesComponent.value?.listEducationUser || valuesComponent.value?.listEducationUser === null)
+      valuesComponent.value.listEducationUser = []
+    valuesComponent.value.listEducationUser[valuesComponent.value.listEducationUser.length] = education
   }
   updateDialogVisible(false, 'EDUCATION')
 }
 
 const handleUpdateExperences = (experences: any, edit: boolean) => {
-  console.log('education', experences)
-  console.log('edit', edit)
-  console.log('dataProfile', values.value)
-  console.log('dataProfile', values.value.listExperienceUser?.length)
-
-  if (edit) { values.value.listExperienceUser[experences?.index] = experences }
+  if (edit) { valuesComponent.value.listExperienceUser[experences?.index] = experences }
   else {
-    if (!values.value.listExperienceUser || values.value.listExperienceUser === null)
-      values.value.listExperienceUser = []
-    values.value.listExperienceUser[values.value.listExperienceUser.length] = experences
+    if (!valuesComponent.value.listExperienceUser || valuesComponent.value.listExperienceUser === null)
+      valuesComponent.value.listExperienceUser = []
+    valuesComponent.value.listExperienceUser[valuesComponent.value.listExperienceUser.length] = experences
   }
   updateDialogVisible(false, 'EXPERENCE')
 }
 
 /** ******************** */
-window.hideAllPageLoading()
 </script>
 
 <template>
@@ -262,10 +249,11 @@ window.hideAllPageLoading()
               <!-- input birth-day -->
               <Field name="birthDay">
                 <div class="mb-1">
-                  <label class="text-label-default">{{ t("common.birth-day") }}</label>
+                  <label class="text-label-default">{{ t("birth-day") }}</label>
                 </div>
                 <CmDateTimePicker
-                  v-model="values.birthDay"
+                  v-if="valuesComponent"
+                  v-model="valuesComponent.birthDay"
                   placeholder="dd-mm-yyyy"
                 />
               </Field>
@@ -276,14 +264,14 @@ window.hideAllPageLoading()
             >
               <!-- giáo dục -->
               <div class="mb-3">
-                <label class="text-label-default ">{{ $t("users.add-user.education") }}</label>
+                <label class="text-label-default ">{{ $t("education") }}</label>
               </div>
               <div
-                v-if="values.listEducationUser && values.listEducationUser.length > 0"
+                v-if="valuesComponent?.listEducationUser && valuesComponent?.listEducationUser.length > 0"
                 class="style-education"
               >
                 <div
-                  v-for="(item, index) in values.listEducationUser"
+                  v-for="(item, index) in valuesComponent?.listEducationUser"
                   :key="index"
                   class="border-item"
                 >
@@ -292,7 +280,7 @@ window.hideAllPageLoading()
                       cols="10"
                     >
                       <div class="text-name-school text-bold-sm mb-2">
-                        {{ item.schoolName }} <span v-if="item?.graduationYear">({{ $t("common.years") }} {{ formatDateYears(item.graduationYear) }})</span>
+                        {{ item.schoolName }} <span v-if="item?.graduationYear">({{ $t("years") }} {{ formatDateYears(item.graduationYear) }})</span>
                       </div>
                       <CmChip class="mb-2">
                         <div> {{ item.degreeName }}</div>
@@ -330,7 +318,7 @@ window.hideAllPageLoading()
                   size="16"
                   class="color-primary mr-2"
                 />
-                <span class="color-primary  align-center">{{ $t('common.add') }}</span>
+                <span class="color-primary  align-center">{{ $t('add') }}</span>
               </BLink>
             </VCol>
           </VRow>
@@ -348,14 +336,14 @@ window.hideAllPageLoading()
               <!-- input passport -->
               <Field
                 v-slot="{ field }"
-                v-model="values.passport"
+                v-model="valuesComponent.passport"
                 name="passport"
                 type="passport"
               >
                 <CmTextField
                   :field="field"
-                  :text="`${t('users.add-user.enter-passport')}`"
-                  :placeholder="t('users.add-user.enter-passport')"
+                  :text="`${t('enter-passport')}`"
+                  :placeholder="t('enter-passport')"
                 />
               </Field>
             </VCol>
@@ -365,14 +353,14 @@ window.hideAllPageLoading()
             >
               <!-- Kinh nghiệm -->
               <div class="mb-3">
-                <label class="text-label-default ">{{ t("users.add-user.experience") }}</label>
+                <label class="text-label-default ">{{ t("experience") }}</label>
               </div>
               <div
-                v-if="values.listExperienceUser && values.listExperienceUser.length > 0"
+                v-if="valuesComponent.listExperienceUser && valuesComponent.listExperienceUser.length > 0"
                 class="style-experience"
               >
                 <div
-                  v-for="(item, index) in values.listExperienceUser"
+                  v-for="(item, index) in valuesComponent.listExperienceUser"
                   :key="index"
                   class="border-item"
                 >
@@ -383,7 +371,7 @@ window.hideAllPageLoading()
                       <div class="text-name-school text-bold-sm mb-2">
                         {{ item.companyName }}
                         <span>
-                          ({{ $t("common.years") }} {{ formatDateYears(item.dateStart) }} - {{ $t("common.years") }} {{ formatDateYears(item.dateFinish) }})
+                          ({{ $t("years") }} {{ formatDateYears(item.dateStart) }} - {{ $t("years") }} {{ formatDateYears(item.dateFinish) }})
                         </span>
                       </div>
                       <CmChip class="mb-2">
@@ -422,7 +410,7 @@ window.hideAllPageLoading()
                   size="16"
                   class="color-primary mr-2"
                 />
-                <span class="color-primary  align-center">{{ $t('common.add') }}</span>
+                <span class="color-primary  align-center">{{ $t('add') }}</span>
               </BLink>
             </VCol>
           </VRow>
@@ -439,7 +427,7 @@ window.hideAllPageLoading()
             >
               <!-- address -->
               <div class="mb-3">
-                <label class="text-label-default ">{{ t("common.address") }}</label>
+                <label class="text-label-default ">{{ t("address") }}</label>
               </div>
               <CpAddressEdit
                 ref="address"

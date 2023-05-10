@@ -36,11 +36,6 @@ interface Emit {
   (e: 'click:clear', el: MouseEvent): void
 }
 
-// inherit Attribute make false
-defineOptions({
-  inheritAttrs: false,
-})
-
 const attrs = useAttrs()
 
 const [rootAttrs, compAttrs] = filterInputAttrs(attrs)
@@ -61,8 +56,6 @@ if (compAttrs.config && compAttrs.config.inline) {
 
 // v-field clear prop
 const onClear = (el: MouseEvent) => {
-  el.stopPropagation()
-
   nextTick(() => {
     emit('update:modelValue', '')
 

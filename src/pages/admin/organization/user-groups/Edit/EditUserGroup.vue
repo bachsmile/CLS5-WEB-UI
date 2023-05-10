@@ -15,7 +15,7 @@ const isDisabledTab = computed(() => {
 const listtab = ref([
   {
     key: 'info',
-    title: 'common.info',
+    title: 'info',
     component: CpAdd,
     dataTab: {
       TITLE: {
@@ -30,13 +30,13 @@ const listtab = ref([
   },
   {
     key: 'user',
-    title: 'common.tabs.user',
+    title: 'user',
     isDisabled: isDisabledTab.value,
     component: CpUserTab,
   },
   {
     key: 'course',
-    title: 'common.tabs.course',
+    title: 'course',
     isDisabled: isDisabledTab.value,
     component: CpCourseTab,
   },
@@ -48,6 +48,7 @@ const listtab = ref([
     type="button"
     :list-tab="listtab"
     label="tab"
+    :is-use-component="true"
   />
 </template>
 

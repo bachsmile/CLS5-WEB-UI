@@ -47,9 +47,9 @@ const data = reactive({
 })
 
 const DATA_LABEL = Object.freeze({
-  TITLE: t('users.add-user.add-education'),
-  LABEL_SCHOOL: t('users.add-user.school-name'),
-  LABEL_DEGREE: t('users.add-user.degree'),
+  TITLE: t('add-education'),
+  LABEL_SCHOOL: t('school-name'),
+  LABEL_DEGREE: t('degree'),
 })
 
 // get name schools '
@@ -107,7 +107,6 @@ const addEducation = () => {
   const degree: any = data.degreesCombobox.find((itemDegrees: any) => itemDegrees.key === values.degreeId)
   if (degree)
     values.degreeName = degree.value
-  console.log('education', values)
   if (props?.educationData?.isEdit === false)
     emit('update:profile', window._.clone(values), false)
 
@@ -195,7 +194,7 @@ watch(() => props.educationData, value => {
               name="graduationYear"
               :rules="schema.graduationYear"
             >
-              <label class="text-label-default">{{ t('common.years') }}</label>
+              <label class="text-label-default">{{ t('years') }}</label>
               <CmDateTimePicker
                 :key="errors.length"
                 v-model="values.graduationYear"
@@ -219,7 +218,7 @@ watch(() => props.educationData, value => {
           >
             <CmTextArea
               :field="field"
-              :text="t('common.description')"
+              :text="t('description')"
             />
           </Field>
         </VCol>

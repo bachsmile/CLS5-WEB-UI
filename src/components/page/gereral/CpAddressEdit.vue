@@ -61,12 +61,11 @@ const data = reactive<Data>({
 })
 
 const actionItemEdit = (dataAction: any, index: any) => {
-  console.log('edit', dataAction, index)
   data.isShowModalAddress = true
 }
 
 const actionItemDelete = (dataAction: any, index: any, dataResend?: any) => {
-  console.log('actionItemDelete', dataAction, index)
+  // console.log('actionItemDelete', dataAction, index)
 }
 
 const addressName = (address: any) => {
@@ -107,8 +106,6 @@ const action = [
 ]
 
 const fetchDataAddress = async (dataAddress: any) => {
-  console.log(ArrayUtil.isEmptyArray(country.value))
-
   if (dataAddress.countryId && ArrayUtil.isEmptyArray(country.value)) {
     await fetchCountry()
     if (dataAddress.provinceId && ArrayUtil.isEmptyArray(provinces.value)) {

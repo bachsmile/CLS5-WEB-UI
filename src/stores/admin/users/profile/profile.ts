@@ -59,7 +59,7 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
     birthDay: null,
     email: '',
     employmentDate: '',
-    firstName: '',
+    firstName: undefined,
     gender: true,
     lastName: '',
     levelId: null,
@@ -122,6 +122,9 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
     password: schemaOption?.password,
   })
   const updateSchema = () => {
+    schema.value = null
+    console.log(route.params.id)
+
     if (!Number(route.params.id))
       schema.value = { ...schemaInit, ...schemaPass }
     else
@@ -129,7 +132,7 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
   }
   updateSchema()
 
-  const { values, setValues, resetForm, submitForm } = useForm({
+  const { values, setValues, resetForm, submitForm, resetField, errors } = useForm({
     validationSchema: schema,
     initialValues: ref<userInfor>(window._.cloneDeep(initForm)),
   })
@@ -166,12 +169,14 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
   }
 
   const resetData = () => {
+    console.log('resetData')
+
     isShowButton.value = true
 
-    router.push({ name: 'admin-organization-users-profile-edit', params: { tab: 'infor', id: route?.params?.id } })
+    router.replace({ name: 'admin-organization-users-profile-add', params: { tab: 'infor' } })
 
     idUpdate.value = null
-    resetForm()
+
     idUser.value = null
     getAutoCode()
   }
@@ -187,7 +192,14 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
     })
   }
   const resetFormInfor = () => {
-    setValues(initForm)
+    idUpdate.value = null
+
+    resetForm()
+    if (myFormUserInfor.value) {
+      myFormUserInfor.value.resetForm()
+      console.log(myFormUserInfor.value)
+    }
+    updateSchema()
     idUpdate.value = null
   }
   const handlesCreateUser = async (bvModalEvt: any, dataObj: any, type: any) => {
@@ -250,10 +262,10 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
 
               return
             }
-            if (type === 'save-add')
+            if (type === 'save-add') {
               resetData()
-
-            resetFormInfor()
+              resetFormInfor()
+            }
           })
       }
       else {

@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<Props>(), ({
 }))
 
 const emit = defineEmits<Emit>(); const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
+
 /** ** Interface */
 
 interface Props {
@@ -100,6 +101,9 @@ const messageError = computed(() => {
   border: none !important;
 }
 .v-field--prepended{
+  .v-field__input{
+    border: none !important;
+  }
   border: $border-input !important;
   border-radius: $border-radius-input !important;
   .v-field__outline__notch::before,

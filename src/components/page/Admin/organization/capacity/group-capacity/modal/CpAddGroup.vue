@@ -88,7 +88,7 @@ const confirmModal = () => {
       <VRow>
         <VCol>
           <CmTextField
-            :text="t('common.description')"
+            :text="t('description')"
             :placeholder="t('users.capacity-management.proficiency-group.name')"
           />
         </VCol>

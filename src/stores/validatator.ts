@@ -56,11 +56,11 @@ export const validatorStore = defineStore('validator', () => {
       MAX: 20,
     },
     USER_TYPE: {
-      FIELD: t('users.user.filters.user-role'),
+      FIELD: t('user-role'),
       MIN: 1,
     },
     STATUS: {
-      FIELD: t('common.status-name'),
+      FIELD: t('status-name'),
       MIN: 1,
     },
   })
@@ -107,7 +107,6 @@ export const validatorStore = defineStore('validator', () => {
     requiredString: yup.string().required(ruleMessage.required()).max(CONFIG.DEFAULT_STRING.MAX, ruleMessage.max(CONFIG.DEFAULT_STRING.MAX)),
     code: yup.string().max(CONFIG.CODE.MAX, ruleMessage.max(CONFIG.CODE.MAX)).nullable(),
     require: yup.string().required(ruleMessage.required()),
-
     lastName: yup.string().required(ruleMessage.required())
       .max(CONFIG.LAST_NAME.MAX, ruleMessage.max(CONFIG.LAST_NAME.MAX, CONFIG.LAST_NAME.FIELD)),
     firstName: yup.string().required(ruleMessage.required())

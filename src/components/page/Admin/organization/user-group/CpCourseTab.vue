@@ -14,7 +14,7 @@ const { t } = window.i18n()
 const TITLE = Object.freeze({
   BUTTON_EXCEL: t('export-excel'),
   TITLE_PAGE: t('Danh sách khóa học'),
-  BUTTON_ADD: t('common.add'),
+  BUTTON_ADD: t('Add'),
   BUTTON_MOVE: t('Chuyển nhóm'),
   BUTTON_DELETE: t('Xóa khóa học'),
   MESSAGE_DELETE: t('courses.course.confirm-delete'),
@@ -23,8 +23,8 @@ const TITLE = Object.freeze({
 // Danh sách người dùng
 const headers = [
   { text: '', value: 'checkbox', with: 50 },
-  { text: t('common.user-name'), value: 'name', type: 'custom' },
-  { text: t('common.title'), value: 'titleName' },
+  { text: t('user-name'), value: 'name', type: 'custom' },
+  { text: t('title'), value: 'titleName' },
   { text: '', value: 'actions', width: 150 },
 ]
 

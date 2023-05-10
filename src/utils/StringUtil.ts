@@ -46,4 +46,8 @@ export default class StringUtil {
         return `${lastName || '-'} ${firstName || '-'}`
     }
   }
+
+  static generateRandomKey = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2)
+  }
 }

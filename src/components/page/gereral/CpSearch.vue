@@ -28,11 +28,14 @@ const handleSearch = (val: string) => {
 </script>
 
 <template>
-  <CmTextField
-    label="Tìm kiếm"
-    class="header-action-field"
-    placeholder="Tìm kiếm"
-    prepend-inner-icon="tabler-search"
-    @update:model-value="handleSearch"
-  />
+  <div>
+    <CmTextField
+      style="widht: 400px"
+      label="Tìm kiếm"
+      class="header-action-field"
+      placeholder="Tìm kiếm"
+      prepend-inner-icon="tabler-search"
+      @update:model-value="handleSearch"
+    />
+  </div>
 </template>

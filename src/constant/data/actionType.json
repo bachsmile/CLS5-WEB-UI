@@ -4,97 +4,113 @@
       "id": 1,
       "name": "ActionEdit",
       "icon": "mdi-pencil",
-      "color": "primary"
+      "color": "primary",
+      "note": "Chỉnh sửa"
     },
     {
       "id": 2,
       "name": "ActionDelete",
       "icon": "fe:trash",
-      "color": "error"
+      "color": "error",
+      "note": "Xóa"
     },
     {
       "id": 3,
       "name": "ActionSendAgree",
       "icon": "tabler:send",
-      "color": "success"
+      "color": "success",
+      "note": "Gửi duyệt"
     },
     {
       "id": 4,
       "name": "ActionViewDetail",
       "icon": "tabler:eye",
-      "color": "primary"
+      "color": "primary",
+      "note": "Xem chi tiết"
     },
     {
       "id": 5,
       "name": "ActionViewFeedBack",
       "icon": "tabler:eye",
-      "color": "success"
+      "color": "success",
+      "note": "Xem phản hồi"
     },
     {
       "id": 6,
       "name": "ActionRecallRequest",
       "icon": "tabler:circle-minus",
-      "color": "primary"
+      "color": "primary",
+      "note": "Yêu cầu thu hồi"
     },
     {
       "id": 7,
       "name": "ActionAcceptRecallRequest",
       "icon": "prime-check-circle",
-      "color": "success"
+      "color": "success",
+      "note": "Cho phép thu hồi"
     },
     {
       "id": 8,
       "name": "ActionViewReport",
       "icon": "fe:pie-chart",
-      "color": "success"
+      "color": "success",
+      "note": "Xem báo cáo"
     },
     {
       "id": 9,
       "name": "ActionAgree",
       "icon": "prime-check-circle",
-      "color": "color-success"
+      "color": "color-success",
+      "note": "Duyệt"
     },
     {
       "id": 10,
       "name": "ActionCreatingTestCode",
       "icon": "mdi-pencil",
-      "color": "primary"
+      "color": "primary",
+      "note": "Tạo đề"
     },
     {
       "id": 11,
       "name": "ActionRollCallOffline",
       "icon": "mdi:checkbox-marked-outline",
-      "color": "success"
+      "color": "success",
+      "note": "Điểm danh"
     },
     {
       "id": 12,
       "name": "ActionUpdatePointOffline",
       "icon": "mdi-pencil",
-      "color": "primary"
+      "color": "primary",
+      "note": "Cập nhật điểm"
     },
     {
       "id": 13,
       "name": "issuePasswords",
       "icon": "fe:lock",
-      "color": "warning"
+      "color": "warning",
+      "note": "Cấp mật khẩu"
     },
     {
       "id": 14,
       "name": "changeStatus",
       "icon": "tabler:refresh",
-      "color": "primary"
+      "color": "primary",
+      "note": "Thay đổi trạng thái"
     },
     {
       "id": 15,
       "name": "RestoreCourse",
       "icon": "tabler:refresh",
-      "color": "purple"
+      "color": "purple",
+      "note": "Khôi phục"
     },
     {
       "id": 16,
       "name": "AddOrStructure",
       "icon": "tabler:circle-plus",
-      "color": "orange"
+      "color": "orange",
+      "note": ""
     }
   ]
 }

@@ -5,6 +5,7 @@ import { getHomeRouteForLoggedInUser, getUserData, parseJwt } from './utils'
 import error from './errors/error.router'
 import admin from '@/router/admin/admin.router'
 import MethodsUtil from '@/utils/MethodsUtil'
+import { load } from '@/stores/loadComponent.js'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import { canNavigate } from '@/@layouts/plugins/casl'
 
@@ -34,7 +35,11 @@ const isUserLoggedIn = () => {
 }
 
 const checkPortal: any = async (next: any, to: any) => {
+  const store = load()
+  store.components = []
+  store.$dispose()
   const isLoggedIn = isUserLoggedIn()
+
   if (to.meta.requireAuth) {
     const requireAuth: any = to.meta.requireAuth || {}
     const key: string = requireAuth.permissionKey || ''
@@ -73,6 +78,7 @@ const checkPortal: any = async (next: any, to: any) => {
     // getHomeRouteForLoggedInUser(userData ? userData.roles : null)
     next({ name: 'admin-organization-users-manager' })
   }
+
   return next()
 }
 
@@ -88,27 +94,28 @@ const router = createRouter({
 
 router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   // return checkPortal(next, to)
-  if (!isUserLoggedIn())
-    return checkPortal(next, to)
-  if (to.meta.redirectIfLoggedIn && isUserLoggedIn()) {
-    const userData = getUserData()
+  // if (!isUserLoggedIn())
+  return checkPortal(next, to)
 
-    // getHomeRouteForLoggedInUser(userData ? userData.roles : null)
-    next({ name: 'admin-organization-users-manager' })
-  }
-  if (to.meta.requireAuth) {
-    const requireAuth: any = to.meta.requireAuth || {}
-    const key: string = requireAuth.permissionKey || ''
+  // if (to.meta.redirectIfLoggedIn && isUserLoggedIn()) {
+  //   const userData = getUserData()
 
-    // Redirect if logged in
+  //   // getHomeRouteForLoggedInUser(userData ? userData.roles : null)
+  //   next({ name: 'admin-organization-users-manager' })
+  // }
+  // if (to.meta.requireAuth) {
+  //   const requireAuth: any = to.meta.requireAuth || {}
+  //   const key: string = requireAuth.permissionKey || ''
 
-    if ((Number(permission[key]) & requireAuth.permissionValue) !== requireAuth.permissionValue)
-      return next({ name: 'error-403' })
+  //   // Redirect if logged in
 
-    return next()
-  }
+  //   if ((Number(permission[key]) & requireAuth.permissionValue) !== requireAuth.permissionValue)
+  //     return next({ name: 'error-403' })
 
-  return next()
+  //   return next()
+  // }
+
+  // return next()
 })
 
 export default router

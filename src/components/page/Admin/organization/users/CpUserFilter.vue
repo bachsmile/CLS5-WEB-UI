@@ -11,9 +11,9 @@ const emit = defineEmits<Emit>()
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 /** ** Khởi tạo store */
 const store = comboboxStore()
-const { statuses, organizations, userType } = storeToRefs(store)
+const { statuses, organizations, userType, groupUser } = storeToRefs(store)
 
-const { fetchStatusUsersCombobox, fetchTypeUsersCombobox, fetchTOrgStructCombobox } = store
+const { fetchStatusUsersCombobox, fetchTypeUsersCombobox, fetchTOrgStructCombobox, fetchGroupUserCombobox } = store
 
 const LABEL = Object.freeze({
   FILLTER1: 'Tình trạng hoạt động',
@@ -21,12 +21,14 @@ const LABEL = Object.freeze({
   FILLTER3: 'Vai trò người dùng',
   FILLTER4: 'Từ ngày đến ngày',
   FILLTER5: 'Được thêm từ',
+  FILLTER6: t('group-management'),
 })
 
 const formFilter = reactive({
   statusList: null,
-  structures: null,
+  orStructure: null,
   userTypeList: null,
+  groupUser: null,
 })
 
 // method
@@ -43,6 +45,8 @@ if (window._.isEmpty(userType.value))
   fetchTypeUsersCombobox()
 if (window._.isEmpty(organizations.value))
   fetchTOrgStructCombobox()
+if (window._.isEmpty(groupUser.value))
+  fetchGroupUserCombobox()
 </script>
 
 <template>
@@ -69,11 +73,27 @@ if (window._.isEmpty(organizations.value))
       sm="4"
     >
       <CpOrganizationSelect
-        v-model="formFilter.structures"
+        v-model="formFilter.orStructure"
         multiple
         :text="LABEL.FILLTER2"
         :placeholder="LABEL.FILLTER2"
         @update:modelValue="change"
+      />
+    </VCol>
+    <VCol
+      cols="12"
+      md="4"
+      sm="4"
+    >
+      <CmSelect
+        v-model="formFilter.groupUser"
+        :items="groupUser"
+        :text="LABEL.FILLTER6"
+        item-value="id"
+        multiple
+        custom-key="name"
+        :placeholder="LABEL.FILLTER6"
+        @update:model-value="change"
       />
     </VCol>
     <VCol

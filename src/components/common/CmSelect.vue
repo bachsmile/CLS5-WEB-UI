@@ -71,7 +71,7 @@ const close = (e: any) => {
 }
 
 const optionsModel = computed(() => {
-  const optionsModels = props.items.map((item: any) => {
+  const optionsModels = props.items?.map((item: any) => {
     item = {
       ...item,
       keySearch: StringUtil.removeAccents(item.userTypeName),
@@ -127,7 +127,7 @@ watch(() => props.modelValue, newValue => {
         class="v-select-limit-width v-select-cls"
         :class="{ 'is-invalid': !!errors?.length }"
         :disabled="disabled"
-        :input-id="option => option.id"
+        :input-id="(option: any) => option.id"
         @open="open"
         @close="close"
         @update:modelValue="handleChangeValue"

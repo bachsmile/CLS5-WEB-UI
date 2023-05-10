@@ -7,11 +7,13 @@ const GroupUserService = {
   DeleteGroup: '/usergroup/delete-list',
   ImportFileGroup: '/usergroup/import-group-user-from-json',
   DownloadFileSampleGroup: '/usergroup/generate-excel-template-group-users',
-  DownloadFileSampleUser: '/UserGroup/generate-template-excel-add-list-user',
+  DownloadFileSampleAddUser: '/UserGroup/generate-template-excel-add-list-user',
+  ImportAddUserToGroup: '/UserGroup/import-list-user-from-excel',
 
   // người dùng
   ListUser: '/usergroup/get-list-user',
   ListUserAdd: '/user/get-list-user',
+  DeleteUser: '/usergroup/delete-user',
   GroupUserCombobox: '/usergroup/get-combobox',
   CategoryTitleCombobox: '/categorytitle/get-combobox',
   TitleCombobox: '/Title/get-list-distinct',

@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import '@/@iconify/icons-bundle'
-import App from '@/App.vue'
 import i18n from '@/plugins/i18n'
+import App from '@/App.vue'
 import layoutsPlugin from '@/plugins/layouts'
 import lodash from '@/plugins/lodash'
 import vuetify from '@/plugins/vuetify'
@@ -22,6 +22,7 @@ import { createApp } from 'vue'
 import VueFeather from 'vue-feather'
 import Vue3EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
+import { configStore } from '@/stores/index'
 
 const pinia = createPinia()
 
@@ -72,6 +73,10 @@ app.use(layoutsPlugin)
 app.component('EasyDataTable', Vue3EasyDataTable)
 
 app.use(router)
+const configControl = configStore()
+const { getDefaultSetting } = configControl
+
+getDefaultSetting()
 
 // Mount vue app
 app.mount('#app')

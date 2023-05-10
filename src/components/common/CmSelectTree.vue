@@ -38,6 +38,7 @@ interface Props {
   sortValueBy?: 'ORDER_SELECTED' | 'LEVEL' | 'INDEX' | null // "ORDER_SELECTED" (default) - Order selected "LEVEL" - Level of option: C 🡒 BB 🡒 AAA "INDEX" - Index of option: AAA 🡒 BB 🡒 C
   valueConsistsOf?: 'ALL' | 'BRANCH_PRIORITY' | 'LEAF_PRIORITY' | 'ALL_WITH_INDETERMINATE' | null // All: Hiện thị tất cả các lựa chọn, BRANCH_PRIORITY: Chỉ hiện thị nút nhánh nếu tất cả các con được lựa chọn, LEAF_PRIORITY:  Chỉ hiện thị nút con được chọn, ALL_WITH_INDETERMINATE: tất cả các nút được chọn kể cả intermindate
   normalizerCustomType?: Array<string> // custom key không lấy mặc định là id và lable
+  isError?: boolean // trạng thái lỗi
 }
 interface Emit {
   (e: 'update', value: any, instanceId: any): void
@@ -71,6 +72,7 @@ const props = withDefaults(defineProps<Props>(), ({
   valueConsistsOf: 'ALL',
   maxItem: Globals.MAX_ITEM_SELECT_MULT,
   maxHeight: undefined,
+  isError: false,
   normalizerCustomType: () => ['id', 'label', 'children'],
 }))
 
@@ -87,19 +89,19 @@ const normalizer = (node: any) => {
 }
 
 /** ** Sao chép biến model modelValue từ prop  modelValue ngăn thay đổi */
-let modelValue = window._.cloneDeep(props.modelValue)
+const modelValue = ref(window._.cloneDeep(props.modelValue))
 
 /** ** Biễn render */
 const render = ref(true)
 
 /** ** Cập nhật dữ liệu trên select */
-const updateValue = () => {
-  render.value = false
-  modelValue = window._.cloneDeep(props.modelValue)
-  nextTick(() => {
-    render.value = true
-  })
-}
+// const updateValue = () => {
+//   render.value = false
+//   modelValue.value = window._.cloneDeep(props.modelValue)
+//   nextTick(() => {
+//     render.value = true
+//   })
+// }
 
 /** ** function: xử lý khi tao tác trên node */
 const handleUpdate = (value: any, instanceId: any) => {
@@ -123,6 +125,7 @@ const limitText = (count: any) => {
   >
     <Treeselect
       v-model="modelValue"
+      :class="{ styleError: isError }"
       :value-format="props.valueFormat"
       :options="props.options"
       :placeholder="props.placeholder"
@@ -211,5 +214,13 @@ const limitText = (count: any) => {
   border: $border-xs solid $color-gray-300;
   block-size: $height-min-select;
   box-shadow: $box-shadow-xs;
+}
+.vue-treeselect__placeholder{
+  color:  $color-gray-500;
+}
+.styleError{
+  .vue-treeselect__control{
+    outline: 1px solid red;
+  }
 }
 </style>

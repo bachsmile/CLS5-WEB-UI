@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import ComboboxService from '@/api/combobox/index'
 import CpImportFile from '@/components/page/gereral/CpImportFile.vue'
 import type { Action, Config } from '@/typescript/interface/import'
-import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import ApiGroupUser from '@/api/group-user/index'
 
@@ -10,7 +8,6 @@ import ApiGroupUser from '@/api/group-user/index'
 const dataColumnExcel = (rowData: Array<any>) => {
   // eslint-disable-next-line prefer-const
   let [code, name, description] = rowData
-
   return { name, code, description }
 }
 
@@ -23,7 +20,7 @@ const combobox = reactive({
 const config = reactive<Config>(
   {
     customId: 'id',
-    routerBack: 'user',
+    routerBack: 'admin-organization-user-groups-list',
     table: ({
       header: [
         { text: 'Mã', value: 'code' },
@@ -46,24 +43,26 @@ const config = reactive<Config>(
     },
   },
 )
-
-// HOOK
 const actions = ref<Action[]>([
   {
     title: 'Thêm từ tệp tin',
-    key: 1,
   },
 ])
+const titleImport = {
+  titleList: 'Danh sách nhóm người dùng',
+  titlePage: 'Thêm nhóm người dùng từ tập tin',
+  titleButtonAdd: 'Thêm nhóm người dùng',
+  titlePageUpload: 'Thêm nhóm người dùng từ tập tin',
+}
 </script>
 
 <template>
   <div>
     <CpImportFile
-      title-list="Danh sách nhóm người dùng"
-      title-page="Thêm nhóm người dùng từ tập tin"
       :config="config"
       custom-key-error="messErr"
       :actions="actions"
+      v-bind="titleImport"
     />
   </div>
 </template>

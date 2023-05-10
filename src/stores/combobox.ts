@@ -18,6 +18,7 @@ export const comboboxStore = defineStore('combobox', () => {
   const statuses = ref([])
   const organizations = ref([])
   const userType = ref([])
+  const groupUser = ref([])
   const country = ref<combobox[]>([])
   const provinces = ref<combobox[]>([])
   const districts = ref<combobox[]>([])
@@ -47,9 +48,25 @@ export const comboboxStore = defineStore('combobox', () => {
       userType.value = res?.data || []
   }
 
+  // Lấy danh sách nhóm người dùng
+  const fetchGroupUserCombobox = async () => {
+    const res = await MethodsUtil.requestApiCustom(ComboboxService.GroupUser, TYPE_REQUEST.GET).then((value: any) => value)
+    if (res.code === 200)
+      groupUser.value = res?.data || []
+  }
+
   // Lấy danh sách cơ cấu tổ chức
   const fetchTOrgStructCombobox = async () => {
     const res = await MethodsUtil.requestApiCustom(ComboboxService.AllOrgStruct, TYPE_REQUEST.GET).then((value: any) => value)
+
+    // const res = await fetchData(ComboboxService.AllOrgStruct, TYPE_REQUEST.GET).then((value: any) => value)
+    if (res.code === 200 && res.data)
+      organizations.value = res?.data || []
+  }
+
+  // Lấy danh sách cơ cấu tổ chức
+  const fetchTOrgStructTitleCombobox = async () => {
+    const res = await MethodsUtil.requestApiCustom(ComboboxService.AllOrgTitle, TYPE_REQUEST.GET).then((value: any) => value)
 
     // const res = await fetchData(ComboboxService.AllOrgStruct, TYPE_REQUEST.GET).then((value: any) => value)
     if (res.code === 200 && res.data)
@@ -111,7 +128,6 @@ export const comboboxStore = defineStore('combobox', () => {
   const fetchUserLevels = async () => {
     await MethodsUtil.requestApiCustom(ComboboxService.levels, TYPE_REQUEST.GET).then((value: any) => {
       userLevels.value = value.data || []
-      console.log(value)
       userLevels.value = value?.data?.map((item: any) => {
         return {
           ...item,
@@ -136,6 +152,7 @@ export const comboboxStore = defineStore('combobox', () => {
     organizations,
     statuses,
     userType,
+    groupUser,
     country,
     provinces,
     districts,
@@ -145,6 +162,8 @@ export const comboboxStore = defineStore('combobox', () => {
     fetchStatusUsersCombobox,
     fetchTypeUsersCombobox,
     fetchTOrgStructCombobox,
+    fetchTOrgStructTitleCombobox,
+    fetchGroupUserCombobox,
     fetchCountry,
     fetchDistricts,
     fetchProvinces,

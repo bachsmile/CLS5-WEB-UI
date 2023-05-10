@@ -4,6 +4,7 @@ import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
 import Globals from '@/constant/Globals'
 import ArrayUtil from '@/utils/ArrayUtil'
 import MethodsUtil from '@/utils/MethodsUtil'
+import StringUtil from '@/utils/StringUtil'
 
 const props = withDefaults(defineProps<Props>(), ({
   headers: () => ([]),
@@ -30,9 +31,10 @@ const CpTableSub = defineAsyncComponent(() => import('../page/gereral/CpTableSub
 const CmPagination = defineAsyncComponent(() => import('./CmPagination.vue'))
 const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
-
+const CpOrganizationSelect = defineAsyncComponent(() => import('@/components/page/gereral/CpOrganizationSelect.vue'))
 interface HeaderCustom extends Header {
   type?: string
+  typeOrg?: number
   combobox?: any
 }
 interface groupOptions {
@@ -64,15 +66,16 @@ interface Emit {
   (e: 'itemSelected', dataRow: object): void
   (e: 'checkedAll', checkedAll: boolean, data: object): void
   (e: 'changeCellvalue', value: string, field: string, key: number): void
-  (e: 'handlePageClick', page: number): void
+  (e: 'handlePageClick', page: number, size: number): void
   (e: 'update:pageNumber', page: number): void
+  (e: 'update:size', size: number): void
   (e: 'update:selected', data: Item): void
 
 }
 
 // $ref dataTable
 const dataTable = ref()
-
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 // Checkbox table
 const selectedRows = ref<Item[]>([])
 const selectedAll = computed(() => {
@@ -90,20 +93,19 @@ const keyid = computed(() => {
 })
 
 watch(() => props.items, (val: Item[]) => {
-  const itemSelected = props.items.filter((x: Item) => x.isSelected === true)
-  selectedRows.value = itemSelected.map((item: Item) => item[keyid.value])
+  props.items.forEach((element, index) => {
+    element.originIndex = index
+    element.isSelected = !!element.isSelected
+    selectedRows.value = []
+    if (element.isSelected)
+      selectedRows.value.push([keyid.value])
+  })
 }, { immediate: true })
 const pageSize = ref(props.pageSize) // số lượng item trên 1 page
-const currentPage = ref<number>(props.pageNumber || Globals.PAGINATION_CURRENT_PAGE) // item hiện tại
-props.items.forEach((element, index) => {
-  element.originIndex = index
-})
 
 /** method */
 // cập nhật selectedRows
 // const updateSelectedRows = () => {
-//   console.log(123)
-
 //   selectedRows.value = []
 //   props.items?.forEach((item: any) => {
 //     if (item.isSelected)
@@ -116,14 +118,22 @@ const checkedAll = (value: any) => {
   if (!value) {
     props.items?.forEach(element => {
       if (!(element?.isDisabled && element?.isDisabled === true))
+        // eslint-disable-next-line sonarjs/no-gratuitous-expressions
         element.isSelected = !value
     })
     selectedRows.value = props.items?.map((item: Item) => item[keyid.value])
   }
   else {
     selectedRows.value = []
+    props.items?.forEach(element => {
+      if (!(element?.isDisabled && element?.isDisabled === true))
+        element.isSelected = !value
+    })
   }
+  const data = props.returnObject ? props.items : selectedRows.value
+  emit('update:selected', data)
   emit('checkedAll', !value, selectedRows)
+  emit('update:selected', selectedRows.value)
 }
 
 /** event */
@@ -134,7 +144,9 @@ const showRow = (item: ClickRowArgument) => {
 }
 
 // sự kiện click chọn item
-const checkedItem = (index: number, value: any) => {
+const checkedItem = (index: number, value: boolean | undefined) => {
+  console.log(index)
+
   // eslint-disable-next-line vue/no-mutating-props
   props.items[index].isSelected = !value
   const itemSelected = props.items.filter((x: Item) => x.isSelected === true)
@@ -143,8 +155,6 @@ const checkedItem = (index: number, value: any) => {
     emit('update:selected', itemSelected)
   else
     emit('update:selected', selectedRows.value)
-  console.log('selectedRows.value', selectedRows.value)
-  console.log('itemSelected', itemSelected)
 }
 
 // Cập nhật table theo pagination
@@ -161,7 +171,9 @@ const updateRowsPerPageSelect = (e: number) => {
 const pageSizeChange = (page: number, size: number) => {
   pageSize.value = size
   emit('update:pageNumber', page)
-  emit('handlePageClick', page)
+  emit('update:size', size)
+  emit('handlePageClick', page, size)
+
   updateRowsPerPageSelect(size)
 
   // phân trang local
@@ -177,6 +189,11 @@ const isErrorcell = (field: string, data: any) => {
 const changeCellvalue = (event: any, field: string, key: number) => {
   emit('changeCellvalue', event, field, key)
 }
+defineExpose({
+  checkedAll,
+  selectedRows: selectedRows.value,
+  items: props.items,
+})
 
 // watch
 // watch(() => props.items, value => {
@@ -293,7 +310,7 @@ const changeCellvalue = (event: any, field: string, key: number) => {
                 activator="parent"
                 location="top"
               >
-                {{ actionItem?.name }}
+                {{ t(actionItem?.name) }}
               </VTooltip>
             </div>
           </template>
@@ -319,12 +336,25 @@ const changeCellvalue = (event: any, field: string, key: number) => {
         <div v-else-if="itemsHeader?.type === 'custom'" />
         <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'combobox'">
           <CmSelect
+            v-model="context.title"
             :max-item="Globals.MAX_ITEM_SELECT_MULT"
-            :items="itemsHeader?.combobox?.data"
-            :item-title="itemsHeader?.combobox?.key"
+            :items="itemsHeader?.combobox.type === 'function'
+              ? itemsHeader?.combobox?.data(context[itemsHeader?.combobox.params])
+              : itemsHeader?.combobox?.data"
+            :custom-key="itemsHeader?.combobox?.key"
             :item-value="itemsHeader?.combobox?.value"
             :multiple="itemsHeader?.combobox?.multiple"
             @update:modelValue="changeCellvalue($event, itemsHeader.value, context?.key)"
+          />
+        </div>
+        <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'organization'">
+          <CpOrganizationSelect
+            v-model="context.organizationalStructureId"
+            :max-height="100"
+            :placeholder="t('organizational')"
+            close-on-select
+            :type-org="itemsHeader?.typeOrg || 0"
+            @update:modelValue="changeCellvalue($event, 'organizational', context?.key)"
           />
         </div>
         <VTextField
@@ -332,7 +362,6 @@ const changeCellvalue = (event: any, field: string, key: number) => {
           v-model="context[itemsHeader.value]"
           class="input-edit-cell"
           type="text"
-          :error="context.errors?.length"
           @update:modelValue="changeCellvalue($event, itemsHeader.value, context.key)"
         />
 
@@ -354,7 +383,7 @@ const changeCellvalue = (event: any, field: string, key: number) => {
     </div>
     <div class="customize-footer">
       <CmPagination
-        :total-items="totalRecord"
+        :total-items="totalRecord || items.length"
         :current-page="props.pageNumber"
         @pageClick="pageSizeChange"
       />

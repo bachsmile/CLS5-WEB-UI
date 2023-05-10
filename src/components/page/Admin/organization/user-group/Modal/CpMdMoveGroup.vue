@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import CmSelect from '@/components/common/CmSelect.vue'
+import { useStoreAddUser } from '@/stores/admin/group-user/modalEditGroupUser'
 
 const props = withDefaults(defineProps<Props>(), ({}))
 const emit = defineEmits<Emit>()
@@ -10,13 +11,16 @@ interface Props {
 }
 interface Emit {
   (e: 'update:isShow', data: boolean): void
-  (e: 'update:dataUser', data: any): void
+  (e: 'ok', data: any): void
 }
 const hidden = (val: any) => {
   emit('update:isShow', false)
 }
+
+const store = useStoreAddUser()
+const groupId = ref(null)
 const confirm = (val: any) => {
-  emit('update:isShow', false)
+  emit('ok', groupId.value)
 }
 </script>
 
@@ -30,6 +34,11 @@ const confirm = (val: any) => {
   >
     <span>Chọn nhóm người dùng</span>
 
-    <CmSelect />
+    <CmSelect
+      v-model:model-value="groupId"
+      :items="store.dataHeader.listGroupUser"
+      item-value="id"
+      custom-key="name"
+    />
   </CmDialogs>
 </template>

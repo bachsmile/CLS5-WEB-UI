@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<Props>(), ({
   isApprove: false,
   disabledApprove: false,
   isFillter: true,
+  isAdd: false,
   disabledFillter: false,
 }))
 
@@ -15,6 +16,7 @@ const emit = defineEmits<Emit>()
 interface Emit {
   (e: 'click', type: string): void
   (e: 'deleteMultiple'): void
+  (e: 'addHandler'): void
   (e: 'search', type: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -33,6 +35,8 @@ interface Props {
   isApprove?: boolean
   disabledApprove?: boolean
   isFillter?: boolean
+  isAdd?: boolean
+  addButtonName?: string
   disabledFillter?: boolean
 }
 
@@ -45,6 +49,9 @@ const handleClickBtn = (type: string) => {
       break
     case 'delete':
       emit('deleteMultiple')
+      break
+    case 'addHandler':
+      emit('addHandler')
       break
 
     default:
@@ -112,12 +119,20 @@ const handleSearch = (value: any) => {
     >
       <VRow>
         <VCol class="d-flex justify-end pr-0">
+          <CmButton
+            v-if="isAdd"
+            class="ml-3"
+            color="primary"
+            @click="handleClickBtn('addHandler')"
+          >
+            {{ addButtonName }}
+          </CmButton>
           <CmTextField
             label="Tìm kiếm"
-            class="header-action-field"
+            class="header-action-field ml-3"
             placeholder="Tìm kiếm"
             prepend-inner-icon="tabler-search"
-            @change="handleSearch"
+            @update:model-value="handleSearch"
           />
           <CmButton
             v-if="isFillter"

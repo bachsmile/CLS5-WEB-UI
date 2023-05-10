@@ -1,6 +1,22 @@
 <script setup lang="ts">
 import CmCheckBox from './CmCheckBox.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
+import type { typeVariant } from '@/typescript/enums/enums'
+
+const propsValue = withDefaults(defineProps<Props>(), ({
+  listItem: () => ([]),
+  icon: 'tabler:dots-vertical',
+  checkbox: true,
+  multiple: false,
+  customKey: 'title',
+  dataResend: '',
+  type: undefined,
+  data: undefined,
+  index: 0,
+  variant: 'outlined',
+}))
+const emit = defineEmits<Emit>()
+const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
 
 /**
  * listItem: danh sách các item
@@ -21,8 +37,14 @@ interface Props {
   multiple?: boolean
   customKey: string
   dataResend?: any
-  type?: number
+  type?: number // 2: loại button
   index?: number
+  variant?: typeof typeVariant[number]
+  color?: string
+  title?: string
+  bgColor?: string
+  className?: string
+  textColor?: string
 }
 interface item {
   icon?: string
@@ -43,20 +65,6 @@ interface prependItem {
   action: any
 }
 
-const propsValue = withDefaults(defineProps<Props>(), ({
-  listItem: () => ([]),
-  icon: 'tabler:dots-vertical',
-  checkbox: true,
-  multiple: false,
-  customKey: 'title',
-  dataResend: '',
-  type: undefined,
-  data: undefined,
-  index: 0,
-}))
-
-const emit = defineEmits<Emit>()
-
 interface Emit {
   (e: 'change', data: any): void
 }
@@ -67,9 +75,21 @@ const handleChange = (event: any) => {
 }
 
 const handleClickItem = (event: any) => {
-  if (propsValue.multiple)
-    event.stopPropagation()
+  // if (propsValue.multiple)
+  //   event.stopPropagation()
 }
+const prefixColor = computed(() => {
+  if (propsValue.variant === 'outlined' || propsValue.variant === 'text')
+    return 'color-bd'
+
+  return 'btn'
+})
+const textButton = computed(() => {
+  if (propsValue.variant === 'text')
+    return 'text-button'
+
+  return ''
+})
 </script>
 
 <template>
@@ -80,8 +100,26 @@ const handleClickItem = (event: any) => {
     >
       <template #activator="{ props }">
         <div v-bind="props">
+          <CmButton
+            v-if="type === 2"
+            :class="[`${prefixColor}-${color}`, bgColor, className, textButton]"
+            :variant="variant"
+            v-bind="props"
+          >
+            <div class="d-flex">
+              <div class="text-button-dropdown">
+                {{ title }}
+              </div>
+              <VIcon
+                v-if="propsValue.icon"
+                v-bind="props"
+                :icon="propsValue.icon "
+                :size="18"
+              />
+            </div>
+          </CmButton>
           <VIcon
-            v-if="propsValue.icon"
+            v-if="type === 1 && propsValue.icon"
             v-bind="props"
             :icon="propsValue.icon "
             :size="18"
@@ -146,6 +184,10 @@ const handleClickItem = (event: any) => {
     border-radius: 0 !important;
     border-block-end: 1px solid $color-gray-100;
     margin-inline: 0 !important;
+  }
+  .text-button-dropdown{
+    font-style: inherit;
+    text-transform: initial !important;
   }
 }
 </style>

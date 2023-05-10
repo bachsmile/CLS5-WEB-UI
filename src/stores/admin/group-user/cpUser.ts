@@ -39,26 +39,33 @@ export const useUserGroupStore = defineStore('useUserGroupStore', () => {
     newGroup: number | null
     userIds: number[]
   }
-  const dataMove = reactive<DataMove>({
-    currentGroup: null,
-    isTotal: null,
-    newGroup: null,
-    userIds: [],
-  })
-  const moveUser = (val: any) => {
+  const moveUser = (data: DataMove) => {
     let status = false
-    MethodsUtil.requestApiCustom(ApiGroupUser.MoveUser, TYPE_REQUEST.PUT).then((res: any) => {
-      toast('SUCCESS', t('calendar.add-user-success'))
+    MethodsUtil.requestApiCustom(ApiGroupUser.MoveUser, TYPE_REQUEST.PUT, data).then((res: any) => {
+      toast('SUCCESS', t('Chuyển nhóm người dùng thành công'))
+      getListUser()
     }).catch((e: any) => {
-      toast('ERROR', t('calendar.add-user-failed'))
+      toast('ERROR', t('Chuyển nhóm người dùng thất bại'))
       status = true
     })
     return status
   }
 
   const deleteItem = (val: any) => {
-    //
+    const payload = {
+      groupId: route.params.id,
+      listUser: [...val],
+    }
+    let status = false
+    MethodsUtil.requestApiCustom(ApiGroupUser.DeleteUser, TYPE_REQUEST.POST, payload).then((res: any) => {
+      toast('SUCCESS', t('Xóa nhóm người dùng thành công'))
+      getListUser()
+    }).catch((e: any) => {
+      toast('ERROR', t('Xóa nhóm người dùng thất bại'))
+      status = true
+    })
+    return status
   }
 
-  return { queryParams, listUserInGroup, totalRecord, getListUser, moveUser, deleteItem, excludeIds, dataMove }
+  return { queryParams, listUserInGroup, totalRecord, getListUser, moveUser, deleteItem, excludeIds }
 })

@@ -5,6 +5,10 @@ import CpImportFile from '@/components/page/gereral/CpImportFile.vue'
 import type { Config } from '@/typescript/interface/import'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
+import { comboboxStore } from '@/stores/combobox'
+
+const storeCombobox = comboboxStore()
+const { organizations } = storeToRefs(storeCombobox)
 
 // Cập nhật mã người dùng
 // const dataColumnExcel = (rowData: Array<any>) => {
@@ -58,6 +62,8 @@ const getComboboxProficiencyLevel = async () => {
 
 getComboboxGroupProficiency()
 getComboboxProficiencyLevel()
+
+const { t } = window.i18n()
 
 // config
 const config = reactive<Config>(
@@ -149,6 +155,56 @@ const config = reactive<Config>(
     importFile: {
       urlFileDefault: ApiUser.UpdateProficiencyUserExcel,
       method: 'POST',
+      dataColumnExcel,
+    },
+  },
+)
+const getListTitle = (orgId: any) => {
+  console.log(orgId)
+
+  if (!orgId)
+    return null
+  const orgItem: any = organizations.value.find((item: any) => item.id === orgId)
+  console.log(orgItem?.titleEachOrgs)
+  return orgItem?.titleEachOrgs || []
+}
+const config2 = reactive<Config>( // tham khảo file UpdateUserTitle.vue
+  {
+    customId: 'id',
+    routerBack: 'admin-organization-users-manager',
+    table: ({
+      header: [
+        { text: t('employee-code'), value: 'userInformation', width: 300 },
+        {
+          text: t('organizational'),
+          value: 'organizationalStructure',
+          type: 'organization',
+          width: 300,
+          typeOrg: 1,
+        },
+        {
+          text: t('title-position'),
+          value: 'title',
+          type: 'combobox', // chỉnh sửa bằng combobox
+          combobox: {
+            data: getListTitle, // data combobox sẽ phụ thuộc vào một callback khi nhận một giá trị params khác
+            multiple: false,
+            key: 'titleName',
+            value: 'titleName',
+            params: 'organizationalStructureId', // khi params này trong row table thay đổi sẽ thay thực hiện hàm combobox.data để getcobobox mới
+            type: 'function', // cờ truyền dữ liệu get data combobox là một function
+          },
+        },
+      ],
+    }),
+    dowloadSample: {
+      urlFileDefault: ApiUser.downloadSampleFileUpdateTitle,
+      method: TYPE_REQUEST.GET,
+      nameFile: 'sample-file-title.xlsx',
+    },
+    importFile: {
+      urlFileDefault: ApiUser.updateTitleFromFile,
+      method: TYPE_REQUEST.PUT,
       dataColumnExcel,
     },
   },

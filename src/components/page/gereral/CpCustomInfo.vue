@@ -3,14 +3,14 @@ import StringUtil from '@/utils/StringUtil'
 import CmAvatar from '@/components/common/CmAvatar.vue'
 
 interface Props {
-  context: any
+  context?: any
   isShowEmail?: boolean
   isShowCode?: boolean
   isShowAvatar?: boolean
-  labelFirst: string
-  labelLast: string
-  isFullName: boolean
-  labelCode: string
+  labelFirst?: string
+  labelLast?: string
+  isFullName?: boolean
+  labelCode?: string
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -22,12 +22,20 @@ const props = withDefaults(defineProps<Props>(), ({
   isFullName: true,
   labelCode: 'userCode',
 }))
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
+const serverfile = window.SERVER_FILE || ''
+const urlImageFile = (src: any) => {
+  if (src)
+    return src.startsWith('http') ? src : serverfile + src
+
+  return null
+}
 
 const linkAvatar = computed(() => {
   if ((props.context && props.context.avatar))
-    return props.context.avatar
+    return urlImageFile(props.context.avatar)
   if ((props.context && props.context.avatar))
-    return props.context.thumbnail
+    return urlImageFile(props.context.thumbnail)
 
   return ''
 })
@@ -43,12 +51,13 @@ const linkAvatar = computed(() => {
     >
       {{ StringUtil.formatFullName(context[labelFirst], context[labelLast]) }}
     </CmAvatar>
-    <div class="d-flex flex-column">
+    <div class="d-flex flex-column ml-2">
       <div>
         <span
           v-if="isShowCode"
-          class="text-primary"
-        >{{ context[labelCode] }}</span>
+          class="text-primary mr-2"
+          :title="context[labelCode]"
+        >{{ t('code-log') }}</span>
         <span v-if="isFullName">{{ StringUtil.formatFullName(context[labelFirst], context[labelLast]) }}</span>
         <span v-else>{{ context.name }}</span>
       </div>

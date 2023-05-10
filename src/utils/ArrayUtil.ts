@@ -12,20 +12,32 @@ export default class ArraysUtil {
     })
   }
 
+  static unFlatMapTree = (list: any) => {
+    return list.flatMap((element: any) => {
+      if (!element.children) {
+        // Nếu phần tử không có children, trả về nó như là một phần tử của danh sách mới
+        return [element]
+      }
+
+      // Nếu phần tử có children, đệ quy vào từng phần tử con và đưa chúng vào danh sách mới
+      return [element, ...ArraysUtil.unFlatMapTree(element.children)]
+    })
+  }
+
   /**
    *
    * @param data
    * @returns
    */
-  static formatTreeData = (data: Array<any>, root: any) => {
+  static formatTreeData = (data: Array<any>, root: any, t: any, customKey = 'permissions') => {
     return data.reduce((object, permiss) => {
-      const { permissions, ...rest } = permiss // loại bỏ permissions ra khỏi object
+      const { permissions, children, ...rest } = permiss // loại bỏ permissions ra khỏi object
 
       const perId = permiss.orgId ? permiss.orgId : permiss.id
 
       object[`node-${perId}`] = rest
       object[`node-${perId}`].ids = permiss.id
-      object[`node-${perId}`].text = object[`node-${perId}`].name
+      object[`node-${perId}`].text = t(object[`node-${perId}`].name)
 
       object[`node-${perId}`].permission = permiss.permissionValue
       object[`node-${perId}`].orgPermission = permiss.orgPermissionValue
@@ -37,8 +49,8 @@ export default class ArraysUtil {
         }
       }
 
-      if (permiss.permissions?.length)
-        object[`node-${perId}`].children = permiss.permissions?.map((item: any) => `node-${item.orgId ? item.orgId : item.id}`)
+      if (permiss[customKey]?.length)
+        object[`node-${perId}`].children = permiss[customKey]?.map((item: any) => `node-${item.orgId ? item.orgId : item.id}`)
 
       return object
     }, {})
@@ -161,7 +173,7 @@ export default class ArraysUtil {
   }
 
   /**
-   * @name: Định dạng cấu trúc cây cho v-select-tree
+   * @name: Định dạng cấu trúc cây cho v-select-tree sẽ trả về dạng từ mảng phẳng có parentId sang mảng cây có childrent và hủy cấu trúc phẳng
    * @param {Array<any>} items => Mảng phẳng dữ liệu cần định dạng
    * @param {string} keyParent => Keyword quy định id node cha
    * @param {string} customId =>  customId cho node

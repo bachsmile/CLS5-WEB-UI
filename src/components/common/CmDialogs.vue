@@ -33,8 +33,8 @@ interface Emit {
 const props = withDefaults(defineProps<Props>(), ({
   type: 0,
   variant: 'outlined',
-  buttonOkName: 'common.ok-title',
-  buttonCancleName: 'common.cancel-title',
+  buttonOkName: 'ok-title',
+  buttonCancleName: 'cancel-title',
   isHideFooter: false,
   persistent: false,
   size: 'lg',
@@ -55,10 +55,10 @@ const onConfirmation = () => {
 }
 
 const onDialogShown = (e: any) => {
-  console.log('onDialogShown', e)
+  // console.log('onDialogShown', e)
 }
 const onDialogHidden = (e: any) => {
-  console.log('onDialogHidden', e)
+  // console.log('onDialogHidden', e)
 }
 
 watch(() => props.isDialogVisible, val => {

@@ -28,13 +28,13 @@ const props = withDefaults(defineProps<Props>(), ({
 
 .Vue-Toastification__toast {
   display: block;
-  padding: $padding-xl;
+  padding: $xl;
 }
 
 .Vue-Toastification__close-button {
   position: absolute;
   color: $color-gray-700;
-  inset-block-start: $padding-xl;
-  inset-inline-end: $padding-xl;
+  inset-block-start: $xl;
+  inset-inline-end: $xl;
 }
 </style>

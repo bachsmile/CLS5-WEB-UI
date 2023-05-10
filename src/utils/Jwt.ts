@@ -1,5 +1,5 @@
 export default class StringJwt {
-  static getRole = (roleString: any) => {
+  static getRole = (roleString: any = null) => {
     const roleName = roleString || ''
     let role = null
     if (roleName === 'Role.Administrator')

@@ -39,7 +39,6 @@ export default class DateUtil {
   static formatDateToDDMM = (value: any) => {
     if (!value)
       return ''
-
     return moment(String(value)).format('DD/MM/YYYY')
   }
 }

@@ -6,6 +6,7 @@ import Globals from '@/constant/Globals'
 import { useImportFileStore } from '@/stores/ImportFile'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Action, Config } from '@/typescript/interface/import'
+import { comboboxStore } from '@/stores/combobox'
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
@@ -20,23 +21,52 @@ const props = withDefaults(defineProps<Props>(), ({
   actions: () => ([{
     title: 'Thêm từ dữ liệu từ tập tin',
   }]),
+  titleButtonAdd: 'Thêm',
+  titleButtonCancel: 'Quay lại',
+  titlePageUpload: ' Trang bắt đầu',
+  isFilter: false,
+  filterConfig: () => ({
+    list: [],
+    customKey: 'value',
+    itemValue: 'key',
+  }),
 }))
+
+const emit = defineEmits<Emit>()
+
+const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
+
 const { t } = window.i18n()
+interface Emit {
+  (e: 'filter', data: any): void
+}
 
 // interface
-
+interface filter {
+  list: Array<any>
+  customKey?: string
+  itemValue?: string
+  modelValue?: any
+}
 interface Props {
-  titleList: string
   config: Config
-  customKeyError: string
-  actions: Action[]
+  titleList?: string
+  customKeyError?: string
+  actions?: Action[]
+  titleButtonAdd?: string
+  titleButtonCancel?: string
+  titlePageUpload?: string
+  isFilter?: boolean
+  filterConfig?: filter
 }
 
 /** ** Khởi tạo store */
 const store = useImportFileStore()
+const storeCombobox = comboboxStore()
 const router = useRouter()
 const { paramsImport } = store
-const { type } = storeToRefs(store)
+const { organizations } = storeToRefs(storeCombobox)
+const { type, refTableValid } = storeToRefs(store)
 const { checkInvalidData, fileChange, updateFromFile } = store
 // eslint-disable-next-line vue/no-setup-props-destructure
 store.customKeyError = props.customKeyError
@@ -54,17 +84,13 @@ const headersInvalid = computed(() => {
     thClass: 'custom-th-class',
     sortable: false,
   }
-
   const columns = window._.cloneDeep(headers)
-
   columns.shift()
   columns.unshift(select)
-
   return columns
 })
-
+const typeFillter = ref(props.filterConfig?.modelValue)
 const inputFile = ref()
-
 watch(() => props.config, value => {
   store.$patch({
     config: {
@@ -85,7 +111,13 @@ const dowloadSampleFile = async () => {
 
 // thay đổi dữ liệu trên bảng
 const changeCellvalue = (event: any, field: string, key: number) => {
-  paramsImport.invalidData[key][field] = event as never
+  if (field === 'organizational') {
+    paramsImport.invalidData[key].organizationalStructureId = event
+    const org: any = organizations.value.find((item: any) => item.id === event)
+    paramsImport.invalidData[key].organizationalStructure = org?.name
+  }
+
+  else { paramsImport.invalidData[key][field] = event as never }
 }
 
 const handleEditTable = () => {
@@ -94,28 +126,34 @@ const handleEditTable = () => {
 
 const updateFromFileHandle = async () => {
   const back = await updateFromFile()
-  if (back === 'back' && props?.config?.routerBack)
+  if (back === 'back' && props?.config?.routerBack) {
+    store.$dispose()
     router.push({ name: props.config.routerBack })
+  }
 }
-
-const handleSelectedRows = (listSelected: any) => {
-  console.log(listSelected)
-}
-onBeforeUnmount(() => {
-  store.$dispose()
-})
 const isDisabledSubmit = computed(() => {
   const listSelected = paramsImport.validData.filter((item: any) => item.isSelected === true)
   return !listSelected.length
 })
 const isShowTemplateImport = computed(() => {
-  return paramsImport.validData.length && paramsImport.invalidData.length
+  return paramsImport.validData.length || paramsImport.invalidData.length
 })
 
 const uploadFile = (val: string | number | undefined) => {
+  console.log(val)
+
   type.value = val
   inputFile.value.click()
 }
+const filterUpdate = (event: any) => {
+  console.log(event)
+  emit('filter', event)
+}
+
+onBeforeUnmount(() => {
+  store.$dispose()
+  store.$reset()
+})
 </script>
 
 <template>
@@ -124,26 +162,43 @@ const uploadFile = (val: string | number | undefined) => {
     class="template-no-data page-container"
   >
     <div class="d-flex justify-space-between align-center">
-      <h3>Thêm nhóm người dùng từ tập tin</h3>
+      <h3>{{ titlePageUpload }}</h3>
       <CmButton
         title="Tải tập tin mẫu"
         icon="solar:download-minimalistic-bold"
         @click="dowloadSampleFile"
       />
     </div>
-
     <div
-      v-for="item in actions"
-      :key="item.key"
-      class="d-flex w-100 button-group"
-      @click="uploadFile(item?.key || undefined)"
+      v-if="isFilter"
+      class="d-flex justify-center my-4"
     >
-      <div class="button-import-file cursor-pointer">
+      <CmSelect
+        v-model:model-value="typeFillter"
+        style="width: 400px;"
+        :items="filterConfig?.list"
+        :custom-key="filterConfig?.customKey"
+        :item-value="filterConfig?.itemValue"
+        @update:model-value="filterUpdate"
+      />
+    </div>
+    <div
+      class="d-flex w-100 button-group"
+    >
+      <div
+        v-for="item in actions"
+        :key="item.key"
+        class="button-import-file cursor-pointer"
+        @click="uploadFile(item?.key || undefined)"
+      >
         <VIcon :icon="item.icon ? item.icon : 'bi:upload'" />
         <span
           class="mt-3"
         >{{ item.title }}</span>
       </div>
+    </div>
+    <div class="d-flex w-100">
+      <slot name="actions" />
     </div>
   </div>
   <div v-else>
@@ -156,23 +211,23 @@ const uploadFile = (val: string | number | undefined) => {
           <div class="cp-import-file-action">
             <div class="cp-import-file-btn mr-3">
               <CmButton @click="dowloadSampleFile">
-                Tải tập tin mẫu {{ t('common.action-header.download-file') }}
+                {{ t('download-file') }}
               </CmButton>
             </div>
             <div class="cp-import-file-btn">
               <CmButton @click="inputFile.click()">
-                Lựa chọn tập tin
+                {{ t('select-file') }}
               </CmButton>
             </div>
           </div>
         </div>
         <div class="cp-import-file-table">
           <CmTable
+            ref="refTableValid"
             :headers="headers"
             :items="paramsImport.validData"
             return-object
             is-import-file
-            @update:selected="handleSelectedRows"
           />
         </div>
       </div>
@@ -187,7 +242,7 @@ const uploadFile = (val: string | number | undefined) => {
           <div class="cp-import-file-action">
             <div class="cp-import-file-btn mr-3">
               <CmButton @click="checkInvalidData">
-                Kiểm tra
+                {{ t('check') }}
               </CmButton>
             </div>
             <div class="cp-import-file-btn">
@@ -202,6 +257,7 @@ const uploadFile = (val: string | number | undefined) => {
             :headers="headersInvalid"
             :items="paramsImport.invalidData"
             :is-editing="isEditing"
+            :min-height="300"
             is-import-file
             @changeCellvalue="changeCellvalue"
           />
@@ -218,8 +274,8 @@ const uploadFile = (val: string | number | undefined) => {
   >
   <div class="cp-import-file-action-footer mt-3">
     <div class="cp-import-file-btn-footer ">
-      <CmButton @click="dowloadSampleFile">
-        Quay lại
+      <CmButton @click="() => { router.push({ name: props.config.routerBack }) }">
+        {{ titleButtonCancel }}
       </CmButton>
     </div>
     <div
@@ -230,7 +286,7 @@ const uploadFile = (val: string | number | undefined) => {
         :disabled="isDisabledSubmit"
         @click="updateFromFileHandle"
       >
-        Thêm người dùng
+        {{ titleButtonAdd }}
       </CmButton>
     </div>
   </div>

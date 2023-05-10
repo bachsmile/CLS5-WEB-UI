@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useUserGroupStore } from './cpUser'
-import { useCourseGroupStore } from './cpCourse'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import ApiGroupUser from '@/api/group-user/index'
@@ -132,7 +131,6 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
 export const useStoreAddCourse = defineStore('useStoreAddCourse', () => {
   const route = useRoute()
   const { t } = window.i18n()
-  const useCourseStore = useCourseGroupStore()
   interface QueryParamsModal extends Params {
     keyword: string
     excludeListId: number[] | null

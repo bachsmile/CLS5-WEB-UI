@@ -3,6 +3,8 @@ const props = withDefaults(defineProps<Props>(), ({
   isShowAddGroup: true,
   isShowDelete: true,
   isShowAdd: true,
+  isDisabledMove: false,
+  isDisabledDelete: false,
 }))
 
 const emit = defineEmits<Emit>()
@@ -18,6 +20,8 @@ interface Props {
   titlePage: string
   buttonAdd: string
   buttonPrepend: string
+  isDisabledMove: boolean
+  isDisabledDelete: boolean
 }
 interface Emit {
   (e: 'update:keySearch', key: string): void
@@ -32,7 +36,6 @@ const showAdd = () => {
 
 // Tìm kiếm
 const timer = ref<any>(null)
-
 const handleSearch = (val: string) => {
   if (timer) {
     clearTimeout(timer.value)
@@ -81,6 +84,7 @@ const handleSearch = (val: string) => {
           icon="tabler:trash"
           color="error"
           size="40"
+          :disabled="props.isDisabledDelete"
           :size-icon="18"
           class="d-flex align-middle justify-center mr-2"
           @click="emit('clickDelete')"
@@ -91,12 +95,13 @@ const handleSearch = (val: string) => {
           icon="simple-line-icons:cursor-move"
           color="success"
           size="40"
+          :disabled="props.isDisabledMove"
           :size-icon="18"
           class="d-flex align-middle justify-center"
           @click="emit('clickMoveMultiple')"
         />
 
-        <slot name="buttonBottm" />
+        <slot name="buttonBottom" />
       </VCol>
       <VCol class="d-flex justify-end pr-0">
         <CmTextField

@@ -97,7 +97,7 @@ $color-text-bold-default: #101828;  // màu chữ in đậm
 
 // checkbox
 $color-checkbox-selected: $color-primary-600;
-$color-checkbox-indeterminate: $color-primary-600;
+$color-checkbox-indeterminate: rgba(var(--v-color-primary));
 
 /** icon */
 $color-icon-default: $color-gray-700;
