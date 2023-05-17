@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import DateUtil from '@/utils/DateUtil'
 import ApiUser from '@/api/user/index'
 import MethodsUtil from '@/utils/MethodsUtil'
-import DateUtil from '@/utils/DateUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import StringUtil from '@/utils/StringUtil'
 import toast from '@/plugins/toast'
@@ -14,9 +14,13 @@ const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gere
 const CpUserFilter = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpUserFilter.vue'))
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
 const CmAccodion = defineAsyncComponent(() => import('@/components/common/CmAccodion.vue'))
+const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue'))
 const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/gereral/CpConfirmDialog.vue'))
 const CpModalUpdateStatus = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpModalUpdateStatus.vue'))
 const CpCustomInfo = defineAsyncComponent(() => import('@/components/page/gereral/CpCustomInfo.vue'))
+const CpModalAddUserApi = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/CpModalAddUserApi.vue'))
+const CpTableSub = defineAsyncComponent(() => import('@/components/page/gereral/CpTableSub.vue'))
+const CpTableSubIconList = defineAsyncComponent(() => import('@/components/page/gereral/CpTableSubIconList.vue'))
 
 /** params */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -28,17 +32,17 @@ const router = useRouter()
 
 const headers = reactive([
   { text: '', value: 'checkbox', width: 50 },
-  { text: t('surname-name'), value: 'fullName' },
-  { text: t('role'), value: 'userTypeName' },
-  { text: t('status-name'), value: 'statusName', type: 'custom' },
-  { text: t('join-date'), value: 'registeredDate', type: 'custom' },
+  { text: t('surname-name'), value: 'fullName', width: 250 },
+  { text: t('role'), value: 'userTypeName', width: 100 },
+  { text: t('status-name'), value: 'statusName', type: 'custom', width: 150 },
+  { text: t('join-date'), value: 'registeredDate', type: 'custom', width: 100 },
   { text: t('organization'), value: 'organization', type: 'menu', width: 300 },
   { text: '', value: 'actions', width: 150 },
 ])
 
 const orgModels = {
   value: 1,
-  label: 'Cơ cấu tổ chức',
+  label: t('orgStruct'),
   icon: 'tabler-briefcase',
   colorClass: 'color-error',
   content: [],
@@ -71,6 +75,7 @@ const data = reactive({
   showPassword: false,
   isShowDialogPasword: false,
   isShowDialogStatus: false,
+  isShowDialogAddUserApi: false,
   typeDialogRessetPass: 1,
   selectedItemId: 0,
   testingCode: '',
@@ -98,14 +103,14 @@ const disabledDelete = computed(() => !data.listId.length)
 // Function to handle when click button Delete
 const deleteItem = (id: number) => {
   data.deleteIds = [id as never]
-  modalContent.value = t('users.user.action-modal.delete')
+  modalContent.value = t('delete')
   isShowDialogNoti.value = true
 }
 
 // click  multi delete btn to show modal confirm
 const deleteItems = () => {
   data.deleteIds = data.listId
-  modalContent.value = t('users.user.action-modal.delete')
+  modalContent.value = t('delete')
   isShowDialogNoti.value = true
 }
 
@@ -204,8 +209,6 @@ const copyTestingCode = () => {
 }
 
 const selectedRows = (e: any) => {
-  console.log(e)
-
   data.listId = e
 }
 
@@ -264,9 +267,9 @@ async function fectchListUsers() {
             return MethodsUtil.checkActionType(el, actionItem)
           })
         })
-        items.value = value.data.pageLists
-        totalRecord.value = value?.data?.totalRecord
       }
+      items.value = value.data.pageLists
+      totalRecord.value = value?.data?.totalRecord
     })
     .catch(() => {
       toast('ERROR', t('USR_GetFailed'))
@@ -276,19 +279,17 @@ async function fectchListUsers() {
 // search ở fillter header
 const handleSearch = async (value: any) => {
   queryParam.pageNumber = 1
-  queryParam.keyword = value.search
+  queryParam.keyword = value
   await fectchListUsers()
 }
 
 //  fillter header
-const handleFilterCombobox = (dataFilter: any) => {
-  console.log(dataFilter)
-
+const handleFilterCombobox = async (dataFilter: any) => {
   queryParam = {
     ...queryParam,
     ...dataFilter,
   }
-  fectchListUsers()
+  await fectchListUsers()
 }
 
 // hàm trả về các loại action từ header filter
@@ -305,11 +306,10 @@ const handleClickBtn = (type: string) => {
       break
   }
 }
-const actionAddFromFile = () => {
-  console.log('actionAddFromFile')
-}
+
 const actionAddFromApi = () => {
   console.log('actionAddFromApi')
+  data.isShowDialogAddUserApi = true
 }
 
 const exportExcel = async () => {
@@ -342,7 +342,9 @@ const actionAdd = [
   {
     title: t('add-from-file'),
     icon: 'tabler:file-plus',
-    action: actionAddFromFile,
+    action: () => {
+      router.push({ name: 'admin-organization-user-import-file-add-user' })
+    },
   },
   {
     title: t('add-from-api'),
@@ -369,6 +371,23 @@ const actionUpdate = [
 
 ]
 
+const handlerActionHeader = (type: any) => {
+  console.log(type)
+  switch (type) {
+    case 'handlerAddButton':
+
+      router.push({ name: 'admin-organization-users-profile-add', params: { tab: 'infor' } })
+      break
+    case 'handlerApproveButton':
+
+      router.push({ name: 'admin-organization-user-approve' })
+      break
+
+    default:
+      break
+  }
+}
+
 // watch
 watch(() => route.path, value => {
   // console.log(value)
@@ -390,7 +409,7 @@ window.hideAllPageLoading()
       :action-add="actionAdd"
       :action-update="actionUpdate"
       @exportExcel="exportExcel"
-      @click="router.push({ name: 'admin-organization-users-profile-add', params: { tab: 'infor' } })"
+      @click="handlerActionHeader"
     />
   </div>
   <div
@@ -413,6 +432,7 @@ window.hideAllPageLoading()
       ref="refTableUserList"
       :headers="headers"
       :items="items"
+      is-expand
       :total-record="totalRecord"
       @handlePageClick="handlePageClick"
       @update:selected="selectedRows"
@@ -448,7 +468,7 @@ window.hideAllPageLoading()
           <span>{{ DateUtil.formatDateToDDMM(context.registeredDate) }}</span>
         </div>
         <div v-if="col === 'statusName'">
-          <VChip
+          <CmChip
             class="ma-2"
             :class="MethodsUtil.checkStatusTypeUser(context.statusName)?.color"
           >
@@ -458,16 +478,42 @@ window.hideAllPageLoading()
               size="12"
             />
             <span>{{ t(MethodsUtil.checkStatusTypeUser(context.statusName)?.name) }}</span>
-          </VChip>
+          </CmChip>
         </div>
+      </template>
+      <template #tableSub>
+        <VRow>
+          <VCol
+            col="12"
+            sm="12"
+            md="6"
+          >
+            <CpTableSub />
+          </VCol>
+          <VCol
+            col="12"
+            sm="6"
+            md="3"
+          >
+            <CpTableSubIconList />
+          </VCol>
+          <VCol
+            col="12"
+            sm="6"
+            md="3"
+          >
+            <CpTableSubIconList />
+          </VCol>
+        </VRow>
       </template>
     </CmTable>
   </div>
   <CpConfirmDialog
     :type="2"
     variant="outlined"
-    :confirmation-msg-sub-title="t('users.user.action-modal.delete')"
-    :confirmation-msg="t('users.branch.deleteUser')"
+    :max-width="400"
+    :confirmation-msg-sub-title="t('delete')"
+    :confirmation-msg="t('deleteUser')"
     :is-dialog-visible="isShowDialogNoti"
     @update:isDialogVisible="updateDialogVisible"
     @confirm="confirmDialog"
@@ -508,6 +554,9 @@ window.hideAllPageLoading()
     :is-dialog-visible="data.isShowDialogStatus"
     @confirm="confirmDialogStatus"
     @update:is-dialog-visible="updateDialogVisibleStatus"
+  />
+  <CpModalAddUserApi
+    v-model:is-dialog-visible="data.isShowDialogAddUserApi"
   />
 </template>
 

@@ -6,6 +6,8 @@ import CpHeaderAction from '@/components/page/Admin/organization/user-group/CpHe
 import apiPermission from '@/api/permission/index'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
+import toast from '@/plugins/toast'
+import CpMdDeletePermission from '@/components/page/Admin/organization/permission/Modal/CpMdDeletePermission.vue'
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 interface HeaderPermission extends Header {
@@ -36,31 +38,86 @@ const getListUserType = async () => {
   totalRecord.value = data.totalRecord
 }
 getListUserType()
-
-watch(params, val => {
+const search = () => {
+  params.pageNumber = 1
   getListUserType()
-})
+}
+
+// watch(params, val => {
+//   getListUserType()
+// })
 
 // Chuyển trang thêm quyền
 const addPermission = () => {
   router.push({ name: 'admin-organization-permission-add' })
 }
+const detailPermission = (val: any) => {
+  router.push({ name: 'admin-organization-permission-edit', params: { id: val.id } })
+}
+const isShowModalDelete = ref<boolean>(false)
+const TITLE_MODAL_DELETE = Object.freeze({
+  TITLE_MODAL: t('delete-title'),
+  TITLE_FEILD: t('instead-user-type'),
+})
+const comboboxUserType = ref<any[]>([])
+const getComboboxUserType = async () => {
+  const { data } = await MethodsUtil.requestApiCustom(apiPermission.comboboxUserType, TYPE_REQUEST.GET)
+  comboboxUserType.value = data
+}
+const deleteId = ref<number>(0)
+const deleteItem = async (val: any) => {
+  deleteId.value = val
+  await getComboboxUserType()
+  isShowModalDelete.value = true
+}
+
+const handleDelete = (val: number) => {
+  const payload = {
+    deleteingUserTypeId: deleteId.value,
+    newUserTypeId: val,
+  }
+  let message = 'success-delete'
+  let typeErr: any = 'SUCCESS'
+  MethodsUtil.requestApiCustom(apiPermission.deleteUserType, TYPE_REQUEST.POST, payload)
+    .then((res: any) => {
+      getListUserType()
+      isShowModalDelete.value = false
+    })
+    .catch(() => {
+      message = t('error')
+      typeErr = 'ERROR'
+    })
+  toast(typeErr, t(message))
+}
 </script>
 
 <template>
   <CpHeaderAction
+    v-model:key-search="params.keyword"
+    :is-show-export-excel="false"
+    :is-show-delete="false"
     title-page="Danh sách kiểu người dùng"
     :is-show-move="false"
     :is-show-add-group="false"
     button-add="Thêm mới"
     button-prepend="Xuất excel"
     @click-add="addPermission"
+    @update:key-search="search"
   />
   <CpTablePermission
     v-model:page-number="params.pageNumber"
     :headers="headers"
     :items="items"
     :total-record="totalRecord"
+    @update:data-detail="detailPermission"
+    @update:data-delete="deleteItem"
+  />
+  <CpMdDeletePermission
+    v-model:isShow="isShowModalDelete"
+    :title="TITLE_MODAL_DELETE.TITLE_MODAL"
+    :name-feild="TITLE_MODAL_DELETE.TITLE_FEILD"
+    :list="comboboxUserType"
+    @confirm="handleDelete"
   />
 </template>
 

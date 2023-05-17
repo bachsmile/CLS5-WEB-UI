@@ -65,7 +65,7 @@ const store = useImportFileStore()
 const storeCombobox = comboboxStore()
 const router = useRouter()
 const { paramsImport } = store
-const { organizations } = storeToRefs(storeCombobox)
+const { organizationsCombobox } = storeToRefs(storeCombobox)
 const { type, refTableValid } = storeToRefs(store)
 const { checkInvalidData, fileChange, updateFromFile } = store
 // eslint-disable-next-line vue/no-setup-props-destructure
@@ -110,11 +110,13 @@ const dowloadSampleFile = async () => {
 }
 
 // thay đổi dữ liệu trên bảng
-const changeCellvalue = (event: any, field: string, key: number) => {
+const changeCellvalue = (event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) => {
   if (field === 'organizational') {
-    paramsImport.invalidData[key].organizationalStructureId = event
-    const org: any = organizations.value.find((item: any) => item.id === event)
-    paramsImport.invalidData[key].organizationalStructure = org?.name
+    console.log(keyCustomValue, keyCustomIdValue)
+
+    paramsImport.invalidData[key][keyCustomIdValue] = event
+    const org: any = organizationsCombobox.value.find((item: any) => item.id === event)
+    paramsImport.invalidData[key][keyCustomValue] = org?.name
   }
 
   else { paramsImport.invalidData[key][field] = event as never }
@@ -140,13 +142,10 @@ const isShowTemplateImport = computed(() => {
 })
 
 const uploadFile = (val: string | number | undefined) => {
-  console.log(val)
-
   type.value = val
   inputFile.value.click()
 }
 const filterUpdate = (event: any) => {
-  console.log(event)
   emit('filter', event)
 }
 
@@ -259,6 +258,7 @@ onBeforeUnmount(() => {
             :is-editing="isEditing"
             :min-height="300"
             is-import-file
+            :custom-key-error="customKeyError"
             @changeCellvalue="changeCellvalue"
           />
         </div>

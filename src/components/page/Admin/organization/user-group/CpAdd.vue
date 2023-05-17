@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import CmTextField from '@/components/common/CmTextField.vue'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
@@ -144,7 +144,7 @@ const cancel = () => {
         cols="12"
         class="pl-2 pr-2"
       >
-        <CmtextArea
+        <CmTextArea
           v-model:model-value="dataInput.description"
           text="Mô tả"
         />

@@ -5,6 +5,7 @@ const props = withDefaults(defineProps<Props>(), ({
   isShowAdd: true,
   isDisabledMove: false,
   isDisabledDelete: false,
+  isShowExportExcel: true,
 }))
 
 const emit = defineEmits<Emit>()
@@ -17,11 +18,13 @@ interface Props {
   isShowDelete?: boolean
   isShowMove?: boolean
   isShowAdd?: boolean
+  isShowExportExcel?: boolean
   titlePage: string
   buttonAdd: string
   buttonPrepend: string
   isDisabledMove: boolean
   isDisabledDelete: boolean
+
 }
 interface Emit {
   (e: 'update:keySearch', key: string): void
@@ -55,6 +58,7 @@ const handleSearch = (val: string) => {
       </VCol>
       <VCol class="d-flex justify-end">
         <CmButton
+          v-if="isShowExportExcel"
           :title="props.buttonPrepend"
           icon="tabler:download"
           color="50-primary"

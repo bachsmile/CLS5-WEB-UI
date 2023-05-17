@@ -2,6 +2,7 @@
 import CmCheckBox from '@/components/common/CmCheckBox.vue'
 import 'vue3-treeview/dist/style.css'
 import { configStore } from '@/stores/index'
+import { ActionType } from '@/constant/data/actionType.json'
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
@@ -18,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), ({
   }),
   nodes: () => (reactive({})),
   isOrg: true,
+  isAction: false,
   typeFlatChild: false, // chọn con không ảnh hưởng cha
   customId: 'id',
   returnObject: true,
@@ -26,11 +28,12 @@ const props = withDefaults(defineProps<Props>(), ({
 const emit = defineEmits<Emit>()
 
 const Treeview = defineAsyncComponent(() => import('vue3-treeview'))
-
+const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
 interface Props {
   config?: Config
   nodes: NodeTree
-  isOrg: boolean
+  isOrg?: boolean
+  isAction?: boolean
   typeFlatChild?: boolean
   returnObject?: boolean
   customId?: string
@@ -51,8 +54,13 @@ interface Emit {
   (e: 'nodeOver', value: any): void
   (e: 'nodeDrop', value: any): void
   (e: 'update:modelValue', value: any): void
+  (e: 'handleAction', value: any, dataResend: any): void
 }
 
+/**
+ * lib
+ */
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 interface Config {
   roots: Array<string>
   keyboardNavigation: boolean
@@ -106,6 +114,26 @@ const configTree = computed(() => {
     },
   }
 })
+const actionItemEdit = (dataAction: any, index: any) => {
+  // data.isShowModalAddress = true
+}
+
+const actionItemDelete = (dataAction: any, index: any, dataResend?: any) => {
+  // console.log('actionItemDelete', dataAction, index)
+}
+
+const action = [
+  {
+    title: t('update'),
+    icon: ActionType[0].icon,
+    action: actionItemEdit,
+  },
+  {
+    title: t('delete'),
+    icon: ActionType[1].icon,
+    action: actionItemDelete,
+  },
+]
 const updateValueChecked = async () => {
   await nextTick()
 
@@ -227,9 +255,10 @@ const onChangeOrgChecked = (val: any, node: any) => {
           v-if="!node.children.length"
           class="dot-tree"
         />
+
         <CmCheckBox
+          v-if="config.checkboxes"
           v-model:model-value="node.state.checked"
-          tooltip-label="Phân quyền theo cơ cấu tổ chức"
           :false-value="false"
           class="checkbox-tree-view"
           :true-value="true"
@@ -237,11 +266,10 @@ const onChangeOrgChecked = (val: any, node: any) => {
         />
       </template>
       <template
-        v-if="isOrg"
         #after-input="{ node }"
       >
         <div
-          v-if="node.orgPermission > 0"
+          v-if="isOrg && node.orgPermission > 0"
           class="content-after"
         >
           <CmCheckBox
@@ -253,6 +281,18 @@ const onChangeOrgChecked = (val: any, node: any) => {
               && node.orgPermissionValue
               && node.orgPermissionValue < node.orgPermission)"
             @update:model-value="onChangeOrgChecked($event, node)"
+          />
+        </div>
+        <div
+          v-if="isAction"
+          class="action-more px-2"
+        >
+          <CmDropDown
+            :list-item="node.actions"
+            custom-key="name"
+            :data-resend="node"
+            :type="1"
+            @click="($event, dataResend) => emit('handleAction', $event, dataResend)"
           />
         </div>
       </template>
@@ -274,12 +314,12 @@ const onChangeOrgChecked = (val: any, node: any) => {
     inset-inline-end: 0;
   }
   .checkbox-wrapper {
-    left: 24px;
+    left: 17px;
     opacity: 0;
     position: absolute;
-    width: 36px;
-    height: 36px;
-    top: 4px;
+    width: 25px;
+    height: 25px;
+    top: 5;
     z-index: 1000;
   }
 
@@ -305,7 +345,7 @@ const onChangeOrgChecked = (val: any, node: any) => {
     //gray 300
     background-color: #D0D5DD;
     margin-left: -14px;
-    margin-right: 8px;
+    margin-right: 24px;
   }
   .v-selection-control__input input{
     display: none;
@@ -313,6 +353,9 @@ const onChangeOrgChecked = (val: any, node: any) => {
   // .dot-tree::before {
   //   content: url('https://webcoban.vn/image/banana.png')
   // }
+  input[type=checkbox] {
+    display: none;
+  }
 }
 </style>
 

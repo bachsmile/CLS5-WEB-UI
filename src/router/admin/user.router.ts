@@ -197,6 +197,48 @@ export default [
             name: 'admin-organization-user-import-file-update-user-title',
             component: () => import('@/pages/admin/organization/users/import-file/UpdateUserTitle.vue'),
           },
+          {
+            path: 'import-file-add-user',
+            meta: {
+              requireAuth: {
+                permissionKey: 'UserManaging',
+                permissionValue: 1,
+              },
+              breadcrumb: [
+                {
+                  title: 'user-list',
+                  to: { name: 'admin-organization-users-manager' },
+                },
+                {
+                  title: 'add-user-from-file',
+                  active: true,
+                },
+              ],
+            },
+            name: 'admin-organization-user-import-file-add-user',
+            component: () => import('@/pages/admin/organization/users/import-file/AddUser.vue'),
+          },
+          {
+            path: 'users-approve',
+            meta: {
+              requireAuth: {
+                permissionKey: 'UserManaging',
+                permissionValue: 1,
+              },
+              breadcrumb: [
+                {
+                  title: 'user-list',
+                  to: { name: 'admin-organization-users-manager' },
+                },
+                {
+                  title: 'browse-user',
+                  active: true,
+                },
+              ],
+            },
+            name: 'admin-organization-user-approve',
+            component: () => import('@/pages/admin/organization/users/approve/Approve.vue'),
+          },
         ],
       },
       {
@@ -305,7 +347,26 @@ export default [
       {
         path: 'org-struct',
         name: 'admin-organization-org-struct',
-        component: () => import('@/pages/admin/organization/org-struct/OrgStruct.vue'),
+        redirect: { name: 'admin-organization-org-struct-list' },
+        meta: {
+          requireAuth: {
+            permissionKey: 'OrganizationalStructureManaging',
+            permissionValue: 1,
+          },
+        },
+        children: [
+          {
+            path: '',
+            name: 'admin-organization-org-struct-list',
+            component: () => import('@/pages/admin/organization/org-struct/OrgStruct.vue'),
+          },
+          {
+            path: 'org-struct/add/:parentId',
+            name: 'admin-organization-org-struct-add',
+            component: () => import('@/pages/admin/organization/org-struct/edit/EditOrgStruct.vue'),
+          },
+        ],
+        component: () => import('@/pages/admin/organization/org-struct/Index.vue'),
       },
       {
         path: 'position-title',

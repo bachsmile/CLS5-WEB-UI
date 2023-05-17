@@ -13,7 +13,7 @@ interface Props {
   rounded?: string | number | boolean
   variant?: string
   shadow?: string
-  backgroud: string
+  backgroud?: string
 }
 
 const props = withDefaults(defineProps<Props>(), ({

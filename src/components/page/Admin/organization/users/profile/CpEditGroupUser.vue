@@ -114,7 +114,7 @@ const handleDeleteItem = (context: any) => {
   dataComponent.deleteIds.push(context.id)
   isShowDialogNotiDelete.value = true
 
-  // this.modalContent = this.$t('users.user.action-modal.delete')
+  // this.modalContent = this.$t('delete')
   // this.$bvModal.show(this.confirmModalId)
 }
 
@@ -216,7 +216,7 @@ getPagingByUser(queryParams)
     <CpConfirmDialog
       :type="2"
       variant="outlined"
-      :confirmation-msg="t('users.user.action-modal.delete')"
+      :confirmation-msg="t('delete')"
       :is-dialog-visible="isShowDialogNotiDelete"
       @update:isDialogVisible="updateDialogVisible"
       @confirm="confirmDialog"

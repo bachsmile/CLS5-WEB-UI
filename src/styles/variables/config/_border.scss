@@ -1,3 +1,4 @@
+@use "@/styles/variables/config/color" as *;
 // ****kích thước border****/
 $border-xs: 1px;
 $border-sm: 1.5px;
@@ -17,5 +18,5 @@ $border-radius-2xl: 56px;
 $border-radius-3xl: 64px;
 
 //**** style input border****/
-$border-input:1px solid #D0D5DD;
+$border-input: $border-xs solid $color-gray-300;
 $border-radius-input: $border-radius-xs;

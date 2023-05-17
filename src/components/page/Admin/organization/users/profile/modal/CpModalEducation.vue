@@ -31,7 +31,7 @@ const emit = defineEmits<Emit>()
 const CmDialogs = defineAsyncComponent(() => import('@/components/common/CmDialogs.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
-const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmtextArea.vue'))
+const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
 
 /**
  * lib
@@ -78,9 +78,9 @@ const storeValidate = validatorStore()
 const { schemaOption, Field, Form, useForm } = storeValidate
 
 const schema = reactive<any>({
-  schoolId: schemaOption.requiredString,
-  degreeId: schemaOption.requiredString,
-  graduationYear: schemaOption.requiredString,
+  schoolId: schemaOption.requiredString(),
+  degreeId: schemaOption.requiredString(),
+  graduationYear: schemaOption.requiredString(),
 })
 
 const { values, setValues, resetForm } = useForm({

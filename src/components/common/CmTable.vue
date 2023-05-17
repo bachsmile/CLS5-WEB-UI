@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
-
 import Globals from '@/constant/Globals'
 import ArrayUtil from '@/utils/ArrayUtil'
 import MethodsUtil from '@/utils/MethodsUtil'
-import StringUtil from '@/utils/StringUtil'
 
 const props = withDefaults(defineProps<Props>(), ({
   headers: () => ([]),
@@ -25,17 +23,20 @@ const props = withDefaults(defineProps<Props>(), ({
   minHeight: 100,
   customKeyError: 'errors',
 }))
-
 const emit = defineEmits<Emit>()
-const CpTableSub = defineAsyncComponent(() => import('../page/gereral/CpTableSub.vue'))
+const SkTable = defineAsyncComponent(() => import('@/components/page/gereral/skeleton/SkTable.vue'))
+const isLoading = ref(true)
 const CmPagination = defineAsyncComponent(() => import('./CmPagination.vue'))
 const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CpOrganizationSelect = defineAsyncComponent(() => import('@/components/page/gereral/CpOrganizationSelect.vue'))
+const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
 interface HeaderCustom extends Header {
   type?: string
   typeOrg?: number
   combobox?: any
+  config?: any
+  valueId?: any
 }
 interface groupOptions {
   allowEmptySelect?: boolean
@@ -65,7 +66,7 @@ interface Emit {
   (e: 'selectedRows', dataRow: object): void
   (e: 'itemSelected', dataRow: object): void
   (e: 'checkedAll', checkedAll: boolean, data: object): void
-  (e: 'changeCellvalue', value: string, field: string, key: number): void
+  (e: 'changeCellvalue', value: string, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any): void
   (e: 'handlePageClick', page: number, size: number): void
   (e: 'update:pageNumber', page: number): void
   (e: 'update:size', size: number): void
@@ -91,8 +92,11 @@ const indeterminate = computed(() => {
 const keyid = computed(() => {
   return props?.isImportFile ? 'key' : props.customId
 })
-
+const checkActionShow = (action: Array<any>) => {
+  return action?.filter((item: any) => item.isShow === true)?.length > 0
+}
 watch(() => props.items, (val: Item[]) => {
+  isLoading.value = true
   props.items.forEach((element, index) => {
     element.originIndex = index
     element.isSelected = !!element.isSelected
@@ -145,8 +149,6 @@ const showRow = (item: ClickRowArgument) => {
 
 // sự kiện click chọn item
 const checkedItem = (index: number, value: boolean | undefined) => {
-  console.log(index)
-
   // eslint-disable-next-line vue/no-mutating-props
   props.items[index].isSelected = !value
   const itemSelected = props.items.filter((x: Item) => x.isSelected === true)
@@ -182,17 +184,27 @@ const pageSizeChange = (page: number, size: number) => {
 
 // kiểm tra cột lỗi
 const isErrorcell = (field: string, data: any) => {
-  return data.errors?.filter((x: any) => x.location.toLowerCase() === field.toLowerCase()).length > 0
+  return data[props.customKeyError]?.filter((x: any) => x.location.toLowerCase() === field.toLowerCase()).length > 0
 }
 
 // thay đổi dữ liệu trên bảng
-const changeCellvalue = (event: any, field: string, key: number) => {
-  emit('changeCellvalue', event, field, key)
+const changeCellvalue = (event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) => {
+  emit('changeCellvalue', event, field, key, keyCustomValue, keyCustomIdValue)
 }
 defineExpose({
   checkedAll,
   selectedRows: selectedRows.value,
   items: props.items,
+})
+onUpdated(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
+})
+onMounted(() => {
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
 })
 
 // watch
@@ -202,7 +214,11 @@ defineExpose({
 </script>
 
 <template>
-  <div class="table-box">
+  <SkTable v-if="isLoading" />
+  <div
+    v-show="!isLoading"
+    class="table-box"
+  >
     <EasyDataTable
       ref="dataTable"
       alternating
@@ -213,7 +229,7 @@ defineExpose({
       theme-color="#1849a9"
       :table-min-height="minHeight"
       :item-key="keyid"
-      fixed-expand
+      click-row-to-expand
       hide-footer
       :body-row-class-name="rowClassName"
       @click-row="showRow"
@@ -241,7 +257,7 @@ defineExpose({
         #expand
       >
         <div>
-          <CpTableSub />
+          <slot name="tableSub" />
         </div>
       </template>
       <!--
@@ -294,7 +310,8 @@ defineExpose({
             v-for="(actionItem, idKey) in context?.actions "
           >
             <div
-              v-if="idKey < 2"
+              v-if="checkActionShow(context?.actions) && actionItem.isShow
+                || !checkActionShow(context?.actions) && (context?.actions.length <= 3 || idKey < (Globals.MAX_ITEM_ACTION - 1))"
               :key="idKey"
               class="px-2 "
             >
@@ -303,7 +320,7 @@ defineExpose({
                 :icon="actionItem?.icon"
                 :size="actionItem?.size || 18"
                 class="align-middle"
-                :class="`color-${actionItem?.color}`"
+                :class="actionItem?.color"
                 @click="actionItem?.action ? actionItem?.action(MethodsUtil.checlActionKey(actionItem, context)) : ''"
               />
               <VTooltip
@@ -319,7 +336,7 @@ defineExpose({
           >
             <div class="action-more px-2">
               <CmDropDown
-                :list-item="ArrayUtil.sliceArray(context?.actions, Globals.MAX_ITEM_ACTION)"
+                :list-item="ArrayUtil.sliceArray(context?.actions, Globals.MAX_ITEM_ACTION - 1)"
                 :data="context"
                 custom-key="name"
                 :type="1"
@@ -336,7 +353,7 @@ defineExpose({
         <div v-else-if="itemsHeader?.type === 'custom'" />
         <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'combobox'">
           <CmSelect
-            v-model="context.title"
+            v-model="context[itemsHeader.value]"
             :max-item="Globals.MAX_ITEM_SELECT_MULT"
             :items="itemsHeader?.combobox.type === 'function'
               ? itemsHeader?.combobox?.data(context[itemsHeader?.combobox.params])
@@ -347,14 +364,21 @@ defineExpose({
             @update:modelValue="changeCellvalue($event, itemsHeader.value, context?.key)"
           />
         </div>
+        <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'dateTime'">
+          <CmDateTimePicker
+            v-model="context[itemsHeader.value]"
+            placeholder="dd/mm/yyyy"
+            :config="itemsHeader?.config"
+            @update:modelValue="changeCellvalue($event, itemsHeader.value, context?.key)"
+          />
+        </div>
         <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'organization'">
           <CpOrganizationSelect
-            v-model="context.organizationalStructureId"
+            v-model="context[itemsHeader.value]"
             :max-height="100"
             :placeholder="t('organizational')"
-            close-on-select
             :type-org="itemsHeader?.typeOrg || 0"
-            @update:modelValue="changeCellvalue($event, 'organizational', context?.key)"
+            @update:modelValue="changeCellvalue($event, 'organizational', context?.key, itemsHeader.value, itemsHeader.valueId)"
           />
         </div>
         <VTextField
@@ -489,3 +513,28 @@ defineExpose({
 }
 </style>
 
+<style lang="scss">
+.vue3-easy-data-table{
+
+  .can-expand{
+    position: relative !important;
+    width: 0px !important;
+    padding: 0 !important;
+    .expand-icon{
+      display: none !important;
+    }
+  }
+  th.can-expand.shadow{
+    width: 0px !important;
+    padding: 0 !important;
+  }
+  th.shadow::after,
+  td.can-expand.shadow::after{
+    width: 0px !important;
+  }
+
+  .vue3-easy-data-table__body tr{
+    cursor: pointer;
+  }
+}
+</style>

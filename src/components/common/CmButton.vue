@@ -123,7 +123,10 @@ defineExpose({
     >
       <div :class="[textColor]">
         <slot v-if="!title && !icon" />
-        <span v-if="props.title || props.icon">
+        <span
+          v-if="props.title || props.icon"
+          class="d-flex align-items-center"
+        >
           <VIcon
             v-if="props.icon"
             :icon="props.icon"

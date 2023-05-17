@@ -159,7 +159,7 @@ fetchDataAddress(values.value)
         size="16"
         class="color-primary mr-2"
       />
-      <span class="color-primary  align-center">{{ $t('common.add') }}</span>
+      <span class="color-primary  align-center">{{ $t('Add-new') }}</span>
     </BLink>
 
     <CpModalAddress

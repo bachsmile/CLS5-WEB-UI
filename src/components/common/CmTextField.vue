@@ -32,7 +32,10 @@ interface Emit {
   (e: 'change', value: any): void
 }
 
-const formModelValue = ref(props.modelValue)
+const formModelValue = ref(null)
+watch(() => props.modelValue, (val: any) => {
+  formModelValue.value = props.modelValue
+}, { immediate: true })
 
 /** Method */
 const handleChangeText = () => {

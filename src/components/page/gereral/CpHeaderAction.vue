@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<Props>(), ({
   isDelete: false,
-  disabledDelete: false,
   isBack: false,
   disabledBack: false,
   isApprove: false,
-  disabledApprove: false,
   isFillter: true,
   isAdd: false,
+  disabledDelete: false,
+  disabledApprove: false,
   disabledFillter: false,
 }))
 
@@ -17,6 +17,7 @@ interface Emit {
   (e: 'click', type: string): void
   (e: 'deleteMultiple'): void
   (e: 'addHandler'): void
+  (e: 'back'): void
   (e: 'search', type: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -53,6 +54,9 @@ const handleClickBtn = (type: string) => {
     case 'addHandler':
       emit('addHandler')
       break
+    case 'back':
+      emit('back')
+      break
 
     default:
       break
@@ -61,8 +65,17 @@ const handleClickBtn = (type: string) => {
   emit('click', type)
 }
 
+const timer = ref<any>(null)
 const handleSearch = (value: any) => {
-  emit('search', value)
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
+  timer.value = setTimeout(() => {
+    console.log(value)
+
+    emit('search', value)
+  }, 500)
 }
 </script>
 
@@ -142,10 +155,11 @@ const handleSearch = (value: any) => {
             bg-color="bg-white"
             color="color-dark-300"
             text-color="color-dark"
+            :size-icon="20"
+            icon="ic:round-filter-list"
+            :title="isShowFilter ? t('hide-filter') : t('show-filter')"
             @click="handleClickBtn('fillter')"
-          >
-            {{ isShowFilter ? t('hide-filter') : t('show-filter') }}
-          </CmButton>
+          />
         </VCol>
       </VRow>
     </VCol>

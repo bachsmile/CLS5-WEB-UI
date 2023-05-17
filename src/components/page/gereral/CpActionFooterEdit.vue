@@ -1,10 +1,20 @@
 <script setup lang="ts">
 interface Props {
-  isSave?: any
+  isSave?: boolean
+  isCancel?: boolean
+  isSaveGroup?: boolean
+  isSaveAndUpdate?: boolean
+  titleSave?: string
+  titleCancel?: string
+  titleSaveGroup?: string
+  titleSaveAndUpdate?: string
 }
 
 const props = withDefaults(defineProps<Props>(), ({
-  isSave: true,
+  isSave: false,
+  isSaveGroup: false,
+  isSaveAndUpdate: false,
+  titleCancel: 'cancel-title',
 }))
 
 const emit = defineEmits<Emit>()
@@ -13,10 +23,10 @@ const CmButtonGroup = defineAsyncComponent(() => import('@/components/common/CmB
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const handleSaveUpdate = (event: any) => {
-  emit('onSave', event, 'save-update')
+  emit('onSaveGroup', event, 'save-update')
 }
 const handleSaveAdd = (event: any) => {
-  emit('onSave', event, 'save-add')
+  emit('onSaveGroup', event, 'save-add')
 }
 const action = [
   {
@@ -41,7 +51,9 @@ const action = [
 
 interface Emit {
   (e: 'onCancel'): void
-  (e: 'onSave', event: any, type: string): void
+  (e: 'onSave'): void
+  (e: 'onSaveUpdate'): void
+  (e: 'onSaveGroup', event: any, type: string): void
 }
 
 const onCancel = () => {
@@ -49,7 +61,7 @@ const onCancel = () => {
 }
 
 const handlerPreButton = (event: any) => {
-  emit('onSave', event, 'save')
+  emit('onSaveGroup', event, 'save')
 }
 </script>
 
@@ -63,18 +75,40 @@ const handlerPreButton = (event: any) => {
         text-color="color-dark"
         @click="onCancel"
       >
-        {{ t('cancel-title') }}
+        {{ t(titleCancel) }}
+      </CmButton>
+    </div>
+    <div
+      v-if="props.isSave"
+      class="mr-3"
+    >
+      <CmButton
+        color="primary"
+        @click="emit('onSave')"
+      >
+        {{ t(titleSave) }}
+      </CmButton>
+    </div>
+    <div
+      v-if="props.isSaveAndUpdate"
+      class="mr-3"
+    >
+      <CmButton
+        color="primary"
+        @click="emit('onSaveUpdate')"
+      >
+        {{ t(titleSaveAndUpdate) }}
       </CmButton>
     </div>
     <div>
       <CmButtonGroup
-        v-if="props.isSave"
+        v-if="props.isSaveGroup"
         is-load
         :list-item="action"
-        :title="t('save-and-add')"
+        :title="titleSaveGroup"
         @click-prepend="handlerPreButton($event)"
       >
-        {{ t('save') }}
+        {{ t(titleSaveGroup) }}
       </CmButtonGroup>
     </div>
   </div>

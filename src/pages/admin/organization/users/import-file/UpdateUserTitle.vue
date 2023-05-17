@@ -19,7 +19,7 @@ const titleImport = {
  */
 
 const storeCombobox = comboboxStore()
-const { organizations } = storeToRefs(storeCombobox)
+const { organizationsCombobox } = storeToRefs(storeCombobox)
 
 // Cập nhật năng lực
 const dataColumnExcel = (rowData: Array<any>) => {
@@ -28,12 +28,9 @@ const dataColumnExcel = (rowData: Array<any>) => {
   return { userInformation, organizationalStructure, title }
 }
 const getListTitle = (orgId: any) => {
-  console.log(orgId)
-
   if (!orgId)
     return null
-  const orgItem: any = organizations.value.find((item: any) => item.id === orgId)
-  console.log(orgItem?.titleEachOrgs)
+  const orgItem: any = organizationsCombobox.value.find((item: any) => item.id === orgId)
   return orgItem?.titleEachOrgs || []
 }
 const actions = ref<Action[]>([
@@ -62,6 +59,7 @@ const config = reactive<Config>(
         {
           text: t('organizational'),
           value: 'organizationalStructure',
+          valueId: 'organizationalStructureId',
           type: 'organization',
           width: 300,
           typeOrg: 1,

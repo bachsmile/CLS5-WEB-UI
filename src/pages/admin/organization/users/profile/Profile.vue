@@ -91,9 +91,11 @@ window.hideAllPageLoading()
       class="user-infor no-background py-5"
     >
       <CpActionFooterEdit
-        :is-save="isShowButton"
+        is-cancel
+        :is-save-group="isShowButton"
+        :title-save-group="t('save-and-add')"
         @onCancel="backUser"
-        @onSave="handleUser"
+        @onSaveGroup="handleUser"
       />
     </div>
   </div>

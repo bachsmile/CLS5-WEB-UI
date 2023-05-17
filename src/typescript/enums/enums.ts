@@ -9,6 +9,7 @@ export enum TYPE_REQUEST {
   POST = 'POST',
   PUT = 'PUT',
   UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
 }
 export const size = ['x-small', 'small', 'default', 'large', 'x-large'] as const
 export const sizeDialog = ['sm', 'lg', 'xl'] as const
@@ -19,3 +20,11 @@ declare type Tinline = typeof inline[number]
 export type Anchor = Tblock | Tinline | 'center' | 'center center' | `${Tblock} ${Tinline | 'center'}` | `${Tinline} ${Tblock | 'center'}`
 export const typeTab = ['button', 'underline'] as const
 export const typeLoading = ['FULL', 'COMPONENT', 'FULL-OPACITY', 'COMPONENT-OPACITY', null] as const
+export const typeSkeleton = [
+  'BulletListLoader',
+  'CodeLoader',
+  'ContentLoader',
+  'FacebookLoader',
+  'InstagramLoader',
+  'ListLoader',
+] as const

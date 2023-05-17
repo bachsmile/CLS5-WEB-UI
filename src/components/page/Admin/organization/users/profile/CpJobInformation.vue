@@ -9,7 +9,7 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
-const CmtextArea = defineAsyncComponent(() => import('@/components/common/CmtextArea.vue'))
+const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
 
 // store
 const storeProfileUserManager = profileUserManagerStore()
@@ -101,7 +101,7 @@ if (window._.isEmpty(userLevels.value))
         </Field>
       </VCol>
     </VRow>
-    <CmtextArea
+    <CmTextArea
       v-model:model-value="values.story"
       :text="t('story')"
     />

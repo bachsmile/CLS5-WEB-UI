@@ -3,7 +3,7 @@ import { formatDateYears } from '@/utils/FilterUtil'
 import { ActionType } from '@/constant/data/actionType.json'
 import { validatorStore } from '@/stores/validatator'
 import { profileUserManagerStore } from '@/stores/admin/users/profile/profile'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
 const CpModalEducation = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/modal/CpModalEducation.vue'))
@@ -318,7 +318,7 @@ const handleUpdateExperences = (experences: any, edit: boolean) => {
                   size="16"
                   class="color-primary mr-2"
                 />
-                <span class="color-primary  align-center">{{ $t('add') }}</span>
+                <span class="color-primary  align-center">{{ $t('Add-new') }}</span>
               </BLink>
             </VCol>
           </VRow>
@@ -410,7 +410,7 @@ const handleUpdateExperences = (experences: any, edit: boolean) => {
                   size="16"
                   class="color-primary mr-2"
                 />
-                <span class="color-primary  align-center">{{ $t('add') }}</span>
+                <span class="color-primary  align-center">{{ $t('Add-new') }}</span>
               </BLink>
             </VCol>
           </VRow>

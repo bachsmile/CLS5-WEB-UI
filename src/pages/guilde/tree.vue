@@ -31,7 +31,6 @@ const getRoleFeature = async () => {
     .then((value: any) => {
       const result = ArraysUtil.formatTreeData(ArraysUtil.flatMapTree([value.data[0]], 'permissions'), config.roots, t)
       nodes.value = reactive(result)
-      console.log(result)
     })
     .catch((error: any) => error)
 }

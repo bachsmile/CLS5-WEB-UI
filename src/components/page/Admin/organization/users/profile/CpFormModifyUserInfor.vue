@@ -23,7 +23,7 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const storeValidate = validatorStore()
 const storeCombobox = comboboxStore()
 const { Field, Form } = storeValidate
-const { userType, statuses } = storeToRefs(storeCombobox)
+const { userTypeCombobox, statusesCombobox } = storeToRefs(storeCombobox)
 const { fetchTypeUsersCombobox, fetchStatusUsersCombobox } = storeCombobox
 const storeProfileUserManager = profileUserManagerStore()
 const { idUpdate, myFormUserInfor, titleTable, values, schema } = storeToRefs(storeProfileUserManager)
@@ -57,9 +57,9 @@ const optionGender = reactive([
   { label: 'nữ', value: true },
 ])
 
-if (window._.isEmpty(statuses.value))
+if (window._.isEmpty(statusesCombobox.value))
   fetchStatusUsersCombobox()
-if (window._.isEmpty(userType.value))
+if (window._.isEmpty(userTypeCombobox.value))
   fetchTypeUsersCombobox()
 
 const isOwner = computed(() => {
@@ -284,7 +284,7 @@ window.hideAllPageLoading()
                 :model-value="valuesComponent.userTypeId"
                 :text="LABEL.TEXT_USER_TYPE"
                 :placeholder="LABEL.PLACEHOLDER_USER_TYPE"
-                :items="userType"
+                :items="userTypeCombobox"
                 :errors="errors"
                 :disabled="isOwner"
                 item-value="id"
@@ -309,7 +309,7 @@ window.hideAllPageLoading()
                 :model-value="valuesComponent.statusId"
                 :text="LABEL.TEXT_STATUS"
                 :placeholder="LABEL.PLACEHOLDER_STATUS"
-                :items="statuses"
+                :items="statusesCombobox"
                 :errors="errors"
                 item-value="key"
                 custom-key="value"

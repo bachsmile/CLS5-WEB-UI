@@ -28,6 +28,8 @@ export const useImportFileStore = defineStore('importFile', () => {
     if (data && data.length > 0) {
       data.forEach((item: any) => {
         if (item.isSuccess === false) {
+          console.log(item[customKeyError.value])
+
           if (item[customKeyError.value]) {
             item.messageErr = ''
             item[customKeyError.value].forEach((err: any) => {
@@ -43,7 +45,6 @@ export const useImportFileStore = defineStore('importFile', () => {
   }
 
   const getValidData = async (listData: Array<object>, paramExtend?: object) => {
-    window.showAllPageLoading('COMPONENT')
     const model = {
       listLocal: [],
       listExcel: listData,
@@ -75,13 +76,11 @@ export const useImportFileStore = defineStore('importFile', () => {
           refTableValid.value.checkedAll()
       })
     })
-    window.hideAllPageLoading()
 
     // showaddComponent = validData.length > 0
   }
 
   const checkInvalidData = async () => {
-    window.showAllPageLoading('COMPONENT')
     const model = {
       listLocal: paramsImport.validData,
       listExcel: paramsImport.invalidData,
@@ -114,12 +113,10 @@ export const useImportFileStore = defineStore('importFile', () => {
         if (refTableValid.value?.items.length)
           refTableValid.value.checkedAll()
       })
-      window.hideAllPageLoading()
     })
   }
 
   const fileChange = (event: any) => {
-    console.log(123312)
     const input = event.target.files[0]
     const listData: any = []
     readXlsxFile(input).then(rows => {

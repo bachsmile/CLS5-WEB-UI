@@ -3,10 +3,13 @@ import CmButton from '@/components/common/CmButton.vue'
 import { DialogType } from '@/constant/data/notification.json'
 
 interface Props {
+  keyModal?: string
   confirmationMsg: string
   confirmationMsgSubTitle?: string
   isDialogVisible: boolean
   type: number
+  minWidth?: number
+  maxWidth?: number
   icon?: string
   variant?: string
   color?: string
@@ -18,7 +21,7 @@ interface Props {
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'confirm', value: boolean): void
+  (e: 'confirm', value: boolean, key?: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -27,6 +30,8 @@ const props = withDefaults(defineProps<Props>(), ({
   buttonOkName: 'ok-title',
   buttonCancleName: 'cancel-title',
   isHideFooter: false,
+  minWidth: 300,
+  maxWidth: 300,
 }))
 
 const emit = defineEmits<Emit>()
@@ -49,7 +54,7 @@ const updateModelValue = (val: boolean) => {
 }
 
 const onConfirmation = () => {
-  emit('confirm', true)
+  emit('confirm', true, props?.keyModal)
   updateModelValue(false)
 }
 
@@ -62,13 +67,14 @@ const onCancel = () => {
 <template>
   <!-- 👉 Confirm Dialog -->
   <VDialog
-    max-width="500"
+    :min-width="minWidth"
+    :max-width="maxWidth"
     :model-value="props.isDialogVisible"
     close-on-back
     @update:model-value="updateModelValue"
   >
-    <VCard class="text-center px-10 py-6">
-      <VCardText class="noti-content mb-2">
+    <VCard class="text-center pa-6">
+      <VCardText class="noti-content">
         <div class="d-flex justify-center mb-5">
           <div class="icon-noti">
             <VIcon
@@ -100,13 +106,14 @@ const onCancel = () => {
 
       <VCardActions
         v-if="!isHideFooter"
-        class="align-center justify-center gap-2"
+        class="align-center justify-center gap-2 noti-content"
       >
         <CmButton
           variant="outlined"
           bg-color="bg-white"
           color="dark"
           text-color="color-dark"
+          class="w-50"
           @click="onCancel"
         >
           {{ t(buttonCancleName) }}
@@ -114,6 +121,7 @@ const onCancel = () => {
 
         <CmButton
           variant="elevated"
+          class="w-50"
           :color="color || checkTypeDialog(type).color"
           @click="onConfirmation"
         >
@@ -126,72 +134,16 @@ const onCancel = () => {
 
 <style lang="scss">
 @use "@/styles/style-global.scss" as *;
-
+.v-dialog {
+  .v-card{
+    border-radius: 12px !important;
+  }
+}
 .text-title-noti {
   color: $color-gray-900;
 }
 
 .text-title-sub-noti {
   color: $color-gray-500;
-}
-
-.icon-noti {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  block-size: 50px;
-  inline-size: 50px;
-
-  .ring1 {
-    position: absolute;
-    z-index: 5;
-    border-radius: 50%;
-    block-size: 32px;
-    inline-size: 32px;
-  }
-
-  .ring2 {
-    position: absolute;
-    z-index: 0;
-    border-radius: 50%;
-    block-size: 52px;
-    inline-size: 52px;
-  }
-
-  .ring1-type-0 {
-    background-color: $color-success-100;
-  }
-
-  .ring2-type-0 {
-    background-color: $color-success-50;
-  }
-
-  .ring1-type-1 {
-    background-color: $color-warning-100;
-  }
-
-  .ring2-type-1 {
-    background-color: $color-warning-50;
-  }
-
-  .ring1-type-2 {
-    background-color: $color-error-100;
-  }
-
-  .ring2-type-2 {
-    background-color: $color-error-50;
-  }
-
-  .ring1-type-3 {
-    background-color: $color-primary-100;
-  }
-
-  .ring2-type-3 {
-    background-color: $color-primary-50;
-  }
-
-  .noti-zindex {
-    z-index: 10;
-  }
 }
 </style>

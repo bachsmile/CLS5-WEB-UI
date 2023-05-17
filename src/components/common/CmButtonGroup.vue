@@ -127,6 +127,7 @@ const clickItem = (item: object) => {
 <style lang="scss" scoped>
 @use "/src/styles/style-global" as *;
 .btn-group-style{
+  display: flex;
   height: $button-default-height;
 }
 .button-group-prepend {

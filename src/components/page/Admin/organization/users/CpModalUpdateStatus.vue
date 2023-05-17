@@ -17,7 +17,7 @@ interface Emit {
   (e: 'confirm', data: any): void
 }
 const store = comboboxStore()
-const { statuses } = storeToRefs(store)
+const { statusesCombobox } = storeToRefs(store)
 const { fetchStatusUsersCombobox } = store
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
@@ -38,7 +38,7 @@ const onConfirmation = () => {
   emit('confirm', statusList.value)
 }
 
-if (window._.isEmpty(statuses.value))
+if (window._.isEmpty(statusesCombobox.value))
   fetchStatusUsersCombobox()
 </script>
 
@@ -57,7 +57,7 @@ if (window._.isEmpty(statuses.value))
         custom-key="value"
         :text="LABEL.TEXT"
         :placeholder="LABEL.PLACEHOLDER"
-        :items="statuses"
+        :items="statusesCombobox"
       />
     </div>
   </CmDialogs>

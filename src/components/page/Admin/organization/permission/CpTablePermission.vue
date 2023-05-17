@@ -36,7 +36,7 @@ const getDetail = (val: any) => {
 }
 
 const deleteItem = (val: any) => {
-  emit('update:dataDelete', [val.id])
+  emit('update:dataDelete', val.id)
 }
 
 const selectedRows = (e: any) => {

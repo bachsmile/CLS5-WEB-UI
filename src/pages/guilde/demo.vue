@@ -16,8 +16,6 @@ import CmSwitch from '@/components/common/CmSwitch.vue'
 import CmTab from '@/components/common/CmTab.vue'
 
 const showToast = () => {
-  console.log(button123.value)
-
   // console.log(button123.value.unLoadButton())
   button123?.value.unLoadButton()
 

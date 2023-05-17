@@ -34,12 +34,18 @@ interface Emit {
 const router = useRouter()
 
 const handlerPreButton = () => {
-  emit('click', 'handlerPreButton')
+  emit('click', 'handlerAddButton')
+}
+const handlerApproveButton = () => {
+  emit('click', 'handlerApproveButton')
 }
 </script>
 
 <template>
-  <div class="d-flex justify-space-between my-8">
+  <div
+    class="d-flex justify-space-between my-8"
+    style="flex-wrap: wrap;"
+  >
     <div class="text-medium-lg">
       {{ title }}
     </div>
@@ -89,6 +95,7 @@ const handlerPreButton = () => {
         <CmButton
           bg-color="bg-success"
           text-color="color-white"
+          @click="handlerApproveButton"
         >
           {{ titleAprove }}
         </CmButton>

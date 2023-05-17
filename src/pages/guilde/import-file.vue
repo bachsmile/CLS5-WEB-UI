@@ -8,7 +8,7 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import { comboboxStore } from '@/stores/combobox'
 
 const storeCombobox = comboboxStore()
-const { organizations } = storeToRefs(storeCombobox)
+const { organizationsCombobox } = storeToRefs(storeCombobox)
 
 // Cập nhật mã người dùng
 // const dataColumnExcel = (rowData: Array<any>) => {
@@ -160,11 +160,9 @@ const config = reactive<Config>(
   },
 )
 const getListTitle = (orgId: any) => {
-  console.log(orgId)
-
   if (!orgId)
     return null
-  const orgItem: any = organizations.value.find((item: any) => item.id === orgId)
+  const orgItem: any = organizationsCombobox.value.find((item: any) => item.id === orgId)
   console.log(orgItem?.titleEachOrgs)
   return orgItem?.titleEachOrgs || []
 }

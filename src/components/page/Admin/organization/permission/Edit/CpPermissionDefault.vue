@@ -4,10 +4,14 @@ import CmTreeView from '@/components/common/CmTreeView.vue'
 interface Props {
   listFeaturePermission: any[]
 }
+interface Emit {
+  (e: 'update:listFeature', data: any): void
+}
 const props = withDefaults(defineProps<Props>(), {})
+const emit = defineEmits<Emit>()
 const config = (idx: number) => {
   return {
-    roots: [`node-${idx + 1}`],
+    roots: [`node-p${idx + 1}`],
     keyboardNavigation: false,
     dragAndDrop: false,
     checkboxes: true,
@@ -15,6 +19,30 @@ const config = (idx: number) => {
     disabled: false,
     padding: 25,
     checkMode: 0,
+  }
+}
+
+const handleChecked = (node: any, idx: number) => {
+  if (node.children && node.children.length) {
+    //
+    node.permissionValue = node.permission
+  }
+  else {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.listFeaturePermission[idx][node.parent].permissionValue += node.permission
+    console.log(props.listFeaturePermission[idx])
+  }
+}
+
+const handleUnChecked = (node: any, idx: number) => {
+  if (node.children && node.children.length) {
+    //
+    node.permissionValue = 0
+  }
+  else {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.listFeaturePermission[idx][node.parent].permissionValue -= node.permission
+    console.log(props.listFeaturePermission[idx])
   }
 }
 </script>
@@ -32,6 +60,8 @@ const config = (idx: number) => {
         <CmTreeView
           :config="config(index)"
           :nodes="tree"
+          @node-checked="handleChecked($event, index)"
+          @node-unchecked="handleUnChecked($event, index)"
         />
       </div>
     </div>

@@ -129,17 +129,13 @@ const updateTitle = async (userId: any) => {
 }
 
 const changeTitle = (index: any, val: any) => {
-  console.log(index, val)
-
   const indexItem = findIndex(index, items.value)
-  console.log(indexItem)
 
   // dataOrg.isChange = true
   isChangeRef.value = true
   const changedValue = items.value[indexItem]
 
   changedValue.titleId = val
-  console.log(changedValue)
 
   items.value.splice(indexItem, 1, changedValue)
 }
@@ -174,7 +170,6 @@ const getListOrgStructTitleUser = async () => {
 const checkGetListOrgStruct = async () => {
   if (route.name === 'admin-organization-users-profile-add') {
     items.value = []
-    console.log(123)
 
     return
   }
@@ -254,7 +249,6 @@ defineExpose({
                 <CpOrganizationSelect
                   v-model="context.id"
                   :placeholder="t('name-structure')"
-                  :close-on-select="true"
                   @update:modelValue="changeOrg(context.key, $event)"
                 />
               </Field>

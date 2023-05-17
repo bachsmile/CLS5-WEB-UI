@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CmButton from './CmButton.vue'
+
 interface Props {
   listItem: item[]
   color?: string
@@ -27,7 +29,7 @@ const positionBorder = (value: number) => {
 </script>
 
 <template>
-  <VBtn
+  <CmButton
     v-for="(item, index) in listItem"
     :key="index"
     :class="`color-${color}-300 ${positionBorder(index)} button-group`"
@@ -35,9 +37,9 @@ const positionBorder = (value: number) => {
     @click="item?.action"
   >
     <span :class="`color-${color} font-weight-600`">
-      <VueFeather
+      <VIcon
         v-if="item.icon"
-        :type="item.icon"
+        :icon="item.icon"
         size="18"
       />
       <span
@@ -45,7 +47,7 @@ const positionBorder = (value: number) => {
         class="ml-1"
       >{{ item.title }}</span>
     </span>
-  </VBtn>
+  </CmButton>
 </template>
 
 <style lang="scss" scoped>
@@ -71,10 +73,10 @@ const positionBorder = (value: number) => {
 }
 
 .active {
-  background: $color-gray-50 !important;
+  background: $color-primary !important;
 }
 
 .button-group:focus {
-  background: $color-gray-50 !important;
+  background: $color-primary-100 !important;
 }
 </style>

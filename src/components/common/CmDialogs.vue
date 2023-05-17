@@ -20,6 +20,7 @@ interface Props {
   isHideFooter?: boolean
   persistent?: boolean
   size?: typeof sizeDialog[] | string
+  height?: number | string
   disabledOk?: boolean
   disabledCancel?: boolean
 }
@@ -89,6 +90,7 @@ const sizeModal = computed(() => {
       content-class="cm-dialogs"
       :model-value="props.isDialogVisible"
       :width="sizeModal"
+      :height="height"
       scrollable
       :persistent="props.persistent"
       @update:model-value="onCancel"

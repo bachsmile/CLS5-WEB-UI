@@ -17,14 +17,10 @@ interface Props {
   listCategoryTitle?: any[]
   listTitle?: any[]
 }
-
-const props = withDefaults(defineProps<Props>(), ({}))
-
-const emit = defineEmits<Emit>()
-
-const LABEL = Object.freeze({
+// Khởi tạo biến đa ngôn ngữ
+const props = withDefaults(defineProps<Props>(), ({})) ;const emit = defineEmits<Emit>() ;const { t } = window.i18n()const LABEL = Object.freeze({
   TITLE_MODAL: 'Danh sách nhóm người dùng',
-  FILLTER1: 'Cơ cấu tổ chức',
+  FILLTER1: t('orgStruct'),
   FILLTER2: 'Nhóm người dùng',
   FILLTER3: 'Danh mục chức danh',
   FILLTER4: 'Vị trí chức danh',

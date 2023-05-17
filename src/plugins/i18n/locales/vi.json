@@ -2891,7 +2891,7 @@
   "add-user-from-file": "Thêm người dùng từ tập tin",
   "add-user-to-group-success": "Thêm người dùng thành công",
   "add-user-to-group-failed": "Thêm người dùng thất bại",
-  "add": "Thêm nhóm người dùng",
+  "group-add": "Thêm nhóm người dùng",
   "failure-list": "Danh sách nhóm người dùng thêm không thành công",
   "invalid-list": "Danh sách nhóm người dùng không hợp lệ",
   "success-list": "Danh sách nhóm người dùng thêm thành công",
@@ -3084,6 +3084,7 @@
   "SHA_Approved": "Đã duyệt",
   "SHA_NoApproved": "Đang chỉnh sửa",
   "SHA_Declined": "Trả lại",
+  "ActionDeclined": "Trả lại",
   "USR_ValueMaxLength10": "Giá trị có độ dài tối đa 10",
   "CSE_TimeFinishLargeTime": "Thời gian hoàn thành lớn hơn thời gian bài học",
   "QUE_AgreeExamFailed": "Duyệt kỳ thi thất bại",
@@ -3304,5 +3305,11 @@
   "UserInformation": "Thông tin cũ",
   "InfoUpdate": "Thông tin mới",
   "edit-user-from-file": "Cập nhật người dùng",
-  "code-log": "Mã"
+  "code-log": "Mã",
+  "BirthDay": "Ngày sinh",
+  "orgStruct": "Cơ cấu tổ chức",
+  "status-action": "Tình trạng hoạt động",
+  "role-user": "Vai trò người dùng",
+  "approve-success": "Duyệt người dùng thành công",
+  "QuestionService.AddOrStructure": "Thêm"
 }

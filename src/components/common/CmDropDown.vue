@@ -27,6 +27,8 @@ const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton
  *  action: function truyền xuống
  *  appendItem: phần sau của item có thể hiển thị cả icon lẫn title
  *  prependItem: checkbox của từng item
+ *  dataResend: dữ liệu muốn trả lại kèm theo action
+ *  type: a: icon  2: loại button
  * }
  */
 
@@ -37,7 +39,7 @@ interface Props {
   multiple?: boolean
   customKey: string
   dataResend?: any
-  type?: number // 2: loại button
+  type?: number
   index?: number
   variant?: typeof typeVariant[number]
   color?: string
@@ -67,6 +69,7 @@ interface prependItem {
 
 interface Emit {
   (e: 'change', data: any): void
+  (e: 'click', data: any, dataResend?: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
@@ -90,6 +93,11 @@ const textButton = computed(() => {
 
   return ''
 })
+const checkIconAction = (data: any) => {
+  console.log(data)
+
+  console.log(MethodsUtil.checlActionKey(data))
+}
 </script>
 
 <template>
@@ -121,7 +129,7 @@ const textButton = computed(() => {
           <VIcon
             v-if="type === 1 && propsValue.icon"
             v-bind="props"
-            :icon="propsValue.icon "
+            :icon="propsValue.icon"
             :size="18"
           />
         </div>
@@ -146,14 +154,14 @@ const textButton = computed(() => {
             />
           </template>
           <VListItemTitle
-            @click="item?.action ? propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, data), index, dataResend) : item?.action() : ''"
+            @click="item?.action ? propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, data), index, dataResend) : item?.action() : emit('click', item, dataResend)"
           >
             <VIcon
-              v-if="item?.icon"
-              :icon="item?.icon"
+              v-if="item?.icon || MethodsUtil.checlActionKey(item)[0]?.icon"
+              :icon="item?.icon || MethodsUtil.checlActionKey(item)[0]?.icon"
               :size="18"
-              class="mr-2 color-dark"
-              :class="[item.colorClass]"
+              class="mr-2"
+              :class="[item.colorClass, MethodsUtil.checlActionKey(item)[0]?.color]"
             />
             <span class="text-medium-sm">{{ t(item[customKey]) }}
             </span>

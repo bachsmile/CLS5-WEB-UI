@@ -30,7 +30,7 @@ const emit = defineEmits<Emit>()
 
 const CmDialogs = defineAsyncComponent(() => import('@/components/common/CmDialogs.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
-const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmtextArea.vue'))
+const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 const CmCheckBox = defineAsyncComponent(() => import('@/components/common/CmCheckBox.vue'))
@@ -81,10 +81,10 @@ const storeValidate = validatorStore()
 const { schemaOption, Field, Form, useForm } = storeValidate
 
 const schema = reactive<any>({
-  companyName: schemaOption.requiredString,
-  position: schemaOption.requiredString,
-  dateStart: schemaOption.requiredString,
-  dateFinish: schemaOption.requiredString,
+  companyName: schemaOption.requiredString(),
+  position: schemaOption.requiredString(),
+  dateStart: schemaOption.requiredString(),
+  dateFinish: schemaOption.requiredString(),
 })
 
 const { values, setValues, resetForm } = useForm({

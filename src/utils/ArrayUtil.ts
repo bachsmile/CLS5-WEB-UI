@@ -34,26 +34,68 @@ export default class ArraysUtil {
       const { permissions, children, ...rest } = permiss // loại bỏ permissions ra khỏi object
 
       const perId = permiss.orgId ? permiss.orgId : permiss.id
-
       object[`node-${perId}`] = rest
       object[`node-${perId}`].ids = permiss.id
       object[`node-${perId}`].text = t(object[`node-${perId}`].name)
 
       object[`node-${perId}`].permission = permiss.permissionValue
       object[`node-${perId}`].orgPermission = permiss.orgPermissionValue
-      object[`node-${perId}`].permissionValue = 0
-      object[`node-${perId}`].orgPermissionValue = 0
+      object[`node-${perId}`].permissionValue = permiss.permission ? permiss.permission : 0
+      object[`node-${perId}`].orgPermissionValue = permiss.orgPermission ? permiss.orgPermission : 0
+      object[`node-${perId}`].state = {
+        ...permiss.state,
+      }
       if (root.includes(`node-${perId}`)) {
         object[`node-${perId}`].state = {
           opened: true,
+          ...permiss.state,
         }
       }
 
       if (permiss[customKey]?.length)
         object[`node-${perId}`].children = permiss[customKey]?.map((item: any) => `node-${item.orgId ? item.orgId : item.id}`)
-
       return object
     }, {})
+  }
+
+  // static formatTreeMaxSpeed = (data: any) => {
+  //   const obj = {}
+  //   if (data.permissions && data.permissions.length > 0 && data.id) {
+  //     data.permissions.forEach((item: any) => {
+  //       if (item.id)
+  //         ArraysUtil.formatTreeMaxSpeed(item)
+  //     })
+  //   }
+  // }
+
+  static TestTree = (data: any, listPermission: Array<any>) => {
+    if (data.permissions && data.permissions.length > 0 && data.id) {
+      data.permissions.forEach((item: any) => {
+        if (item.id)
+          ArraysUtil.TestTree(item, listPermission)
+      })
+    }
+
+    if (data.id && data.permissions.length > 0) {
+      const mapPermission = listPermission.find(x => x.featureId === Number(data.orgId))
+      if (mapPermission) {
+        data.permission = mapPermission.permissionValue
+        data.orgPermission = mapPermission.permissionOrganizationalStructure
+        data.permissions.forEach((x: any) => {
+          if (!x.id && (mapPermission.permissionValue & x.permissionValue) > 0)
+            x.state = { checked: true }
+          if (!x.id && (mapPermission.permissionOrganizationalStructure & x.orgPermissionValue) > 0)
+            x.orgPermission = mapPermission.permissionOrganizationalStructure
+        })
+      }
+      const childrenPermission = data.permissions.filter((x: any) => x.state && (x.state.indeterminate || x.state.checked)).length
+      if (childrenPermission > 0)
+        data.state = { indeterminate: true }
+
+      const def = data.permissions.filter((x: any) => x.state && x.state.checked).length
+      if (def === data.permissions.length)
+        data.state = { checked: true }
+    }
   }
 
   // Hàm lấy độ sâu của 1 node (root có depth = 0)

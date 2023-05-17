@@ -13,6 +13,8 @@ const ComboboxService = {
   Wards: '/Address/get-wards', // Quận huyện
   topicCourse: '/topic/get-combobox-topic-course',
   levels: '/Level/get-combobox',
+  Titles: '/title/get-combobox',
+  Owner: '/user/get-list-user',
 }
 
 export default ComboboxService

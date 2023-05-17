@@ -11,6 +11,7 @@ interface Props {
   className?: string
   isClassicBorder?: boolean
   data?: string
+  icon?: string
 }
 
 /** ** Khởi tạo prop emit */
@@ -73,8 +74,9 @@ const getAvatarName = (data: any) => {
     :rounded="rounded"
     :size="size"
   >
+    <slot v-if="icon" />
     <VImg
-      v-if="src"
+      v-else-if="src"
       :src="src"
     />
     <span

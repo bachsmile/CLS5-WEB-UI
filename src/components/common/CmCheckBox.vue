@@ -77,7 +77,10 @@ watch(() => propsValue.modelValue, value => {
 </script>
 
 <template>
-  <div :title="tooltipLabel">
+  <div
+    class="cm-checkbox"
+    :title="tooltipLabel"
+  >
     <VCheckbox
       :id="propsValue.id"
       v-model="checkbox"
@@ -114,38 +117,44 @@ watch(() => propsValue.modelValue, value => {
 
 <style lang="scss">
 @use "/src/styles/style-global" as *;
-
-.color-error {
-  .v-selection-control__input {
-    color: $color-error-600;
+  .cm-checkbox {
+    .color-error {
+    .v-selection-control__input {
+      color: $color-error-600;
+    }
   }
-}
 
-.color-primary {
-  .v-selection-control__input {
-    color: $color-primary-600;
+  .color-primary {
+    .v-selection-control__input {
+      color: $color-primary-600;
+    }
   }
-}
 
-.color-warning {
-  .v-selection-control__input {
-    color: $color-warning-600;
+  .color-warning {
+    .v-selection-control__input {
+      color: $color-warning-600;
+    }
   }
-}
 
-.color-gray {
-  .v-selection-control__input {
-    color: $color-gray-600;
+  .color-gray {
+    .v-selection-control__input {
+      color: $color-gray-600;
+    }
   }
-}
 
-.color-success {
-  .v-selection-control__input {
-    color: $color-success-600;
+  .color-success {
+    .v-selection-control__input {
+      color: $color-success-600;
+    }
   }
-}
-.indeterminate {
+  .indeterminate {
     color: #{$color-checkbox-indeterminate} !important;
   }
+  // .v-selection-control {
+  //   height: 25px !important;
+  //   width: 25px !important;
+  // }
+
+}
 </style>
 

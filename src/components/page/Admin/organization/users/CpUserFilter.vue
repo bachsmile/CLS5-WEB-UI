@@ -3,25 +3,29 @@ import CmSelect from '@/components/common/CmSelect.vue'
 import CpOrganizationSelect from '@/components/page/gereral/CpOrganizationSelect.vue'
 import { comboboxStore } from '@/stores/combobox'
 
+const emit = defineEmits<Emit>()
+const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
+
 /** ** Interface */
 interface Emit {
   (e: 'update', value: any): void
 }
-const emit = defineEmits<Emit>()
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 /** ** Khởi tạo store */
 const store = comboboxStore()
-const { statuses, organizations, userType, groupUser } = storeToRefs(store)
+const { statusesCombobox, organizationsCombobox, userTypeCombobox, groupUserCombobox, addFromCombobox } = storeToRefs(store)
 
 const { fetchStatusUsersCombobox, fetchTypeUsersCombobox, fetchTOrgStructCombobox, fetchGroupUserCombobox } = store
 
 const LABEL = Object.freeze({
-  FILLTER1: 'Tình trạng hoạt động',
-  FILLTER2: 'Cơ cấu tổ chức',
-  FILLTER3: 'Vai trò người dùng',
-  FILLTER4: 'Từ ngày đến ngày',
-  FILLTER5: 'Được thêm từ',
-  FILLTER6: t('group-management'),
+  FILLTER1: t('status-action'),
+  FILLTER2: t('orgStruct'),
+  FILLTER3: t('role-user'),
+  FILLTER4: t('start-day'),
+  FILLTER5: t('to-day'),
+  FILLTER6: t('add-user-from'),
+  FILLTER7: t('group-management'),
+  FILLTER8: t('add-user-from'),
 })
 
 const formFilter = reactive({
@@ -29,6 +33,9 @@ const formFilter = reactive({
   orStructure: null,
   userTypeList: null,
   groupUser: null,
+  timeFrom: null,
+  timeTo: null,
+  modeAdd: null,
 })
 
 // method
@@ -39,13 +46,13 @@ const change = () => {
 
 // created
 
-if (window._.isEmpty(statuses.value))
+if (window._.isEmpty(statusesCombobox.value))
   fetchStatusUsersCombobox()
-if (window._.isEmpty(userType.value))
+if (window._.isEmpty(userTypeCombobox.value))
   fetchTypeUsersCombobox()
-if (window._.isEmpty(organizations.value))
+if (window._.isEmpty(organizationsCombobox.value))
   fetchTOrgStructCombobox()
-if (window._.isEmpty(groupUser.value))
+if (window._.isEmpty(groupUserCombobox.value))
   fetchGroupUserCombobox()
 </script>
 
@@ -58,7 +65,7 @@ if (window._.isEmpty(groupUser.value))
     >
       <CmSelect
         v-model="formFilter.statusList"
-        :items="statuses"
+        :items="statusesCombobox"
         multiple
         item-value="key"
         custom-key="value"
@@ -87,12 +94,12 @@ if (window._.isEmpty(groupUser.value))
     >
       <CmSelect
         v-model="formFilter.groupUser"
-        :items="groupUser"
-        :text="LABEL.FILLTER6"
+        :items="groupUserCombobox"
+        :text="LABEL.FILLTER7"
         item-value="id"
         multiple
         custom-key="name"
-        :placeholder="LABEL.FILLTER6"
+        :placeholder="LABEL.FILLTER7"
         @update:model-value="change"
       />
     </VCol>
@@ -103,7 +110,7 @@ if (window._.isEmpty(groupUser.value))
     >
       <CmSelect
         v-model="formFilter.userTypeList"
-        :items="userType"
+        :items="userTypeCombobox"
         :text="LABEL.FILLTER3"
         item-value="id"
         multiple
@@ -114,12 +121,39 @@ if (window._.isEmpty(groupUser.value))
     </VCol>
     <VCol
       cols="12"
-      md="3"
+      md="2"
+      sm="4"
+    >
+      <CmDateTimePicker
+        :model-value="formFilter.timeFrom"
+        :text="LABEL.FILLTER4"
+        placeholder="dd/mm/yyyy"
+        @update:model-value="change"
+      />
+    </VCol>
+    <VCol
+      cols="12"
+      md="2"
+      sm="4"
+    >
+      <CmDateTimePicker
+        :model-value="formFilter.timeTo"
+        :text="LABEL.FILLTER5"
+        placeholder="dd/mm/yyyy"
+        @update:model-value="change"
+      />
+    </VCol>
+    <VCol
+      cols="12"
+      md="4"
       sm="4"
     >
       <CmSelect
-        :text="LABEL.FILLTER4"
-        :placeholder="LABEL.FILLTER4"
+        v-model="formFilter.modeAdd"
+        :items="addFromCombobox"
+        :text="LABEL.FILLTER8"
+        :placeholder="LABEL.FILLTER8"
+        @update:model-value="change"
       />
     </VCol>
   </VRow>

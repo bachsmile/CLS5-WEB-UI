@@ -11,7 +11,6 @@ import { filterInputProps, makeVInputProps } from 'vuetify/lib/components/VInput
 // @ts-expect-error There won't be declaration file for it
 import { filterInputAttrs } from 'vuetify/lib/util/helpers'
 
-import { object } from 'yup'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
 const props = defineProps({
@@ -26,6 +25,9 @@ const props = defineProps({
   placeholder: {
     type: String,
   },
+  text: {
+    type: String,
+  },
 
 })
 
@@ -35,6 +37,11 @@ interface Emit {
   (e: 'update:modelValue', val: string): void
   (e: 'click:clear', el: MouseEvent): void
 }
+
+// inherit Attribute make false
+defineOptions({
+  inheritAttrs: false,
+})
 
 const attrs = useAttrs()
 
@@ -56,6 +63,8 @@ if (compAttrs.config && compAttrs.config.inline) {
 
 // v-field clear prop
 const onClear = (el: MouseEvent) => {
+  el.stopPropagation()
+
   nextTick(() => {
     emit('update:modelValue', '')
 
@@ -85,16 +94,24 @@ watch(theme, updateThemeClassInCalendar)
 onMounted(() => {
   updateThemeClassInCalendar(vuetifyTheme.name.value)
 })
-
-const emitModelValue = (val: string) => {
+const valuePrivate = ref(computed(() => props.modelValue).value)
+const emitModelValue = (val: any) => {
   emit('update:modelValue', val)
 }
+watch(valuePrivate, val => {
+  emitModelValue(val)
+})
 </script>
 
 <template>
+  <div class="mb-1">
+    <label
+      class="text-medium-sm color-dark"
+    >{{ props.text }}</label>
+  </div>
   <!-- v-input -->
   <VInput
-    v-bind="{ ...inputProps, ...rootAttrs, ...field }"
+    v-bind="{ ...inputProps, ...rootAttrs }"
     :model-value="modelValue"
     :hide-details="props.hideDetails"
     class="position-relative cm-datetime"
@@ -117,20 +134,19 @@ const emitModelValue = (val: string) => {
               v-if="!isInlinePicker"
               v-bind="compAttrs"
               ref="refFlatPicker"
-              :model-value="modelValue"
-              class="flat-picker-custom-style text-regular-md"
+              v-model="valuePrivate"
+              class="flat-picker-custom-style  text-regular-md"
               :disabled="isReadonly.value"
               :placeholder="placeholder"
               :options="flatpickrOptions"
               @on-open="isCalendarOpen = true"
               @on-close="isCalendarOpen = false"
-              @update:model-value="emitModelValue"
             />
 
             <!-- simple input for inline prop -->
             <input
               v-if="isInlinePicker"
-              :value="modelValue"
+              :value="valuePrivate"
               class="flat-picker-custom-style text-regular-md"
               type="text"
             >
@@ -145,7 +161,7 @@ const emitModelValue = (val: string) => {
     v-if="isInlinePicker"
     v-bind="compAttrs"
     ref="refFlatPicker"
-    :model-value="modelValue"
+    :model-value="valuePrivate"
     @update:model-value="emitModelValue"
     @on-open="isCalendarOpen = true"
     @on-close="isCalendarOpen = false"
@@ -447,6 +463,9 @@ input[altinputclass="inlinePicker"] {
   line-height: 24px;
   border: $border-input;
   border-radius: $border-radius-input;
+}
+.cm-datetime .flatpickr-input[placeholder]{
+  color: $color-gray-900 !important;
 }
 .cm-datetime .v-field__outline__end,
 .cm-datetime .v-field__outline__start{

@@ -21,7 +21,6 @@ export const configStore = defineStore('appConfig', () => {
     await MethodsUtil.requestApiCustom(SystemService.SettingDefaultSystem, TYPE_REQUEST.GET).then((value: any) => {
       if (value?.data?.length > 0)
         settingDefaults.value = value.data
-      console.log(settingDefaults)
 
       const isLoginOneDeviceStatus = value.data.find((x: any) => x.typeId === 5)
       if (isLoginOneDeviceStatus && isLoginOneDeviceStatus.value === 1)

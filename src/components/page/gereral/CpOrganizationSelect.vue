@@ -43,22 +43,22 @@ const emit = defineEmits<Emit>()
 
 /** ** Khởi tạo store */
 const store = comboboxStore()
-const { organizations } = storeToRefs(store)
+const { organizationsCombobox } = storeToRefs(store)
 const { fetchTOrgStructCombobox, fetchTOrgStructTitleCombobox } = store
 const organizationsValue = ref<any>(props.modelValue)
 
 const options = ref()
 
 const getAllOrgStruct = async () => {
-  if (!window._.isEmpty(organizations.value)) {
-    const data = window._.cloneDeep(organizations.value)
+  if (!window._.isEmpty(organizationsCombobox.value)) {
+    const data = window._.cloneDeep(organizationsCombobox.value)
     if (props.excludeId) {
       const positionExclude = data.findIndex((item: any) => item[props.customKey] === props.excludeId)
 
-      organizations.value = window._.pullAt(data, positionExclude)
+      organizationsCombobox.value = window._.pullAt(data, positionExclude)
     }
 
-    options.value = ArrayUtil.formatSelectTree(organizations.value, 'parentId', props.customKey)
+    options.value = ArrayUtil.formatSelectTree(organizationsCombobox.value, 'parentId', props.customKey)
   }
 }
 
@@ -91,7 +91,7 @@ onMounted(async () => {
       :options="options"
       :placeholder="props.placeholder"
       :value-format="valueFormat"
-      :close-on-select="closeOnSelect"
+      :close-on-select="multiple ? false : true"
       :multiple="multiple"
       :normalizer-custom-type="[props.customKey, 'name', 'children']"
       @update:model-value="handleChangeSelect"
