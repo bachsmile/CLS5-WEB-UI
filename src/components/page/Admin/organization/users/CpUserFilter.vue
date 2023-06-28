@@ -40,7 +40,7 @@ const formFilter = reactive({
 
 // method
 
-const change = () => {
+function change() {
   emit('update', formFilter)
 }
 

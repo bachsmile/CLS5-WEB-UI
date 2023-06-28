@@ -5,6 +5,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import CommonService from '@/api/common'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
+import Globals from '@/constant/Globals'
 
 interface Props {
   src?: string
@@ -12,8 +13,15 @@ interface Props {
   variant?: string
   tooltip?: string
   isIconText?: boolean
+  icon?: string
   iconText?: string
   isRounded?: string | number | boolean
+  isAvatar?: boolean
+  offsetX?: number
+  offsetY?: number
+  size?: number // kích thước theo cài đặt
+  isSizeFull?: boolean // kích thước full cha
+  isBadge?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -22,6 +30,12 @@ const props = withDefaults(defineProps<Props>(), ({
   variant: '',
   isIconText: false,
   isRounded: false,
+  isAvatar: false,
+  offsetX: Globals.avatar.offsetX,
+  offsetY: Globals.avatar.offsetY,
+  size: Globals.avatar.size,
+  icon: '',
+  isBadge: false,
 }))
 
 /** ** Khởi tạo prop emit */
@@ -35,11 +49,11 @@ const isLoading = ref(false)
 const disabled = ref(false)
 const serverfile = window.SERVER_FILE || ''
 
-const hanleClickAvatar = () => {
+function hanleClickAvatar() {
   inputImage.value?.click()
 }
 
-const uploadFile = async (model: any) => {
+async function uploadFile(model: any) {
   const formData = new FormData()
 
   formData.append('IsSecure', model.isSecure)
@@ -54,7 +68,7 @@ const uploadFile = async (model: any) => {
     formData.append('UserId', userData.id)
 
   try {
-    const res = await MethodsUtil.requestApiCustom(CommonService.SERVERFILE, TYPE_REQUEST.POST, formData).then(value => value)
+    const res = await MethodsUtil.requestApiCustom(CommonService.SERVERFILE, TYPE_REQUEST.POST, formData).then((value: any) => value)
     if (res.filePath)
       toast('SUCCESS', t('common.upload-file-success'))
 
@@ -68,7 +82,7 @@ const uploadFile = async (model: any) => {
   }
 }
 
-const onFileSelected = async (e: any) => {
+async function onFileSelected(e: any) {
   const tmpFiles = e.target.files || e.dataTransfer.files
   if (!tmpFiles.length)
     return
@@ -95,15 +109,14 @@ const urlImageFile = computed(() => {
 </script>
 
 <template>
-  <VTooltip
-    max-width="250"
-  >
+  <VTooltip>
     <div v-html="tooltip" />
     <template #activator="propsValue">
       <CmBadge
+        v-if="isBadge"
         v-bind="propsValue.props"
-        :offset-x="30"
-        :offset-y="30"
+        :offset-x="offsetX"
+        :offset-y="offsetY"
         icon="fe:edit"
         :color="color"
         :loading="isLoading"
@@ -112,17 +125,29 @@ const urlImageFile = computed(() => {
         <CmAvatar
           :src="urlImageFile"
           is-classic-border
-          :size="160"
+          :size="size"
           :rounded="isRounded"
+          :is-avatar="isAvatar"
+          :icon="icon"
+          :class="{ 'w-100 h-100': isSizeFull }"
         >
           <span v-if="isIconText">{{ iconText }}</span>
-          <VIcon
-            v-else
-            icon="tabler:camera"
-          />
         </CmAvatar>
       </CmBadge>
-
+      <CmAvatar
+        v-else
+        :src="urlImageFile"
+        v-bind="propsValue.props"
+        is-classic-border
+        :size="size"
+        :rounded="isRounded"
+        :is-avatar="isAvatar"
+        :icon="icon"
+        :class="{ 'w-100 h-100': isSizeFull }"
+        @click="hanleClickAvatar"
+      >
+        <span v-if="isIconText">{{ iconText }}</span>
+      </CmAvatar>
       <VFileInput
         ref="inputImage"
         class="d-none"

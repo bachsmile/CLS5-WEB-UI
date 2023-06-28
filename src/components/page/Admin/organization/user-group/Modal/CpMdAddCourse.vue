@@ -50,9 +50,9 @@ const filter = () => {
 
 // Combobox chủ đề
 const combobox = comboboxStore()
-const { listTopicCourse } = storeToRefs(combobox)
-const { getListTopicCourse } = combobox
-getListTopicCourse()
+const { listTopicCourseCombobox } = storeToRefs(combobox)
+const { getlistTopicCourseCombobox } = combobox
+getlistTopicCourseCombobox()
 
 const confirm = async () => {
   const status = await handleAddCourse()
@@ -73,7 +73,7 @@ const confirm = async () => {
       <CmSelect
         v-model:model-value="queryParams.topicCourseId"
         style="width: 400px;"
-        :items="listTopicCourse"
+        :items="listTopicCourseCombobox"
         custom-key="value"
         item-value="key"
         @update:model-value="filter"

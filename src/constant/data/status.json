@@ -33,40 +33,134 @@
     ],
     "StatusTypeCourse": [
         {
+            "id": 0,
+            "name": "QuestionService.StatusNone",
+            "color": "error",
+            "note": "Không tồn tại"
+        },
+        {
             "id": 1,
             "name": "QuestionService.ExamEditing",
-            "color": "color-dark",
+            "color": "dark",
             "note": "Đang chỉnh sửa"
         },
         {
             "id": 2,
             "name": "QuestionService.ExamPending",
-            "color": "color-primary",
+            "color": "primary",
             "note": "Chờ duyệt"
         },
         {
             "id": 3,
             "name": "QuestionService.ExamUpcoming",
-            "color": "color-warning",
+            "color": "warning",
             "note": "Sắp diễn ra"
         },
         {
             "id": 4,
             "name": "QuestionService.ExamActive",
-            "color": "color-success",
+            "color": "success",
             "note": "Đang diễn ra"
         },
         {
             "id": 5,
             "name": "QuestionService.ExamDeclined",
-            "color": "color-error",
+            "color": "purple",
             "note": "Trả lại"
         },
         {
             "id": 6,
             "name": "QuestionService.ExamEnd",
-            "color": "color-error",
+            "color": "error",
             "note": "Kết thúc"
+        },
+        {
+            "id": 7,
+            "name": "QuestionService.RecallRequest",
+            "color": "warning",
+            "note": "Yêu cầu thu hồi"
+        },
+        {
+            "id": 8,
+            "name": "QuestionService.Complete",
+            "color": "success",
+            "note": "Hoàn thành"
+        },
+        {
+            "id": 9,
+            "name": "QuestionService.NotComplete",
+            "color": "error",
+            "note": "Chưa hoàn thành"
+        },
+        {
+            "id": 10,
+            "name": "QUE_CreatingTestCode",
+            "color": "primary",
+            "note": "Đang tạo đề"
+        },
+        {
+            "id": 11,
+            "name": "QUE_ComingSoon",
+            "color": "warning",
+            "note": "Đang diễn ra"
+        },
+        {
+            "id": 12,
+            "name": "QUE_Happenning",
+            "color": "error",
+            "note": "Đang diễn ra"
+        },
+        {
+            "id": 13,
+            "name": "QUE_Finished",
+            "color": "success",
+            "note": "Hoàn thành"
+        }
+    ],
+    "StatusTypeFormStudy": [
+        {
+            "id": 1,
+            "name": "CourseService.Online",
+            "color": "success",
+            "note": "Học online"
+        },
+        {
+            "id": 2,
+            "name": "CourseService.Offline",
+            "color": "error",
+            "note": "Học offline"
+        }
+    ],
+    "StatusUserAprove": [
+        {
+            "id": 5,
+            "name": "pending-approved",
+            "color": "primary",
+            "note": "Chờ duyệt"
+        },
+        {
+            "id": 3,
+            "name": "approved",
+            "color": "success",
+            "note": "Đã duyệt"
+        },
+        {
+            "id": 6,
+            "name": "rejected",
+            "color": "error",
+            "note": "Từ chối"
+        },
+        {
+            "id": 1,
+            "name": "CourseService.Online",
+            "color": "success",
+            "note": "Học online"
+        },
+        {
+            "id": 2,
+            "name": "CourseService.Offline",
+            "color": "error",
+            "note": "Học offline"
         }
     ]
 }

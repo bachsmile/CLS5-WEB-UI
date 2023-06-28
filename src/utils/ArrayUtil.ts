@@ -224,17 +224,28 @@ export default class ArraysUtil {
   static formatSelectTree = (items: Array<any>, keyParent = 'parentId', customId = 'id') => {
     const orderedNodes = window._.orderBy(items, ['left'], ['desc'])
     const groupedNodes = window._.groupBy(orderedNodes, keyParent)
-
     return window._.map(groupedNodes['0'], parent => {
       const children = groupedNodes[parent[customId]] || []
-
-      const dataChildren = window._.map(children, child => ({
-        ...child,
-        ...(groupedNodes[child.id]?.length ? { children: groupedNodes[child[customId]] } : {}),
-      }))
-
+      parent.children = children
+      const dataChildren = ArraysUtil.mapChildToParent(parent, groupedNodes, customId)
       return dataChildren.length ? { ...parent, children: dataChildren } : { ...parent }
     })
+  }
+
+  static mapChildToParent = (parent: any, groupedNodes: any, customId: any) => {
+    let dataChild = []
+    dataChild = parent.children.map((item: any) => {
+      if (groupedNodes[item[customId]]) {
+        item = { ...item, children: groupedNodes[item[customId]] }
+        const children = ArraysUtil.mapChildToParent(item, groupedNodes, customId)
+
+        return { ...item, children }
+      }
+
+      return { ...item, children: groupedNodes[item[customId]] }
+    })
+
+    return dataChild
   }
 
   // 👉 IsEmptyArray

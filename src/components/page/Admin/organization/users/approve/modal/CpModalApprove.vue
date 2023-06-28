@@ -77,7 +77,6 @@ const resetDataForm = () => {
 const onConfirm = async () => {
   myFormApprove.value.validate().then(async (success: any) => {
     if (success.valid) {
-      console.log(success)
       emit('confirm', window._.cloneDeep(infoUser))
       emit('update:isDialogVisible', false)
       resetDataForm()

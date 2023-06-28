@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {/** ** Interface */
-  modelValue?: boolean
+  modelValue?: any
   color?: string
   disabled?: boolean
   indeterminate?: boolean
@@ -28,6 +28,7 @@ interface Props {/** ** Interface */
   tooltipLabel?: string
   text?: string
   field?: any
+  value?: any
 }
 interface Emit {
   (e: 'update:modelValue', value: any): void
@@ -37,7 +38,7 @@ interface Emit {
 /** ** Khởi tạo prop emit */
 const propsValue = withDefaults(defineProps<Props>(), ({
   modelValue: false,
-  color: '',
+  color: 'primary',
   disabled: false,
   indeterminate: false,
   error: false,
@@ -66,7 +67,7 @@ const propsValue = withDefaults(defineProps<Props>(), ({
 const emit = defineEmits<Emit>()
 const checkbox = ref(propsValue.modelValue)
 
-const onChangeChecked = (val: boolean) => {
+function onChangeChecked(val: boolean) {
   emit('update:modelValue', val)
 }
 
@@ -81,11 +82,12 @@ watch(() => propsValue.modelValue, value => {
     class="cm-checkbox"
     :title="tooltipLabel"
   >
+    <!-- :class="`color-${propsValue.color}`" -->
     <VCheckbox
       :id="propsValue.id"
       v-model="checkbox"
       v-intersect="() => {}"
-      :class="`color-${propsValue.color}`"
+      :color="color"
       :disabled="propsValue.disabled"
       :indeterminate="propsValue.indeterminate"
       :error="propsValue.error"
@@ -96,7 +98,7 @@ watch(() => propsValue.modelValue, value => {
       :hide-details="propsValue.hideDetails"
       :indeterminate-icon="propsValue.indeterminateIcon"
       :inline="propsValue.inline"
-      label="propsValue.label"
+      :label="propsValue.label"
       :multiple="propsValue.multiple"
       :prepend-icon="propsValue.prependIcon"
       :ripple="propsValue.ripple"
@@ -106,9 +108,13 @@ watch(() => propsValue.modelValue, value => {
       :type="propsValue.type"
       :true-icon="propsValue.trueIcon"
       :true-value="propsValue.trueValue"
+      :value="value"
       @update:modelValue="onChangeChecked($event)"
     >
-      <template #label>
+      <template
+        v-if="!label"
+        #label
+      >
         <slot />
       </template>
     </VCheckbox>
@@ -117,44 +123,19 @@ watch(() => propsValue.modelValue, value => {
 
 <style lang="scss">
 @use "/src/styles/style-global" as *;
-  .cm-checkbox {
-    .color-error {
-    .v-selection-control__input {
-      color: $color-error-600;
-    }
+.cm-checkbox {
+  width: max-content;
+  .v-label--clickable {
+    @extend .text-medium-md
   }
-
-  .color-primary {
-    .v-selection-control__input {
-      color: $color-primary-600;
-    }
+  .v-checkbox {
+    color: $color-gray-300;
   }
-
-  .color-warning {
-    .v-selection-control__input {
-      color: $color-warning-600;
-    }
+  .color-info {
+    color: $color-info-600;
   }
-
-  .color-gray {
-    .v-selection-control__input {
-      color: $color-gray-600;
-    }
+  .v-selection-control__input > .v-icon {
+    background-color: rgb(var(--v-theme-surface));
   }
-
-  .color-success {
-    .v-selection-control__input {
-      color: $color-success-600;
-    }
-  }
-  .indeterminate {
-    color: #{$color-checkbox-indeterminate} !important;
-  }
-  // .v-selection-control {
-  //   height: 25px !important;
-  //   width: 25px !important;
-  // }
-
 }
 </style>
-

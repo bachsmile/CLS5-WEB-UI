@@ -15,6 +15,7 @@ interface Prop {
   dirty?: boolean
   disabled?: boolean
   error?: boolean
+  errors?: any
   errorMessages?: string
   focused?: boolean
   hideDetails?: boolean | 'auto'
@@ -41,11 +42,20 @@ const emit = defineEmits<Emit>()
 interface Emit {
   (e: 'update:model-value', data: any): void
 }
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
+
 const formModelValue = ref(props.modelValue)
 
-const handleUpdate = (event: any) => {
+function handleUpdate(event: any) {
   emit('update:model-value', event)
 }
+
+const messageError = computed(() => {
+  if (props.errors?.length)
+    return t(props.errors[0])
+
+  return ''
+})
 </script>
 
 <template>
@@ -55,7 +65,6 @@ const handleUpdate = (event: any) => {
         class="text-medium-sm color-dark"
       >{{ props.text }}</label>
     </div>
-
     <VTextarea
       :id="id"
       v-model="formModelValue"
@@ -72,8 +81,8 @@ const handleUpdate = (event: any) => {
       :counter-value="counterValue"
       :dirty="dirty"
       :disabled="disabled"
-      :error="error"
-      :error-messages="errorMessages"
+      :error="errors?.length > 0 ?? !!error"
+      :error-messages="messageError || errorMessages"
       :focused="focused"
       :hide-details="true"
       :hint="hint"
@@ -89,6 +98,12 @@ const handleUpdate = (event: any) => {
       :persistent-counter="persistentCounter"
       @update:model-value="emit('update:model-value', formModelValue)"
     />
+    <div
+      v-if="errors?.length"
+      class="color-error error-label"
+    >
+      {{ messageError }}
+    </div>
   </div>
 </template>
 
@@ -117,4 +132,3 @@ const handleUpdate = (event: any) => {
   border-radius: $border-radius-xs;
 }
 </style>
-

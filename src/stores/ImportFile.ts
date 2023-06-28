@@ -28,8 +28,6 @@ export const useImportFileStore = defineStore('importFile', () => {
     if (data && data.length > 0) {
       data.forEach((item: any) => {
         if (item.isSuccess === false) {
-          console.log(item[customKeyError.value])
-
           if (item[customKeyError.value]) {
             item.messageErr = ''
             item[customKeyError.value].forEach((err: any) => {
@@ -44,14 +42,28 @@ export const useImportFileStore = defineStore('importFile', () => {
     }
   }
 
-  const getValidData = async (listData: Array<object>, paramExtend?: object) => {
-    const model = {
+  const getValidData = async (listData: Array<object>, paramExtend?: any) => {
+    let model: any = {
       listLocal: [],
       listExcel: listData,
       isSave: false,
-      isValidate: true,
       type: type.value,
-      ...paramExtend,
+    }
+    if (paramExtend) {
+      const { customListExcel, customListLocal, customIsSave, ...extend } = paramExtend
+      model = {
+        ...model,
+        ...extend,
+      }
+      if (customListExcel) {
+        model[customListExcel] = listData
+        model.listExcel = []
+      }
+      if (customListLocal)
+        model[customListLocal] = []
+
+      if (customIsSave)
+        model[customIsSave] = false
     }
     paramsImport.validData = []
     paramsImport.invalidData = []
@@ -81,13 +93,28 @@ export const useImportFileStore = defineStore('importFile', () => {
   }
 
   const checkInvalidData = async () => {
-    const model = {
+    const paramExtend: any = config?.importFile?.paramsImport
+    let model: any = {
       listLocal: paramsImport.validData,
       listExcel: paramsImport.invalidData,
       isSave: false,
-      isValidate: true,
       type: type.value,
-      ...config?.importFile?.paramsImport,
+    }
+    if (paramExtend) {
+      const { customListExcel, customListLocal, customIsSave, ...extend } = paramExtend
+      model = {
+        ...model,
+        ...extend,
+      }
+      if (customListExcel) {
+        model[customListExcel] = paramsImport.invalidData
+        model.listExcel = []
+      }
+      if (customListLocal)
+        model[customListLocal] = paramsImport.validData
+
+      if (customIsSave)
+        model[customIsSave] = false
     }
     paramsImport.validData = []
     paramsImport.invalidData = []
@@ -137,6 +164,7 @@ export const useImportFileStore = defineStore('importFile', () => {
   }
 
   const updateFromFile = async () => {
+    const paramExtend: any = config?.importFile?.paramsImport
     const list = reactive({
       listIndex: <number[]>[],
       listData: <any[]>[],
@@ -148,12 +176,24 @@ export const useImportFileStore = defineStore('importFile', () => {
         list.listData.push(item)
       }
     })
-    let model = {
+    let model: any = {
       listExcel: list.listData,
       isSave: true,
-      isValidate: false,
       typeUpdate: 2,
       type: type.value,
+    }
+    if (paramExtend) {
+      const { customListExcel, customListLocal, customIsSave, ...extend } = paramExtend
+      model = {
+        ...model,
+        ...extend,
+      }
+      if (customListExcel) {
+        model[customListExcel] = list.listData
+        model.listExcel = []
+      }
+      if (customIsSave)
+        model[customIsSave] = true
     }
     if (!ObjectUtil.isEmpty(type.value)) {
       model = {

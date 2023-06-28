@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import ArraysUtil from '@/utils/ArrayUtil'
-import ApiUser from '@/api/user/index'
 import MethodsUtil from '@/utils/MethodsUtil'
-import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import StringJwt from '@/utils/Jwt'
-import { profileUserManagerStore } from '@/stores/admin/users/profile/profile'
+import { orgStructManagerStore } from '@/stores/admin/org-struct/orgStruct'
+import SkTree from '@/components/page/gereral/skeleton/SkTree.vue'
 
-const SkTree = defineAsyncComponent(() => import('@/components/page/gereral/skeleton/SkTree.vue'))
+const emit = defineEmits<Emit>()
 const CmTreeView = defineAsyncComponent(() => import('@/components/common/CmTreeView.vue'))
 
 /**
@@ -15,60 +12,51 @@ const CmTreeView = defineAsyncComponent(() => import('@/components/common/CmTree
 const { t } = window.i18n()
 const route = useRoute()
 const router = useRouter()
+interface Emit {
+  (e: 'deleteNode', data: any): void
+}
 
 /**
  * store
  */
-const storeProfileUserManager = profileUserManagerStore()
-const { values } = storeToRefs(storeProfileUserManager)
+const storeOrgStruct = orgStructManagerStore()
+const { nodes, render, config, isView } = storeToRefs(storeOrgStruct)
+const { getListOrgStruct } = storeOrgStruct
 
 /** *end store */
-const config = reactive({
-  roots: [] as any[],
-  keyboardNavigation: false,
-  dragAndDrop: false,
-  checkboxes: false,
-  editable: false,
-  disabled: false,
-  padding: 25,
-})
-const nodes = ref({})
-const render = ref(0)
+
 const isLoading = ref(true)
-const getListOrgStruct = async () => {
-  const params = {
-    role: StringJwt.getRole(),
+
+function updateValueOrg(value: any) {
+  //
+}
+function removeNode(node: any) {
+  const nodeChildrenIds = MethodsUtil.getAllChildrenOfTreeNodeIds(node, nodes.value)
+
+  nodeChildrenIds.push(node.ids)
+  const deleteData = {
+    deletedId: node.ids,
+    excludeListOrg: nodeChildrenIds,
   }
-  await MethodsUtil.requestApiCustom(ApiUser.GetOrganizationalStructure, TYPE_REQUEST.GET, params).then((value: any) => {
-    // cấu hình dạng cây cho cơ cấu tổ chức
-    for (let i = 0; i < value.data.length; i++) {
-      value.data[i] = {
-        ...value.data[i],
-        state: {
-          checked: values.value?.listOrganizationalStructureId.includes(value.data[i].id),
-        },
-      }
-    }
-
-    const result = ArraysUtil.formatTreeData(ArraysUtil.unFlatMapTree(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id')), config.roots, t, 'children')
-    nodes.value = reactive(result)
-
-    // Cấu hình node roots cho vue tree
-    const filteredKeys = Object.keys(result).filter(key => result[key].parentId === 0)
-    config.roots = filteredKeys
-    render.value++
-  })
+  emit('deleteNode', deleteData)
 }
-const updateValueOrg = (value: any) => {
-  values.value.listOrganizationalStructureId = value
-}
-const handleAction = (value: any, dataResend: any) => {
+
+function handleAction(value: any, dataResend: any) {
   switch (value?.id) {
+    case 1:
+      isView.value = false
+      router.push({ name: 'admin-organization-org-struct-edit', params: { tab: 'infor', id: dataResend.ids } })
+      break
+    case 2:
+      removeNode(dataResend)
+      break
+    case 4:
+      isView.value = true
+      router.push({ name: 'admin-organization-org-struct-edit', params: { tab: 'infor', id: dataResend.ids } })
+      break
     case 16:
-      console.log(value)
-      console.log(dataResend)
-
-      router.push({ name: 'admin-organization-org-struct-add', params: { parentId: dataResend.ids } })
+      isView.value = false
+      router.push({ name: 'admin-organization-org-struct-add-parent', params: { tab: 'infor', parentId: dataResend.ids } })
       break
 
     default:
@@ -78,18 +66,19 @@ const handleAction = (value: any, dataResend: any) => {
 onUpdated(() => {
   setTimeout(() => {
     isLoading.value = false
-  }, 1000)
+  }, 200)
 })
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1000)
+
+watch(render, val => {
+  isLoading.value = true
 })
+isView.value = true
 getListOrgStruct()
+render.value++
 </script>
 
 <template>
-  <SkTree v-if="isLoading" />
+  <SkTree v-show="isLoading" />
   <div
     v-show="!isLoading"
     class="page-containter-box"

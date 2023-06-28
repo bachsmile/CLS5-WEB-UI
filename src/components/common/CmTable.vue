@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
+import CmPagination from './CmPagination.vue'
 import Globals from '@/constant/Globals'
 import ArrayUtil from '@/utils/ArrayUtil'
 import MethodsUtil from '@/utils/MethodsUtil'
+import { tableStore } from '@/stores/table'
+
+import SkTable from '@/components/page/gereral/skeleton/SkTable.vue'
+import CmDropDown from '@/components/common/CmDropDown.vue'
+import CmSelect from '@/components/common/CmSelect.vue'
+import CpOrganizationSelect from '@/components/page/gereral/CpOrganizationSelect.vue'
+import CmDateTimePicker from '@/components/common/CmDateTimePicker.vue'
 
 const props = withDefaults(defineProps<Props>(), ({
   headers: () => ([]),
@@ -20,31 +28,32 @@ const props = withDefaults(defineProps<Props>(), ({
   pageSize: Globals.PAGINATION_PAGE_SIZE_DEFAULT,
   customId: 'id',
   totalRecord: 0,
-  minHeight: 100,
+  minHeight: 300,
   customKeyError: 'errors',
+  typePagination: 1,
+  disiablePagination: false,
+  isUpdateRowForce: false,
 }))
 const emit = defineEmits<Emit>()
-const SkTable = defineAsyncComponent(() => import('@/components/page/gereral/skeleton/SkTable.vue'))
-const isLoading = ref(true)
-const CmPagination = defineAsyncComponent(() => import('./CmPagination.vue'))
-const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
-const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
-const CpOrganizationSelect = defineAsyncComponent(() => import('@/components/page/gereral/CpOrganizationSelect.vue'))
-const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
+
+const isLoading = ref<boolean>(true)
+
 interface HeaderCustom extends Header {
   type?: string
   typeOrg?: number
   combobox?: any
   config?: any
   valueId?: any
+  isDate?: boolean
+  [e: string]: any
 }
-interface groupOptions {
+interface GroupOptions {
   allowEmptySelect?: boolean
   collapsable?: boolean
   enabled?: boolean
 }
 interface Props {
-  groupOptions?: groupOptions
+  groupOptions?: GroupOptions
   headers: HeaderCustom[]
   items?: Item[]
   rowClassName?: string
@@ -58,8 +67,11 @@ interface Props {
   minHeight?: number
   isActionFooter?: boolean
   pageNumber?: number
-  selected?: Item[]
+  selected?: Item[] | number[]
   customKeyError?: string
+  typePagination?: number
+  disiablePagination?: boolean
+  isUpdateRowForce?: boolean
 }
 interface Emit {
   (e: 'handleClickRow', dataRow: object, index: number): void
@@ -69,10 +81,12 @@ interface Emit {
   (e: 'changeCellvalue', value: string, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any): void
   (e: 'handlePageClick', page: number, size: number): void
   (e: 'update:pageNumber', page: number): void
-  (e: 'update:size', size: number): void
+  (e: 'update:pageSize', size: number): void
   (e: 'update:selected', data: Item): void
-
 }
+
+const storeTable = tableStore()
+const { handleActionTable } = storeTable
 
 // $ref dataTable
 const dataTable = ref()
@@ -92,33 +106,25 @@ const indeterminate = computed(() => {
 const keyid = computed(() => {
   return props?.isImportFile ? 'key' : props.customId
 })
-const checkActionShow = (action: Array<any>) => {
+function checkActionShow(action: Array<any>) {
   return action?.filter((item: any) => item.isShow === true)?.length > 0
 }
-watch(() => props.items, (val: Item[]) => {
-  isLoading.value = true
-  props.items.forEach((element, index) => {
-    element.originIndex = index
-    element.isSelected = !!element.isSelected
-    selectedRows.value = []
-    if (element.isSelected)
-      selectedRows.value.push([keyid.value])
-  })
-}, { immediate: true })
+
 const pageSize = ref(props.pageSize) // số lượng item trên 1 page
+const serverfile = window.SERVER_FILE || ''
 
 /** method */
 // cập nhật selectedRows
-// const updateSelectedRows = () => {
-//   selectedRows.value = []
-//   props.items?.forEach((item: any) => {
-//     if (item.isSelected)
-//       selectedRows.value.push(item[keyid.value])
-//   })
-// }
+function updateSelectedRows() {
+  selectedRows.value = []
+  props.items?.forEach((item: any) => {
+    if (item.isSelected)
+      selectedRows.value.push(item[keyid.value])
+  })
+}
 
 // click chọn tất cả hoặc bỏ tất cả
-const checkedAll = (value: any) => {
+function checkedAll(value: any) {
   if (!value) {
     props.items?.forEach(element => {
       if (!(element?.isDisabled && element?.isDisabled === true))
@@ -137,18 +143,17 @@ const checkedAll = (value: any) => {
   const data = props.returnObject ? props.items : selectedRows.value
   emit('update:selected', data)
   emit('checkedAll', !value, selectedRows)
-  emit('update:selected', selectedRows.value)
 }
 
 /** event */
 // sự kiện click vào hàng
-const showRow = (item: ClickRowArgument) => {
+function showRow(item: ClickRowArgument) {
   const index = props.items.findIndex((row: any) => row.key === item.key)
   emit('handleClickRow', item, index)
 }
 
 // sự kiện click chọn item
-const checkedItem = (index: number, value: boolean | undefined) => {
+function checkedItem(index: number, value: boolean | undefined) {
   // eslint-disable-next-line vue/no-mutating-props
   props.items[index].isSelected = !value
   const itemSelected = props.items.filter((x: Item) => x.isSelected === true)
@@ -160,20 +165,20 @@ const checkedItem = (index: number, value: boolean | undefined) => {
 }
 
 // Cập nhật table theo pagination
-const updatePage = (paginationNumber: number) => {
+function updatePage(paginationNumber: number) {
   dataTable.value?.updatePage(paginationNumber)
 }
 
 // Cập nhật số lượng item trên  table theo pagination
-const updateRowsPerPageSelect = (e: number) => {
+function updateRowsPerPageSelect(e: number) {
   dataTable.value?.updateRowsPerPageActiveOption(e)
 }
 
 // thay đổi số lượng item trên trang
-const pageSizeChange = (page: number, size: number) => {
+function pageSizeChange(page: number, size: number) {
   pageSize.value = size
   emit('update:pageNumber', page)
-  emit('update:size', size)
+  emit('update:pageSize', size)
   emit('handlePageClick', page, size)
 
   updateRowsPerPageSelect(size)
@@ -183,38 +188,61 @@ const pageSizeChange = (page: number, size: number) => {
 }
 
 // kiểm tra cột lỗi
-const isErrorcell = (field: string, data: any) => {
+function isErrorcell(field: string, data: any) {
   return data[props.customKeyError]?.filter((x: any) => x.location.toLowerCase() === field.toLowerCase()).length > 0
 }
 
 // thay đổi dữ liệu trên bảng
-const changeCellvalue = (event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) => {
+function changeCellvalue(event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) {
   emit('changeCellvalue', event, field, key, keyCustomValue, keyCustomIdValue)
 }
 defineExpose({
   checkedAll,
+  updateSelectedRows,
   selectedRows: selectedRows.value,
   items: props.items,
 })
 onUpdated(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1000)
-})
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false
-  }, 1000)
+  isLoading.value = false
+
+  nextTick(() => {
+    console.timeEnd('update')
+  })
 })
 
+onMounted(() => {
+  isLoading.value = false
+  nextTick(() => {
+    console.timeEnd('mout')
+  })
+})
+console.time('mout')
+console.time('update')
+
 // watch
-// watch(() => props.items, value => {
-//   updateSelectedRows()
-// }, { deep: true, immediate: true })
+if (props.isUpdateRowForce) {
+  watch(() => props.selected, value => {
+    updateSelectedRows()
+  }, { deep: true, immediate: true })
+}
+watch(() => props.items, (val: Item[]) => {
+  isLoading.value = true
+  selectedRows.value = []
+  console.time('mout')
+  console.time('update')
+
+  props.items?.forEach((element, index) => {
+    element.originIndex = index
+    element.isSelected = !!element.isSelected
+
+    if (element.isSelected)
+      selectedRows.value.push(element[keyid.value])
+  })
+}, { immediate: true })
 </script>
 
 <template>
-  <SkTable v-if="isLoading" />
+  <SkTable v-show="isLoading" />
   <div
     v-show="!isLoading"
     class="table-box"
@@ -222,14 +250,14 @@ onMounted(() => {
     <EasyDataTable
       ref="dataTable"
       alternating
-      table-class-name="customize-table"
+      :table-class-name="`customize-table ${isExpand ? 'table-expand' : ''}`"
       :headers="headers"
       :items="items"
       :rows-per-page="pageSize"
       theme-color="#1849a9"
       :table-min-height="minHeight"
       :item-key="keyid"
-      click-row-to-expand
+      :click-row-to-expand="isExpand"
       hide-footer
       :body-row-class-name="rowClassName"
       @click-row="showRow"
@@ -242,6 +270,7 @@ onMounted(() => {
         >
           <VCheckbox
             v-model="selectedAll"
+            color="primary"
             :indeterminate="indeterminate"
             :label="header.text"
             ripple
@@ -260,6 +289,18 @@ onMounted(() => {
           <slot name="tableSub" />
         </div>
       </template>
+      <template #empty-message>
+        <div class="d-flex justify-center">
+          <div>
+            <VImg
+              :width="300"
+              aspect-ratio="16/9"
+              cover
+              :src="`${serverfile}/badge/eventDefault.png`"
+            />
+          </div>
+        </div>
+      </template>
       <!--
         header => nội dung cột
         context  => nội dung hàng
@@ -273,6 +314,7 @@ onMounted(() => {
           name="rowItem"
           :col="itemsHeader.value"
           :context="context"
+          :data-col="itemsHeader"
         />
         <span
           v-if="itemsHeader.value === 'select' && context?.isSuccess === false"
@@ -316,13 +358,14 @@ onMounted(() => {
               class="px-2 "
             >
               <VIcon
-                v-if="actionItem?.icon"
-                :icon="actionItem?.icon"
-                :size="actionItem?.size || 18"
+                v-if="MethodsUtil.checkActionType(actionItem).icon"
+                :icon="MethodsUtil.checkActionType(actionItem).icon"
+                :size="18"
                 class="align-middle"
-                :class="actionItem?.color"
-                @click="actionItem?.action ? actionItem?.action(MethodsUtil.checlActionKey(actionItem, context)) : ''"
+                :class="MethodsUtil.checkActionType(actionItem)?.color"
+                @click="handleActionTable(MethodsUtil.checlActionKey(actionItem, context))"
               />
+
               <VTooltip
                 activator="parent"
                 location="top"
@@ -338,6 +381,7 @@ onMounted(() => {
               <CmDropDown
                 :list-item="ArrayUtil.sliceArray(context?.actions, Globals.MAX_ITEM_ACTION - 1)"
                 :data="context"
+                is-action
                 custom-key="name"
                 :type="1"
               />
@@ -405,8 +449,13 @@ onMounted(() => {
     >
       <slot name="action-footer" />
     </div>
-    <div class="customize-footer">
+
+    <div
+      v-if="!disiablePagination"
+      class="customize-footer"
+    >
       <CmPagination
+        :type="typePagination"
         :total-items="totalRecord || items.length"
         :current-page="props.pageNumber"
         @pageClick="pageSizeChange"
@@ -535,6 +584,23 @@ onMounted(() => {
 
   .vue3-easy-data-table__body tr{
     cursor: pointer;
+  }
+}
+.table-expand .vue3-easy-data-table__header th:nth-child(1){
+  padding: unset !important;
+}
+.cm-dialogs  .vue3-easy-data-table__main {
+    max-height: 400px !important
+ }
+ .vue3-easy-data-table__body {
+  tr td:last-child {
+    background: rgb(var(--v-theme-surface));
+    position: sticky !important;
+    right: 0 ;
+  }
+  tr th:last-child {
+    position: sticky;
+    right: 0;
   }
 }
 </style>

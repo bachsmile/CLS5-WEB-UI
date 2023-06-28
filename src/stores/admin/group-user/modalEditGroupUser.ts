@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import { useUserGroupStore } from './cpUser'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import ApiGroupUser from '@/api/group-user/index'
+import ApiGroupUser from '@/api/user'
 import type { Params } from '@/typescript/interface/params'
 import toast from '@/plugins/toast'
 
@@ -22,7 +22,7 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
   }
   const storeUserTab = useUserGroupStore()
 
-  const queryParams = reactive<QueryParamsModal>({
+  const queryParams = ref<QueryParamsModal>({
     keyword: '',
     roleId: null,
     titles: null,
@@ -50,8 +50,8 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
   const listUser = ref([])
   const totalRecord = ref(0)
   const fetchDataModal = async () => {
-    queryParams.excludeIds = listId.value
-    const { data } = await MethodsUtil.requestApiCustom(ApiGroupUser.ListUserAdd, TYPE_REQUEST.POST, queryParams)
+    queryParams.value.excludeIds = listId.value
+    const { data } = await MethodsUtil.requestApiCustom(ApiGroupUser.ListUserAdd, TYPE_REQUEST.POST, queryParams.value)
     listUser.value = data.pageLists
     totalRecord.value = data.totalRecord
   }
@@ -101,7 +101,7 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
     groupId: number
     listUser: any[]
   }
-  const dataUser = reactive<DataUser>({
+  const dataUser = ref<DataUser>({
     isCourse: false,
     isTraining: false,
     groupId: Number(route.params.id),
@@ -110,10 +110,10 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
 
   const handleAddUser = (list: number[]) => {
     list.forEach((element: number) => {
-      dataUser.listUser.push({ userId: element })
+      dataUser.value.listUser.push({ userId: element })
     })
     let status = false
-    MethodsUtil.requestApiCustom(ApiGroupUser.AddUserGroup, TYPE_REQUEST.POST, dataUser).then((res: any) => {
+    MethodsUtil.requestApiCustom(ApiGroupUser.AddUserGroup, TYPE_REQUEST.POST, dataUser.value).then((res: any) => {
       toast('SUCCESS', t('calendar.add-user-success'))
       storeUserTab.getListUser()
       status = false
@@ -123,8 +123,28 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
     })
     return status
   }
-
-  return { dataHeader, fetchDataModal, queryParams, listUser, totalRecord, dataUser, handleAddUser }
+  const $reset = () => {
+    dataUser.value = {
+      isCourse: false,
+      isTraining: false,
+      groupId: Number(route.params.id),
+      listUser: [],
+    }
+    queryParams.value = {
+      keyword: '',
+      roleId: null,
+      titles: null,
+      userRole: null,
+      excludeIds: storeUserTab.excludeIds,
+      categoryTitleId: null,
+      groupId: null,
+      organizationalStructureId: null,
+      pageNumber: 1,
+      pageSize: 10,
+      search: '',
+    }
+  }
+  return { dataHeader, fetchDataModal, queryParams, listUser, totalRecord, dataUser, handleAddUser, $reset }
 })
 
 // Course

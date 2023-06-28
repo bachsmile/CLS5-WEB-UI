@@ -100,7 +100,7 @@ watch(() => props.config, value => {
 }, { immediate: true })
 
 /** Method */
-const dowloadSampleFile = async () => {
+async function dowloadSampleFile() {
   MethodsUtil.dowloadSampleFile(
     props.config?.dowloadSample?.urlFileDefault || '',
     props.config?.dowloadSample?.method || 'GET',
@@ -110,10 +110,8 @@ const dowloadSampleFile = async () => {
 }
 
 // thay đổi dữ liệu trên bảng
-const changeCellvalue = (event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) => {
+function changeCellvalue(event: any, field: string, key: number, keyCustomValue?: any, keyCustomIdValue?: any) {
   if (field === 'organizational') {
-    console.log(keyCustomValue, keyCustomIdValue)
-
     paramsImport.invalidData[key][keyCustomIdValue] = event
     const org: any = organizationsCombobox.value.find((item: any) => item.id === event)
     paramsImport.invalidData[key][keyCustomValue] = org?.name
@@ -122,11 +120,11 @@ const changeCellvalue = (event: any, field: string, key: number, keyCustomValue?
   else { paramsImport.invalidData[key][field] = event as never }
 }
 
-const handleEditTable = () => {
+function handleEditTable() {
   isEditing.value = !isEditing.value
 }
 
-const updateFromFileHandle = async () => {
+async function updateFromFileHandle() {
   const back = await updateFromFile()
   if (back === 'back' && props?.config?.routerBack) {
     store.$dispose()
@@ -141,11 +139,11 @@ const isShowTemplateImport = computed(() => {
   return paramsImport.validData.length || paramsImport.invalidData.length
 })
 
-const uploadFile = (val: string | number | undefined) => {
+function uploadFile(val: string | number | undefined) {
   type.value = val
   inputFile.value.click()
 }
-const filterUpdate = (event: any) => {
+function filterUpdate(event: any) {
   emit('filter', event)
 }
 
@@ -274,7 +272,13 @@ onBeforeUnmount(() => {
   >
   <div class="cp-import-file-action-footer mt-3">
     <div class="cp-import-file-btn-footer ">
-      <CmButton @click="() => { router.push({ name: props.config.routerBack }) }">
+      <CmButton
+        variant="outlined"
+        bg-color="bg-white"
+        color="dark"
+        text-color="color-dark"
+        @click="() => { router.push({ name: props.config.routerBack }) }"
+      >
         {{ titleButtonCancel }}
       </CmButton>
     </div>

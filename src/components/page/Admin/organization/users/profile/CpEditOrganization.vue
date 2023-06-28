@@ -27,7 +27,7 @@ const config = reactive({
 })
 const nodes = ref({})
 const render = ref(0)
-const getListOrgStruct = async () => {
+async function getListOrgStruct() {
   const params = {
     role: StringJwt.getRole(),
   }
@@ -51,7 +51,7 @@ const getListOrgStruct = async () => {
     render.value++
   })
 }
-const updateValueOrg = (value: any) => {
+function updateValueOrg(value: any) {
   values.value.listOrganizationalStructureId = value
 }
 getListOrgStruct()

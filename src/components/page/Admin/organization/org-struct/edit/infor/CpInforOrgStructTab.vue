@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { validatorStore } from '@/stores/validatator'
-import { comboboxStore } from '@/stores/combobox'
-import { orgStructManagerStore } from '@/stores/admin/org-struct/OrgStruct'
+import { orgStructManagerStore } from '@/stores/admin/org-struct/orgStruct'
+
+const props = withDefaults(defineProps<Props>(), ({}))
 
 /**
  * component
@@ -17,17 +18,24 @@ const SkUser = defineAsyncComponent(() => import('@/components/page/gereral/skel
  * lib
  */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
+const route = useRoute()
+const router = useRouter()
+
+interface Props {
+  emit?: any
+}
+const { emitEvent } = props.emit()
+
 /**
  * store
  */
 const storeValidate = validatorStore()
 const { schemaOption, Field, Form, useForm, yup } = storeValidate
 const { submitForm } = useForm()
-const storeCombobox = comboboxStore()
-const { ownerCombobox } = storeToRefs(storeCombobox)
-const { getComboboxOwner } = storeCombobox
+
 const storeOrgStruct = orgStructManagerStore()
-const { organization, myFormAddInforOrg, vSelectOwner } = storeToRefs(storeOrgStruct)
+const { organization, myFormAddInforOrg, vSelectOwner, isEdit, isView } = storeToRefs(storeOrgStruct)
+const { getComboboxOwnerInf, resetForm, backOrg, handleSaveOrg, handleSaveUpdateOrg } = storeOrgStruct
 
 /**
  * validate
@@ -45,60 +53,29 @@ const LABEL = Object.freeze({
 })
 
 const isShowButton = ref(true)
+const excludeId = ref()
 
 /**
  * method
  */
-const changeOrg = async () => {
+async function changeOrg() {
 //
 }
-const backOrg = () => {
+
+function handleOrg() {
   //
 }
-const handleOrg = () => {
-  //
-}
-const getComboboxOwnerInf = async (loadMore?: any) => {
-  // loadMore dùng khi infinity scroll
-  await getComboboxOwner(vSelectOwner.value).then((value: any) => {
-    console.log(ownerCombobox.value)
-    console.log(vSelectOwner.value)
-    if (ownerCombobox.value.data?.length) {
-      vSelectOwner.value.totalRecord = ownerCombobox.value.totalRecord
-      if (loadMore)
-        vSelectOwner.value.listCombobox = vSelectOwner.value.listCombobox.concat(ownerCombobox.value.data)
 
-      else
-        vSelectOwner.value.listCombobox = ownerCombobox.value?.data
-
-      if (vSelectOwner.value.itemSelected?.id && !loadMore) {
-        const indexOwner = vSelectOwner.value.listCombobox.findIndex((item: any) => item?.id === vSelectOwner.value.itemSelected.id)
-        if (indexOwner === -1) {
-          vSelectOwner.value.listCombobox.splice(0, 0, vSelectOwner.value?.itemSelected)
-          vSelectOwner.value.excludeList = [vSelectOwner.value?.itemSelected.id]
-        }
-      }
-    }
-
-    else {
-      vSelectOwner.value.listCombobox = []
-      vSelectOwner.value.totalRecord = 0
-    }
-  })
-}
-const isIntersecting = () => {
+function isIntersecting() {
   vSelectOwner.value.pageNumber += 1
   getComboboxOwnerInf(true)
 }
-const handleSaveOrg = async () => {
-  console.log(myFormAddInforOrg)
 
-  myFormAddInforOrg.value.validate().then(async (success: any) => {
-    if (success.valid)
-      console.log(organization.value.id === organization.value.parentId)
-  })
-}
-getComboboxOwnerInf()
+if (route.params.id)
+  excludeId.value = Number(route.params.id)
+onUnmounted(() => {
+  resetForm()
+})
 </script>
 
 <template>
@@ -128,6 +105,7 @@ getComboboxOwnerInf()
                 :errors="errors"
                 :text="LABEL.TITLE"
                 :placeholder="LABEL.TITLE"
+                :disabled="isView"
               />
             </Field>
           </VCol>
@@ -139,6 +117,7 @@ getComboboxOwnerInf()
               v-model="organization.code"
               :text="LABEL.TITLE1"
               :placeholder="LABEL.TITLE1"
+              :disabled="isView"
             />
           </VCol>
           <VCol
@@ -150,6 +129,8 @@ getComboboxOwnerInf()
                 v-model="organization.parentId"
                 :text="LABEL.TITLE2"
                 :placeholder="LABEL.TITLE2"
+                :exclude-id="excludeId"
+                :disabled="isView"
                 @update:modelValue="changeOrg"
               />
             </Field>
@@ -168,6 +149,7 @@ getComboboxOwnerInf()
               item-value="id"
               custom-key="name"
               :append-to-body="false"
+              :disabled="isView"
               @isIntersecting="isIntersecting"
             >
               <template #infinityItem>
@@ -181,6 +163,7 @@ getComboboxOwnerInf()
         <CmTextArea
           v-model:model-value="organization.description"
           :text="t('description')"
+          :disabled="isView"
         />
       </VSheet>
 
@@ -189,13 +172,14 @@ getComboboxOwnerInf()
         class="user-infor no-background py-5"
       >
         <CpActionFooterEdit
-          :is-save="isShowButton"
-          is-save-and-update
+          :is-save="!isView"
+          :is-save-and-update="!isView"
           :title-cancel="t('come-back')"
           :title-save="t('save')"
           :title-save-and-update="t('save-and-update')"
           @onCancel="backOrg"
           @onSave="handleSaveOrg"
+          @onSaveUpdate="handleSaveUpdateOrg"
         />
       </div>
     </Form>
@@ -205,4 +189,3 @@ getComboboxOwnerInf()
 <style scoped lang="scss">
 @use "/src/styles/style-global" as *;
 </style>
-

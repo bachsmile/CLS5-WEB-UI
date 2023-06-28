@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import CmSelectTree from '@/components/common/CmSelectTree.vue'
-import ArrayUtil from '@/utils/ArrayUtil'
-import { comboboxStore } from '@/stores/combobox'
+import CmSelectTree from '@/components/common/CmSelectTree.vue';
+import { comboboxStore } from '@/stores/combobox';
+import ArrayUtil from '@/utils/ArrayUtil';
 
 interface Props {/** ** Interface */
   modelValue?: any
   orgStructs?: Array<any>
   valueFormat?: 'id' | 'node' | undefined
-  excludeId?: number
+  excludeId?: any
   maxItem?: number
   typeOrg?: number
   maxHeight?: number
   customKey?: string
   multiple?: boolean
+  disabled?: boolean
   parentId?: number
   appendToBody?: boolean
   closeOnSelect?: boolean
@@ -29,6 +30,7 @@ interface Emit {
 const props = withDefaults(defineProps<Props>(), ({
   multiple: false,
   closeOnSelect: false,
+  disabled: false,
   error: false,
   customKey: 'id',
   label: undefined,
@@ -49,20 +51,28 @@ const organizationsValue = ref<any>(props.modelValue)
 
 const options = ref()
 
-const getAllOrgStruct = async () => {
+async function getAllOrgStruct() {
   if (!window._.isEmpty(organizationsCombobox.value)) {
     const data = window._.cloneDeep(organizationsCombobox.value)
-    if (props.excludeId) {
-      const positionExclude = data.findIndex((item: any) => item[props.customKey] === props.excludeId)
 
-      organizationsCombobox.value = window._.pullAt(data, positionExclude)
+    if (props.excludeId && typeof props.excludeId === 'number') {
+      const positionExclude = data.findIndex((item: any) => item[props.customKey] === props.excludeId)
+      window._.pullAt(data, positionExclude)
+      organizationsCombobox.value = data
+    }
+    else {
+      props.excludeId?.forEach((item: any) => {
+        const positionExclude = data.findIndex((itemArr: any) => itemArr[props.customKey] === item)
+        window._.pullAt(data, positionExclude)
+        organizationsCombobox.value = data
+      })
     }
 
     options.value = ArrayUtil.formatSelectTree(organizationsCombobox.value, 'parentId', props.customKey)
   }
 }
 
-const handleChangeSelect = (data: any) => {
+function handleChangeSelect(data: any) {
   emit('update:modelValue', data)
 }
 
@@ -93,9 +103,9 @@ onMounted(async () => {
       :value-format="valueFormat"
       :close-on-select="multiple ? false : true"
       :multiple="multiple"
+      :disabled="disabled"
       :normalizer-custom-type="[props.customKey, 'name', 'children']"
       @update:model-value="handleChangeSelect"
     />
   </div>
 </template>
-

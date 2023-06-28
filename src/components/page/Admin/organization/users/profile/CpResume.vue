@@ -3,7 +3,6 @@ import { formatDateYears } from '@/utils/FilterUtil'
 import { ActionType } from '@/constant/data/actionType.json'
 import { validatorStore } from '@/stores/validatator'
 import { profileUserManagerStore } from '@/stores/admin/users/profile/profile'
-import CmTextArea from '@/components/common/CmTextArea.vue'
 
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
 const CpModalEducation = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/modal/CpModalEducation.vue'))
@@ -11,7 +10,7 @@ const CpModalExperence = defineAsyncComponent(() => import('@/components/page/Ad
 const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
 const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
-const CpAddressEdit = defineAsyncComponent(() => import('@/components/page/gereral/CpAddressEdit.vue'))
+const CpAddressEdit = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/CpAddressEdit.vue'))
 const CpJobInformation = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/profile/CpJobInformation.vue'))
 
 // store
@@ -75,17 +74,17 @@ const KEY = Object.freeze({
 
 // Giáo duc
 // fetch data modal education
-const fetchModalEducation = () => {
+function fetchModalEducation() {
   data.educationData.isEdit = false
   modal.isShowModalEducation = true
 }
 
-const removeEducation = (index: any) => {
+function removeEducation(index: any) {
   valuesComponent.value?.listEducationUser.splice(index, 1)
 }
 
 // reset education modal
-const resetEducationModal = () => {
+function resetEducationModal() {
   data.educationData.degreeId = null
   data.educationData.description = null
   data.educationData.graduationYear = null
@@ -93,7 +92,7 @@ const resetEducationModal = () => {
   data.educationData.isEdit = false
 }
 
-const updateEducation = (dataEdit: any, index: any) => {
+function updateEducation(dataEdit: any, index: any) {
   data.educationData.degreeId = dataEdit.degreeId
   data.educationData.description = dataEdit.description
   data.educationData.graduationYear = dataEdit.graduationYear
@@ -103,18 +102,18 @@ const updateEducation = (dataEdit: any, index: any) => {
 }
 
 // Kinh nghiệm
-const addExperiences = () => {
+function addExperiences() {
   data.experienceData.isEdit = false
   modal.isShowModalExperence = true
 }
 
 // delete experience item
-const removeExperience = (index: any) => {
+function removeExperience(index: any) {
   valuesComponent.value.listExperienceUser.splice(index, 1)
 }
 
 // reset education modal
-const resetExperenceModal = () => {
+function resetExperenceModal() {
   data.experienceData.dateStart = null
   data.experienceData.dateFinish = null
   data.experienceData.description = null
@@ -123,7 +122,7 @@ const resetExperenceModal = () => {
   data.experienceData.companyName = null
 }
 
-const updateExperences = (dataEdit: any, index: any) => {
+function updateExperences(dataEdit: any, index: any) {
   data.experienceData.companyName = dataEdit.companyName
   data.experienceData.dateFinish = dataEdit.dateFinish
   data.experienceData.dateStart = dataEdit.dateStart
@@ -137,7 +136,7 @@ const updateExperences = (dataEdit: any, index: any) => {
 /**
  * modal
  */
-const actionItemEdit = (dataAction: any, index: any, dataResend?: any) => {
+function actionItemEdit(dataAction: any, index: any, dataResend?: any) {
   switch (dataResend) {
     case 'EDUCATION':
       updateEducation(dataAction[1], index)
@@ -153,7 +152,7 @@ const actionItemEdit = (dataAction: any, index: any, dataResend?: any) => {
   }
 }
 
-const actionItemDelete = (dataAction: any, index: any, dataResend?: any) => {
+function actionItemDelete(dataAction: any, index: any, dataResend?: any) {
   switch (dataResend) {
     case 'EDUCATION':
       removeEducation(index)
@@ -183,7 +182,7 @@ const action = [
 ]
 
 // cập nhật trạng thái dialog
-const updateDialogVisible = (event: any, type?: any) => {
+function updateDialogVisible(event: any, type?: any) {
   switch (type) {
     case 'EDUCATION':
       modal.isShowModalEducation = event
@@ -203,8 +202,10 @@ const updateDialogVisible = (event: any, type?: any) => {
  *
  * update profile
  */
-const handleUpdataProfile = (education: any, edit: boolean) => {
-  if (edit) { valuesComponent.value.listEducationUser[education?.index] = education }
+function handleUpdataProfile(education: any, edit: boolean) {
+  if (edit) {
+    valuesComponent.value.listEducationUser[education?.index] = education
+  }
   else {
     if (!valuesComponent.value?.listEducationUser || valuesComponent.value?.listEducationUser === null)
       valuesComponent.value.listEducationUser = []
@@ -213,8 +214,10 @@ const handleUpdataProfile = (education: any, edit: boolean) => {
   updateDialogVisible(false, 'EDUCATION')
 }
 
-const handleUpdateExperences = (experences: any, edit: boolean) => {
-  if (edit) { valuesComponent.value.listExperienceUser[experences?.index] = experences }
+function handleUpdateExperences(experences: any, edit: boolean) {
+  if (edit) {
+    valuesComponent.value.listExperienceUser[experences?.index] = experences
+  }
   else {
     if (!valuesComponent.value.listExperienceUser || valuesComponent.value.listExperienceUser === null)
       valuesComponent.value.listExperienceUser = []
@@ -228,7 +231,6 @@ const handleUpdateExperences = (experences: any, edit: boolean) => {
 
 <template>
   <Form
-    ref="formUserInfor"
     class="my-5"
   >
     <VSheet
@@ -429,9 +431,7 @@ const handleUpdateExperences = (experences: any, edit: boolean) => {
               <div class="mb-3">
                 <label class="text-label-default ">{{ t("address") }}</label>
               </div>
-              <CpAddressEdit
-                ref="address"
-              />
+              <CpAddressEdit />
             </VCol>
           </VRow>
         </VCol>
@@ -460,4 +460,3 @@ const handleUpdateExperences = (experences: any, edit: boolean) => {
   color: $color-gray-500
 }
 </style>
-

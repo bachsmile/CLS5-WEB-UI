@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<Props>(), ({
 }))
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const serverfile = window.SERVER_FILE || ''
-const urlImageFile = (src: any) => {
+function urlImageFile(src: any) {
   if (src)
     return src.startsWith('http') ? src : serverfile + src
 
@@ -47,6 +47,7 @@ const linkAvatar = computed(() => {
       v-if="isShowAvatar"
       :src="linkAvatar"
       class="mr-2"
+      is-avatar
       :data="context"
     >
       {{ StringUtil.formatFullName(context[labelFirst], context[labelLast]) }}
@@ -68,4 +69,3 @@ const linkAvatar = computed(() => {
     </div>
   </div>
 </template>
-

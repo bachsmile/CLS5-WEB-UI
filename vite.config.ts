@@ -1,5 +1,5 @@
-import fs from 'fs'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'

@@ -158,7 +158,7 @@ const handleNavScroll = (evt: Event) => {
   inset-inline-start: 0;
   transition: transform 0.25s ease-in-out, inline-size 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
   will-change: transform, inline-size;
-
+  border-radius: 0 24px 0 0;
   .nav-header {
     display: flex;
     align-items: center;

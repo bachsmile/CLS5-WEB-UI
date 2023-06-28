@@ -2,6 +2,7 @@
 @use "@configured-variables" as variables;
 
 .skin--default {
+  position: relative;
   .layout-nav-type-vertical .layout-vertical-nav {
     @include elevation.elevation(2);
   }

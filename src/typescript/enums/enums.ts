@@ -10,6 +10,7 @@ export enum TYPE_REQUEST {
   PUT = 'PUT',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+  PATCH = 'PATCH',
 }
 export const size = ['x-small', 'small', 'default', 'large', 'x-large'] as const
 export const sizeDialog = ['sm', 'lg', 'xl'] as const

@@ -18,5 +18,5 @@ $border-radius-2xl: 56px;
 $border-radius-3xl: 64px;
 
 //**** style input border****/
-$border-input: $border-xs solid $color-gray-300;
+$border-input: $border-xs solid rgba(var(--v-border-color));
 $border-radius-input: $border-radius-xs;

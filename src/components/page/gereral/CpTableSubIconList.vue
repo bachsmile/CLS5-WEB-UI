@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
-import CmAccodion from '@/components/common/CmAccodion.vue'
+import type { Header, Item } from 'vue3-easy-data-table'
 
 const props = withDefaults(defineProps<Props>(), ({
   headers: () => ([]),

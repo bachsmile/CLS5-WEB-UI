@@ -55,7 +55,7 @@ const dataOrg = reactive({
 
 const isChangeRef = toRef(dataOrg, 'isChange')
 
-const addOrg = () => {
+function addOrg() {
   dataOrg.isChange = true
   items.value.push({
     key: items.value.length,
@@ -67,13 +67,13 @@ const addOrg = () => {
   })
 }
 
-const getTitleByOrg = async (orStructureId: any) => {
+async function getTitleByOrg(orStructureId: any) {
   const params = {
     orStructureId,
   }
 
   return await MethodsUtil.requestApiCustom(ApiUser.GetListTitle, TYPE_REQUEST.POST, params)
-    .then(value => {
+    .then((value: any) => {
       if (value?.data?.pageLists?.length > 0) {
         value.data.pageLists = value.data.pageLists.map((x: any, idItem: any) => ({ value: x.id, text: x.name, orgId: x.organizationalStructureId }))
 
@@ -84,11 +84,11 @@ const getTitleByOrg = async (orStructureId: any) => {
     })
 }
 
-const findIndex = (index: any, data: any) => {
+function findIndex(index: any, data: any) {
   return data.findIndex((row: any) => row.key === index)
 }
 
-const changeOrg = async (index: any, val: any) => {
+async function changeOrg(index: any, val: any) {
   // dataOrg.isChange = true
   isChangeRef.value = true
 
@@ -109,7 +109,7 @@ const changeOrg = async (index: any, val: any) => {
   emit('updateListOrg', items.value)
 }
 
-const updateTitle = async (userId: any) => {
+async function updateTitle(userId: any) {
   const listTitle = items.value.map((item: any) => ({ orgStructId: item.id, titleId: item.titleId }))
   const errItem = listTitle.find((x: any) => !x.orgStructId)
   if (errItem) {
@@ -128,7 +128,7 @@ const updateTitle = async (userId: any) => {
   await MethodsUtil.requestApiCustom(ApiUser.UpdateTitleUser, TYPE_REQUEST.POST, params)
 }
 
-const changeTitle = (index: any, val: any) => {
+function changeTitle(index: any, val: any) {
   const indexItem = findIndex(index, items.value)
 
   // dataOrg.isChange = true
@@ -140,7 +140,7 @@ const changeTitle = (index: any, val: any) => {
   items.value.splice(indexItem, 1, changedValue)
 }
 
-const deleteItem = (index: any) => {
+function deleteItem(index: any) {
   const indexItem = findIndex(index, items.value)
 
   items.value.splice(indexItem, 1)
@@ -149,7 +149,7 @@ const deleteItem = (index: any) => {
   isChangeRef.value = true
 }
 
-const getListOrgStructTitleUser = async () => {
+async function getListOrgStructTitleUser() {
   const params = {
     userId: Number(props?.userId),
   }
@@ -167,7 +167,7 @@ const getListOrgStructTitleUser = async () => {
   })
 }
 
-const checkGetListOrgStruct = async () => {
+async function checkGetListOrgStruct() {
   if (route.name === 'admin-organization-users-profile-add') {
     items.value = []
 
@@ -282,4 +282,3 @@ defineExpose({
 <style lang="scss" scoped>
 @use "/src/styles/style-global" as *;
 </style>
-

@@ -49,20 +49,20 @@ $header: ".layout-navbar";
   */
 
   .v-theme--light {
-    --skin-theme-background:
-      #{utils.map-deep-get(
-        variables.$css-vars,
-        "bordered",
-        "--v-theme-background",
-        "light"
-      )};
-    --skin-theme-surface:
-      #{utils.map-deep-get(
-        variables.$css-vars,
-        "bordered",
-        "--v-theme-surface",
-        "light"
-      )};
+    // --skin-theme-background:
+    //   #{utils.map-deep-get(
+    //     variables.$css-vars,
+    //     "bordered",
+    //     "--v-theme-background",
+    //     "light"
+    //   )};
+    // --skin-theme-surface:
+    //   #{utils.map-deep-get(
+    //     variables.$css-vars,
+    //     "bordered",
+    //     "--v-theme-surface",
+    //     "light"
+    //   )};
   }
 
   .v-theme--dark {

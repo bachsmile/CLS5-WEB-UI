@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { useRoute } from 'vue-router'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import ApiGroupUser from '@/api/group-user/index'
+import ApiGroupUser from '@/api/user'
 import type { Params } from '@/typescript/interface/params'
 import toast from '@/plugins/toast'
 
@@ -65,6 +65,14 @@ export const useUserGroupStore = defineStore('useUserGroupStore', () => {
       status = true
     })
     return status
+  }
+
+  const $reset = () => {
+    listUserInGroup.value = []
+    queryParams.groupId = 0
+    queryParams.search = ''
+    queryParams.pageNumber = 1
+    queryParams.pageSize = 10
   }
 
   return { queryParams, listUserInGroup, totalRecord, getListUser, moveUser, deleteItem, excludeIds }

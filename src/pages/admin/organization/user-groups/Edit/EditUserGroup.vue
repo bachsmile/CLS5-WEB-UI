@@ -21,9 +21,9 @@ const listtab = ref([
       TITLE: {
         titlePageAdd: t('add-user-group'),
         titlePageEdit: t('edit-user-group'),
-        titleButton: t('common.save'),
-        titleCancel: t('common.cancel'),
-        titleButtonAndUpdate: t('common.save-and-update'),
+        titleButton: t('save'),
+        titleCancel: t('cancel'),
+        titleButtonAndUpdate: t('save-and-update'),
       },
     },
     isDisabled: false,

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import * as yup from 'yup'
-import { Field, Form, useField, useForm } from 'vee-validate'
+import { Field, FieldArray, Form, useField, useForm } from 'vee-validate'
 import RegExps from '@/constant/RegExps'
 
 export const validatorStore = defineStore('validator', () => {
@@ -20,6 +20,26 @@ export const validatorStore = defineStore('validator', () => {
     DEFAULT_NUMBER: {
       MAX_VALUE: 10000,
       MIN_VALUE: 0,
+    },
+    DEFAULT_NUMBER_PRICE: {
+      MAX_VALUE: 1000000000000,
+      MIN_VALUE: 0,
+    },
+    DEFAULT_NUMBER_100: {
+      MAX_VALUE: 100,
+      MIN_VALUE: 0,
+    },
+    DEFAULT_NUMBER_RATIO: {
+      MAX_VALUE: 100,
+      MIN_VALUE: 0,
+    },
+    DEFAULT_SELECT_SINGLE: {
+      FIELD: t(''),
+      MIN: 0,
+    },
+    DEFAULT_SELECT_LIST: {
+      FIELD: t('user-role'),
+      MIN: 0,
     },
     CODE: {
       FIELD: t('common.code'),
@@ -73,15 +93,20 @@ export const validatorStore = defineStore('validator', () => {
   const ruleMessage = reactive({
     required: (field?: any) => `Vui lòng nhập dữ liệu ${field || ''}`,
     min: (min: any, field?: any) => `${field || TEXT.FIELD} phải chứa ít nhất ${min} ký tự`,
+    minValue: (min: any, field?: any) => `${field || TEXT.FIELD} không được nhỏ hơn ${min}`,
     max: (max: any, field?: any) => `${field || TEXT.FIELD} chỉ chứa tối đa ${max} ký tự`,
+    maxValue: (max: any, field?: any) => `${field || TEXT.FIELD} không được lớn hơn ${max}`,
     password: (field?: any) => `${field || TEXT.FIELD} phải chứa ít nhất một chữ cái viết thường, một chữ in hoa, một số và một ký tự đặc biệt`,
     typeNumber: 'Vui lòng nhập một số.',
     typeString: 'Vui lòng nhập chuỗi.',
     typeArray: 'Vui lòng lựa chọn.',
     typeOption: 'Vui lòng lựa chọn.',
     positive: 'Vui lòng nhập số dương.',
+    numberMin: 'Vui lòng nhập số lớn hơn 0.',
     email: 'Định dạng email không hợp lệ.',
+    file: 'Vui lòng chọn tệp đính kèm',
     url: 'Định dạng url không hợp lệ.',
+    username: 'Tên đăng nhập không hợp lệ, cho phép tiếng việt không dấu và các ký tự đặc biệt -_.@ không liên tiếp',
     requiredOption: (field?: any) => `${field || ''} phải chứa ít nhất một lựa chọn`,
   })
 
@@ -105,8 +130,24 @@ export const validatorStore = defineStore('validator', () => {
   const schemaOption = reactive({
     defaultField: yup.string().max(CONFIG.DEFAULT_FIELD.MAX, ruleMessage.max(CONFIG.DEFAULT_FIELD.MAX)),
     defaultString: yup.string().required(ruleMessage.required()).max(CONFIG.DEFAULT_STRING.MAX, ruleMessage.max(CONFIG.DEFAULT_STRING.MAX)),
-    defaultNumber: yup.number().typeError(ruleMessage.typeNumber).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.max(CONFIG.DEFAULT_NUMBER.MAX_VALUE)).positive(ruleMessage.positive),
-
+    defaultFile: yup.string().required(ruleMessage.file),
+    defaultStringArea: yup.string().required(ruleMessage.required()).max(CONFIG.DEFAULT_ARIA.MAX, ruleMessage.max(CONFIG.DEFAULT_ARIA.MAX)),
+    defaultNumber: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.max(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
+    defaultNumberPrice: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_PRICE.MAX_VALUE, ruleMessage.max(CONFIG.DEFAULT_NUMBER_PRICE.MAX_VALUE)),
+    defaultSelectSingle: yup.number().typeError(ruleMessage.typeOption).required(ruleMessage.required()),
+    defaultSelectList: yup.array().of(yup.number()).min(1, ruleMessage.typeArray).required(ruleMessage.required()),
+    defaultSelectObject: yup.object().required(ruleMessage.required()),
+    defaultNumberRatio: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE)).min(CONFIG.DEFAULT_NUMBER_RATIO.MIN_VALUE, ruleMessage.minValue(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE)),
+    defaultNumberYub: yup.number(),
+    defaultNumberNoReqPosNoNull: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
+    defaultNumberNoReqPosNoNullNot0: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => value > 0).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
+    defaultNumber100Yub: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
+    defaultNumber100YubNoRequire: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
+    defaultNumber100Not0YubNoRequire: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => value > 0 || value === null).nullable().max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
+    defaultNumberNot0: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => value > 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.max(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
+    defaultNumberTime: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => {
+      return Number(value) >= 0
+    }).max(59, ruleMessage.maxValue(59)),
     requiredString: (field?: any) => yup.string().required(ruleMessage.required(field)).max(CONFIG.DEFAULT_STRING.MAX, ruleMessage.max(CONFIG.DEFAULT_STRING.MAX)),
     code: yup.string().max(CONFIG.CODE.MAX, ruleMessage.max(CONFIG.CODE.MAX)).nullable(),
     require: yup.string().required(ruleMessage.required()),
@@ -118,7 +159,8 @@ export const validatorStore = defineStore('validator', () => {
       .max(CONFIG.EMAIL.MAX, ruleMessage.max(CONFIG.EMAIL.MAX, CONFIG.EMAIL.FIELD)),
     userName: yup.string().required(ruleMessage.required())
       .max(CONFIG.USERNAME.MAX, ruleMessage.max(CONFIG.USERNAME.MAX, CONFIG.USERNAME.FIELD))
-      .min(CONFIG.USERNAME.MIN, ruleMessage.min(CONFIG.USERNAME.MIN, CONFIG.USERNAME.FIELD)),
+      .min(CONFIG.USERNAME.MIN, ruleMessage.min(CONFIG.USERNAME.MIN, CONFIG.USERNAME.FIELD))
+      .matches(RegExps.username, ruleMessage.username),
     password: getRulePassword(),
     userCode: yup.string().required(ruleMessage.required())
       .max(CONFIG.USER_CODE.MAX, ruleMessage.max(CONFIG.USER_CODE.MAX, CONFIG.USER_CODE.FIELD)),
@@ -132,5 +174,5 @@ export const validatorStore = defineStore('validator', () => {
     linkUrl: yup.string().required(ruleMessage.required()).max(CONFIG.DEFAULT_STRING.MAX, ruleMessage.max(CONFIG.DEFAULT_STRING.MAX)).matches(RegExps.urlApiUser, ruleMessage.url),
   })
 
-  return { schemaOption, ruleMessage, Field, Form, useField, useForm, yup }
+  return { schemaOption, ruleMessage, Field, FieldArray, Form, useField, useForm, yup }
 })

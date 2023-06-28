@@ -57,12 +57,12 @@ injectSkinClasses()
 
     <!-- 👉 Pages -->
     <RouterView v-slot="{ Component }">
-      <CmBreadcrumb />
       <Transition
         :name="appRouteTransition"
         mode="out-in"
       >
         <div>
+          <CmBreadcrumb />
           <Component :is="Component" />
         </div>
       </Transition>

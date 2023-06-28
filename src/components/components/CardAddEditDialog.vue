@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import constant from '@/constant/constant'
+
 interface Details {
   number: string
   name: string
@@ -36,11 +38,11 @@ watch(props, () => {
   cardDetails.value = structuredClone(toRaw(props.cardDetails))
 })
 
-const formSubmit = () => {
+function formSubmit() {
   emit('submit', cardDetails.value)
 }
 
-const dialogModelValueUpdate = (val: boolean) => {
+function dialogModelValueUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 </script>
@@ -74,6 +76,8 @@ const dialogModelValueUpdate = (val: boolean) => {
                 v-model="cardDetails.number"
                 label="Card Number"
                 type="number"
+                :min="constant.MIN_NUMBER"
+                :max="constant.MAX_NUMBER"
               />
             </VCol>
 

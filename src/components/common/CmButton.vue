@@ -20,7 +20,7 @@ interface Props {
   block?: boolean
   color?: string
   bgColor?: string
-  rounded?: string
+  rounded?: string | number | boolean
   icon?: string
   variant?: typeof typeVariant[number]
   size?: string
@@ -40,10 +40,11 @@ const props = withDefaults(defineProps<Props>(), ({
   textColor: '',
   bgColor: '',
   className: '',
-  variant: 'tonal',
+  variant: 'flat',
   positionIcon: '',
-  size: 'sm',
+  size: 'default',
   sizeIcon: 14,
+  rounded: 'lg',
 }))
 
 const emit = defineEmits<Emit>()
@@ -68,11 +69,11 @@ onBeforeUnmount(() => {
   }
 })
 
-const unLoadButton = () => {
+function unLoadButton() {
   unLoadComponent(indexLoad.value)
 }
 
-const handleClick = () => {
+function handleClick() {
   if (props.isLoad)
     loadComponent(indexLoad.value)
 
@@ -83,17 +84,9 @@ const isDisabled = computed(() => {
   return props.disabled
 })
 
-const prefixColor = computed(() => {
-  if (props.variant === 'outlined' || props.variant === 'text')
-    return 'color-bd'
-
-  return 'btn'
-})
-
-const textButton = computed(() => {
-  if (props.variant === 'text')
-    return 'text-button'
-
+const outlined = computed(() => {
+  if (props.variant === 'outlined')
+    return `outlined-${props.color}`
   return ''
 })
 
@@ -105,16 +98,21 @@ defineExpose({
 <template>
   <VBtn
     :loading="props.isLoad ? components[indexLoad] : false"
-    :variant="props.variant"
     :block="block"
     :disabled="isDisabled"
     :size="size"
+    :variant="variant"
+    :color="color"
     :rounded="rounded"
     class="text-style-btn"
-    :class="[`${prefixColor}-${color}`, bgColor, className, textButton]"
+    :class="[color, outlined, className, color === 'white' ? 'border-button' : '']"
     @click="handleClick"
   >
-    <template #prepend>
+    <!-- :class="[`${prefixColor}-${color}`, bgColor, className]" -->
+    <template
+      v-if="$slots.prepend"
+      #prepend
+    >
       <slot name="prepend" />
     </template>
 
@@ -140,30 +138,51 @@ defineExpose({
         </span>
       </div>
     </template>
-    <template #append>
+    <template
+      v-if="$slots.append"
+      #append
+    >
       <slot name="append" />
     </template>
   </VBtn>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @use "/src/styles/style-global" as *;
 
 .text-style-btn {
   border-radius: 8px;
-  block-size: $button-default-height;
+  height: $button-default-height !important;
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
-  line-height: 20px;
-  padding-block: 10px;
-  padding-inline: 16px;
+  padding: 10px 16px;
   text-transform: inherit;
+  font-family: inherit;
 }
-.text-button {
-  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+// .text-button {
+//   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+// }
+.outlined-success {
+  border: 1px solid rgb(var(--v-success-300)) !important;
 }
-.v-btn--disabled.v-btn--variant-elevated {
-  opacity: 0.9 !important
+.outlined-error {
+  border: 1px solid rgb(var(--v-error-300)) !important;
+}
+.outlined-primary {
+  border: 1px solid rgb(var(--v-primary-300)) !important;
+}
+.outlined-secondary {
+  border: 1px solid rgb(var(--v-gray-300)) !important;
+}
+.outlined-warning {
+  border: 1px solid rgb(var(--v-warning-300)) !important;
+}
+
+.v-btn--variant-outlined {
+  background-color: transparent !important;
+}
+.border-button{
+  border: 1px solid rgb(var(--v-gray-300));
 }
 </style>

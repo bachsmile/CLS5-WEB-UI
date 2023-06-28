@@ -1,17 +1,17 @@
 import { defineStore } from 'pinia'
-import readXlsxFile from 'read-excel-file'
-import type { Config } from '@/typescript/interface/import'
-import toast from '@/plugins/toast'
 import MethodsUtil from '@/utils/MethodsUtil'
-import ObjectUtil from '@/utils/ObjectUtil'
 import ComboboxService from '@/api/combobox/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
+import type { Any } from '@/typescript/interface'
+import ArrayUtil from '@/utils/ArrayUtil'
+import StringUtil from '@/utils/StringUtil'
 
 export const comboboxStore = defineStore('combobox', () => {
   /** variable */
   interface combobox {
-    key: number
+    key: any
     value: string
+    text?: string
   }
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
@@ -20,15 +20,145 @@ export const comboboxStore = defineStore('combobox', () => {
   const userTypeCombobox = ref([])
   const groupUserCombobox = ref([])
   const titleUserCombobox = ref([])
+  const topicCombobox = ref<any>([])
+  const authorIdCombobox = ref<any>([])
+  const formOfStudyCombobox = ref<any>([])
+  const categoryTitleCombobox = ref([])
+  const compoboxCostTypes = ref([])
   const country = ref<combobox[]>([])
   const provinces = ref<combobox[]>([])
   const districts = ref<combobox[]>([])
   const wards = ref<combobox[]>([])
   const userLevels = ref<combobox[]>([])
+  const compoboxStatusCourse = ref([])
+  const compoboxCourseApprove = ref([])
+  const comboboxAuthor = ref([])
+  const compoboxSortCourse = ref<combobox[]>([
+    { key: '*position', value: t('CourseService_Sort_By_Position_AZ') },
+    { key: '-position', value: t('CourseService_Sort_By_Position_ZA') },
+    { key: 'expiring', value: t('CourseService_Expiring') },
+    { key: '-createdDate', value: t('CourseService_Sort_By_Created_Date') },
+    { key: '+name', value: t('CourseService_Sort_By_Name_Asc') },
+    { key: '-name', value: t('CourseService_Sort_By_Name_Desc') },
+    { key: '-modifiedDate', value: t('CourseService_Sort_By_Updated_Date') },
+  ])
+  const isDisplayHome = ref([
+    {
+      key: t('yes'),
+      value: true,
+    },
+    {
+      key: t('no'),
+      value: false,
+    },
+  ])
   const ownerCombobox = ref<any>({
     data: [],
     totalRecord: 0,
   })
+  const getComboboxAuthor = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.GetAuthCourse, TYPE_REQUEST.GET).then(async (value: any) => {
+      const users = await MethodsUtil.getUserInfoByIds(value.data)
+      users.pageLists.forEach((element: any) => {
+        element.fullName = StringUtil.formatFullName(element.firstName, element.lastName)
+      })
+      comboboxAuthor.value = users.pageLists
+    })
+  }
+  const getAuthorIdCombobox = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.GetAuthCourse, TYPE_REQUEST.GET).then(async (value: any) => {
+      const users = await MethodsUtil.getUserInfoByIds(value.data)
+      users.pageLists.forEach((element: any) => {
+        element.fullName = StringUtil.formatFullName(element.firstName, element.lastName)
+      })
+      authorIdCombobox.value = users.pageLists
+    })
+  }
+  const getComboboxTypeContent = async () => {
+    return await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxContentType, TYPE_REQUEST.GET).then(async (value: any) => {
+      return value
+    })
+  }
+
+  // Lấy danh sách loại trường
+  const typeSchoolCombobox = ref<Any>([])
+  const getComboboxTypeSchool = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetSchoolType, TYPE_REQUEST.GET)
+    data.forEach((element: combobox) => {
+      element.text = t(element.value)
+    })
+    typeSchoolCombobox.value = data
+  }
+
+  // Lấy danh sách khóa học
+  const courseCombobox = ref<Any>([])
+  const getComboboxCourse = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxCourse, TYPE_REQUEST.GET)
+    courseCombobox.value = data
+  }
+
+  // Lấy danh sách chủ đề
+  const getComboboxTopic = async (typeId: number) => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxTopic, TYPE_REQUEST.GET, { typeId })
+    topicCombobox.value = ArrayUtil.formatSelectTree(data, 'parentId', 'id')
+  }
+
+  // Lấy danh sách hình thức học
+  const getComboboxFormStudy = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxFormStudy, TYPE_REQUEST.GET).then((value: any) => {
+      if (value.data.length)
+        formOfStudyCombobox.value = value.data
+    })
+  }
+
+  const getComboboxApprover = async (data?: any) => {
+    const params = {
+      excludeIds: data?.excludeIds || [],
+      keyword: data?.keyword || null,
+      pageNumber: data?.pageNumber || 1,
+      pageSize: data?.pageSize || 10,
+      currentUserIds: data?.currentUserIds || [],
+    }
+    await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxCourseApprove, TYPE_REQUEST.POST, params).then((value: any) => {
+      value?.data?.pageLists.forEach((element: any) => {
+        element.fullName = StringUtil.formatFullName(element.firstName, element.lastName)
+      })
+      compoboxCourseApprove.value = value?.data
+    })
+  }
+
+  // Lấy danh sách trạng thái khóa học
+  const getComboboxStatusCourse = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxStatusCourse, TYPE_REQUEST.GET).then((value: any) => {
+      if (value.data.length)
+        compoboxStatusCourse.value = value.data
+    })
+  }
+
+  // Lấy danh sách sự kiện
+  const eventTypeCombobox = ref<Any>([])
+  const getComboboxEventType = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxEventType, TYPE_REQUEST.GET)
+    data.forEach((element: combobox) => {
+      element.text = t(element.value)
+    })
+    eventTypeCombobox.value = data
+  }
+
+  // Lấy danh sách loại chi phí
+  const costTypeCombobox = ref<Any[]>([])
+  const getCostTypeCombobox = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxCostType, TYPE_REQUEST.GET)
+    costTypeCombobox.value = data
+  }
+
+  // Lấy danh sách loại chi phí
+  const examCombobox = ref<Any[]>([])
+  const getExamCombobox = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxExam, TYPE_REQUEST.GET)
+    examCombobox.value = data
+  }
+
   const addFromCombobox = ref([
     { key: t('direct'), value: 1 },
     { key: t('add-from-file'), value: 2 },
@@ -58,6 +188,13 @@ export const comboboxStore = defineStore('combobox', () => {
     }
     await MethodsUtil.requestApiCustom(ComboboxService.Titles, TYPE_REQUEST.GET, params).then((value: any) => {
       titleUserCombobox.value = value?.data || []
+    })
+  }
+
+  // Lấy danh sách danh mục chức danh người dùng
+  const fetchCategoryTitleCombobox = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.CategoryTitleCombobox, TYPE_REQUEST.GET).then((value: any) => {
+      categoryTitleCombobox.value = value?.data || []
     })
   }
 
@@ -122,7 +259,9 @@ export const comboboxStore = defineStore('combobox', () => {
       provinceId,
     }
 
-    if (provinceId === null) { districts.value = [] }
+    if (provinceId === null) {
+      districts.value = []
+    }
     else {
       await MethodsUtil.requestApiCustom(ComboboxService.Districts, TYPE_REQUEST.GET, params).then((value: any) => {
         districts.value = value.data
@@ -136,7 +275,9 @@ export const comboboxStore = defineStore('combobox', () => {
       districtId,
     }
 
-    if (districtId === null) { wards.value = [] }
+    if (districtId === null) {
+      wards.value = []
+    }
     else {
       await MethodsUtil.requestApiCustom(ComboboxService.Wards, TYPE_REQUEST.GET, params).then((value: any) => {
         wards.value = value.data
@@ -158,7 +299,7 @@ export const comboboxStore = defineStore('combobox', () => {
   }
 
   // get chủ sở hữu
-  const getComboboxOwner = async (vSelectOwner: any, loadMore?: any) => {
+  const getComboboxOwner = async (vSelectOwner?: any, loadMore?: any) => {
     // loadMore dùng khi infinity scroll
     const params = {
       pageSize: vSelectOwner.pageSize,
@@ -167,11 +308,15 @@ export const comboboxStore = defineStore('combobox', () => {
       excludeIds: vSelectOwner.excludeList,
     }
     await MethodsUtil.requestApiCustom(ComboboxService.Owner, TYPE_REQUEST.POST, params).then((value: any) => {
-      console.log(value)
       ownerCombobox.value = {
         data: value.data?.pageLists.map((item: any) => ({ ...item, name: `${item.lastName} ${item.firstName}` })),
         totalRecord: value.data.totalRecord,
       }
+    })
+  }
+  const categoryCostCombobox = async () => {
+    await MethodsUtil.requestApiCustom(ComboboxService.GetCosttype, TYPE_REQUEST.GET).then((value: any) => {
+      compoboxCostTypes.value = value.data
     })
   }
 
@@ -182,10 +327,10 @@ export const comboboxStore = defineStore('combobox', () => {
     organizationsCombobox.value = []
   })
 
-  const listTopicCourse = ref([])
-  const getListTopicCourse = async () => {
+  const listTopicCourseCombobox = ref([])
+  const getlistTopicCourseCombobox = async () => {
     const { data } = await MethodsUtil.requestApiCustom(ComboboxService.topicCourse, TYPE_REQUEST.GET)
-    listTopicCourse.value = data
+    listTopicCourseCombobox.value = data
   }
   const reset = () => {
     statusesCombobox.value = []
@@ -197,6 +342,9 @@ export const comboboxStore = defineStore('combobox', () => {
     districts.value = []
     wards.value = []
     userLevels.value = []
+    courseCombobox.value = []
+
+    eventTypeCombobox.value = []
   }
   return {
     organizationsCombobox,
@@ -208,10 +356,29 @@ export const comboboxStore = defineStore('combobox', () => {
     districts,
     wards,
     userLevels,
-    listTopicCourse,
+    listTopicCourseCombobox,
     addFromCombobox,
     titleUserCombobox,
     ownerCombobox,
+    categoryTitleCombobox,
+    examCombobox,
+    courseCombobox,
+    costTypeCombobox,
+    topicCombobox,
+    compoboxSortCourse,
+    formOfStudyCombobox,
+    isDisplayHome,
+    compoboxStatusCourse,
+    compoboxCourseApprove,
+    compoboxCostTypes,
+    typeSchoolCombobox,
+    authorIdCombobox,
+    eventTypeCombobox,
+    comboboxAuthor,
+
+    // function
+    categoryCostCombobox,
+    getComboboxApprover,
     fetchStatusUsersCombobox,
     fetchTypeUsersCombobox,
     fetchTOrgStructCombobox,
@@ -222,9 +389,21 @@ export const comboboxStore = defineStore('combobox', () => {
     fetchDistricts,
     fetchProvinces,
     fetchWards,
-    getListTopicCourse,
+    getlistTopicCourseCombobox,
     fetchUserLevels,
     getComboboxOwner,
+    fetchCategoryTitleCombobox,
     reset,
+    getComboboxCourse,
+    getCostTypeCombobox,
+    getExamCombobox,
+    getComboboxTopic,
+    getComboboxFormStudy,
+    getComboboxStatusCourse,
+    getComboboxTypeSchool,
+    getAuthorIdCombobox,
+    getComboboxEventType,
+    getComboboxAuthor,
+    getComboboxTypeContent,
   }
 })

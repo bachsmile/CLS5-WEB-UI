@@ -13,8 +13,8 @@ const { t } = window.i18n()
 
 const TITLE = Object.freeze({
   BUTTON_EXCEL: t('export-excel'),
-  TITLE_PAGE: t('Danh sách khóa học'),
-  BUTTON_ADD: t('Add'),
+  TITLE_PAGE: t('list-course'),
+  BUTTON_ADD: t('Add-new'),
   BUTTON_MOVE: t('Chuyển nhóm'),
   BUTTON_DELETE: t('Xóa khóa học'),
   MESSAGE_DELETE: t('courses.course.confirm-delete'),

@@ -11,15 +11,22 @@ interface Props {
   categoryTitleId: number[] | null
   groupId: number[] | null
   organizationalStructureId: number[] | null
-  isCourse: boolean
-  isTraining: boolean
+  isCourse?: boolean
+  isTraining?: boolean
   listGroupUser?: any[]
   listCategoryTitle?: any[]
   listTitle?: any[]
+  isShowHeader: boolean
 }
+
 // Khởi tạo biến đa ngôn ngữ
-const props = withDefaults(defineProps<Props>(), ({})) ;const emit = defineEmits<Emit>() ;const { t } = window.i18n()const LABEL = Object.freeze({
-  TITLE_MODAL: 'Danh sách nhóm người dùng',
+const props = withDefaults(defineProps<Props>(), ({
+  isShowHeader: true,
+}))
+const emit = defineEmits<Emit>()
+const { t } = window.i18n()
+const LABEL = Object.freeze({
+  TITLE_MODAL: 'Danh sách người dùng',
   FILLTER1: t('orgStruct'),
   FILLTER2: 'Nhóm người dùng',
   FILLTER3: 'Danh mục chức danh',
@@ -46,10 +53,10 @@ const isShowFilter = ref<boolean>(false)
     <div class="my-6">
       <h3>{{ LABEL.TITLE_MODAL }}</h3>
     </div>
-    <div>
+    <div v-if="isShowHeader">
       <VRow>
         <VCol>
-          <span>Tự động gán người dùng vào nội dung</span>
+          <span>{{ t('auto-assign-content') }}</span>
           <VRow class="ma-1">
             <CmCheckBox
               :model-value="isCourse"
@@ -165,4 +172,3 @@ const isShowFilter = ref<boolean>(false)
     </VRow>
   </div>
 </template>
-

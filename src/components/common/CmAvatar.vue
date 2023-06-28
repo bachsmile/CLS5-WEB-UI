@@ -10,26 +10,33 @@ interface Props {
   size?: number
   className?: string
   isClassicBorder?: boolean
-  data?: string
+  data?: any
   icon?: string
+  text?: string
+  isAvatar?: boolean
+  isText?: boolean
 }
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
-  color: '',
+  color: 'primary',
   variant: Globals.VARIANT_DEFAULT,
   size: Globals.SIZE_AVATAR_DEFAULT,
   isClassicBorder: false,
+  isAvatar: false,
+  isText: false,
+  text: '',
+  icon: 'tabler:camera',
 }))
 
 const prefixColor = computed(() => {
-  if (props.variant === 'outlined')
+  if (['outlined', 'tonal'].includes(props.variant))
     return `color-${props.color}`
 
   return `btn-${props.color}`
 })
 
-const getAvatarName = (data: any) => {
+function getAvatarName(data: any) {
   if (data) {
     if (data?.firstName && data.lastName) {
       let firstName = 'F'
@@ -68,21 +75,31 @@ const getAvatarName = (data: any) => {
 <template>
   <VAvatar
     class="cursor-pointer"
-    :class="[className, isClassicBorder ? 'border-avatar' : '']"
-    :color="prefixColor"
+    :class="[className, isClassicBorder ? 'border-avatar' : '', prefixColor]"
     :variant="variant"
     :rounded="rounded"
     :size="size"
   >
-    <slot v-if="icon" />
     <VImg
-      v-else-if="src"
+      v-if="src"
       :src="src"
     />
     <span
-      v-else
-      :style="{ fontSize: `${size / 2}px` }"
+      v-else-if="isAvatar"
+      :style="{ fontSize: `${size / 3}px` }"
     >{{ getAvatarName(data) }}</span>
+    <span
+      v-else-if="isText"
+    >
+      {{ text }}
+    </span>
+    <slot v-else>
+      <VIcon
+        v-if="icon"
+        :icon="icon"
+        :size="size / 5"
+      />
+    </slot>
   </VAvatar>
 </template>
 
@@ -92,5 +109,9 @@ const getAvatarName = (data: any) => {
 .border-avatar {
   border: 4px solid $color-white;
   box-shadow: $box-shadow-lg;
+  border-radius: 8px;
+}
+.v-avatar--rounded{
+  border-radius: 8px !important;
 }
 </style>

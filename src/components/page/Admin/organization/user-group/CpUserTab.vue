@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { routeLocationKey } from 'vue-router'
 import CpHeaderAction from './CpHeaderAction.vue'
 import CpMdAddUser from './Modal/CpMdAddUser.vue'
 import CpMdMoveGroup from './Modal/CpMdMoveGroup.vue'
@@ -13,8 +12,8 @@ const { t } = window.i18n()
 
 const TITLE = Object.freeze({
   BUTTON_EXCEL: t('export-excel'),
-  TITLE_PAGE: t('Danh sách nhóm người dùng'),
-  BUTTON_ADD: t('add'),
+  TITLE_PAGE: t('user-list'),
+  BUTTON_ADD: t('Add-new'),
   BUTTON_MOVE: t('Chuyển nhóm'),
   BUTTON_DELETE: t('Xóa người dùng'),
 })
@@ -35,7 +34,7 @@ const { listUserInGroup, totalRecord, queryParams } = storeToRefs(store)
 const { moveUser, deleteItem, getListUser } = store
 
 // Tìm kiếm người dùng
-const handleSearch = (val: string) => {
+function handleSearch(val: string) {
   store.queryParams.search = val
   store.queryParams.pageNumber = 1
 }
@@ -44,11 +43,12 @@ watch(queryParams.value, val => {
 })
 
 const isShowAddUser = ref(false)
-const showModalAdd = () => {
+function showModalAdd() {
   isShowAddUser.value = true
 }
 
 onBeforeUnmount(() => {
+  store.$reset()
   store.$dispose()
 })
 
@@ -71,29 +71,29 @@ const dataMove = reactive<DataMove>({
   newGroup: null,
   userIds: [],
 })
-const showModalShowMove = (data: any) => {
+function showModalShowMove(data: any) {
   dataMove.userIds = [data.userId]
   isShowModalMove.value = true
 }
-const handleSubmit = async (val: any | null) => {
+async function handleSubmit(val: any | null) {
   dataMove.isTotal = !dataMove.userIds.length
   dataMove.newGroup = val
   const isHidden = await moveUser(dataMove)
   isShowModalMove.value = isHidden
 }
-const moveMultipleUser = () => {
+function moveMultipleUser() {
   dataMove.userIds = listSelected.value
   isShowModalMove.value = true
 }
 
 // Xóa người dùng khỏi nhóm
 const isShowModalConfirmDelete = ref<boolean>(false)
-const showModalDeleteUser = (val: any | null) => {
+function showModalDeleteUser(val: any | null) {
   if (val)
     listSelected.value = [val.userId]
   isShowModalConfirmDelete.value = true
 }
-const handleDeleteMultiple = () => {
+function handleDeleteMultiple() {
   deleteItem(listSelected.value)
 }
 </script>
@@ -171,9 +171,8 @@ const handleDeleteMultiple = () => {
   />
   <CpConfirmDialog
     v-model:is-dialog-visible="isShowModalConfirmDelete"
-    :type="1"
+    :type="2"
     :confirmation-msg="t('Are-you-sure-you-want-to-delete-the-ability-group?')"
     @confirm="handleDeleteMultiple"
   />
 </template>
-

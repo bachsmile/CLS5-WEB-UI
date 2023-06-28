@@ -96,17 +96,17 @@ const configTree = computed(() => {
       style: 'font-size: 18px; height: 18px; width: 18px;',
       type: 'shape',
       width: '32',
-      fill: 'currentColor',
+      fill: ' #1D2939',
       height: '32',
-      stroke: 'black',
+      stroke: ' #1D2939',
       viewBox: '0 0 24 24',
       draw: 'M12 14.975q-.2 0-.388-.075t-.312-.2l-4.6-4.6q-.275-.275-.275-.7t.275-.7q.275-.275.7-.275t.7.275l3.9 3.9l3.9-3.9q.275-.275.7-.275t.7.275q.275.275.275.7t-.275.7l-4.6 4.6q-.15.15-.325.213t-.375.062Z',
     },
     closedIcon: {
       style: 'font-size: 18px; height: 18px; width: 18px;',
       type: 'shape',
-      stroke: 'black',
-      fill: 'currentColor',
+      stroke: ' #1D2939',
+      fill: ' #1D2939',
       width: '32',
       height: '32',
       viewBox: '0 0 24 24',
@@ -114,11 +114,11 @@ const configTree = computed(() => {
     },
   }
 })
-const actionItemEdit = (dataAction: any, index: any) => {
+function actionItemEdit(dataAction: any, index: any) {
   // data.isShowModalAddress = true
 }
 
-const actionItemDelete = (dataAction: any, index: any, dataResend?: any) => {
+function actionItemDelete(dataAction: any, index: any, dataResend?: any) {
   // console.log('actionItemDelete', dataAction, index)
 }
 
@@ -134,7 +134,7 @@ const action = [
     action: actionItemDelete,
   },
 ]
-const updateValueChecked = async () => {
+async function updateValueChecked() {
   await nextTick()
 
   valueChecked.value = window._.filter(nodesTree.value, prop => {
@@ -142,31 +142,31 @@ const updateValueChecked = async () => {
   })
   emit('update:modelValue', props.returnObject ? valueChecked.value : valueChecked.value.map((item: any) => item[props.customId]))
 }
-const handleNodeOpened = (event: any) => {
+function handleNodeOpened(event: any) {
   emit('nodeOpened', event)
 }
 
-const handleNodeClosed = (event: any) => {
+function handleNodeClosed(event: any) {
   emit('nodeClosed', event)
 }
 
-const handleNodeFocus = (event: any) => {
+function handleNodeFocus(event: any) {
   emit('nodeFocus', event)
 }
 
-const handleNodeToggle = (event: any) => {
+function handleNodeToggle(event: any) {
   emit('nodeToggle', event)
 }
 
-const handleNodeBlur = (event: any) => {
+function handleNodeBlur(event: any) {
   emit('nodeBlur', event)
 }
 
-const handleNodeEdit = (event: any) => {
+function handleNodeEdit(event: any) {
   emit('nodeEdit', event)
 }
 
-const checkedNodeChild = (node: any, status: boolean) => {
+function checkedNodeChild(node: any, status: boolean) {
   if (props.typeFlatChild && isTreeBinding() && node?.children && node?.children.length) {
     node.children.forEach((nodeChild: any) => {
       nodesTree.value[nodeChild] = {
@@ -180,44 +180,44 @@ const checkedNodeChild = (node: any, status: boolean) => {
     })
   }
 }
-const handleNodeChecked = async (event: any) => {
+async function handleNodeChecked(event: any) {
   emit('nodeChecked', event)
 
   checkedNodeChild(event, true)
   updateValueChecked()
 }
 
-const handleNodeUnchecked = (event: any) => {
+function handleNodeUnchecked(event: any) {
   emit('nodeUnchecked', event)
   checkedNodeChild(event, false)
   updateValueChecked()
 }
 
-const handleNodeDragstart = (event: any) => {
+function handleNodeDragstart(event: any) {
   emit('nodeDragstart', event)
 }
 
-const handleNodeDragenter = (event: any) => {
+function handleNodeDragenter(event: any) {
   emit('nodeDragenter', event)
 }
 
-const handleNodeDragleave = (event: any) => {
+function handleNodeDragleave(event: any) {
   emit('nodeDragleave', event)
 }
 
-const handleNodeDragend = (event: any) => {
+function handleNodeDragend(event: any) {
   emit('nodeDragend', event)
 }
 
-const handleNodeOver = (event: any) => {
+function handleNodeOver(event: any) {
   emit('nodeOver', event)
 }
 
-const handleNodeDrop = (event: any) => {
+function handleNodeDrop(event: any) {
   emit('nodeDrop', event)
 }
 
-const onChangeOrgChecked = (val: any, node: any) => {
+function onChangeOrgChecked(val: any, node: any) {
   node.orgPermissionValue = val ? node.orgPermission : 0
   if (node.ids === 0) {
     nodesTree.value[node.parent].orgPermissionValue += (val ? node.orgPermission : -node.orgPermission)
@@ -232,6 +232,7 @@ const onChangeOrgChecked = (val: any, node: any) => {
 <template>
   <div class="tree-view-select">
     <Treeview
+      v-if="nodesTree"
       :config="configTree"
       :nodes="nodesTree"
       class="tree-view"
@@ -263,6 +264,12 @@ const onChangeOrgChecked = (val: any, node: any) => {
           class="checkbox-tree-view"
           :true-value="true"
           :indeterminate="node.state.indeterminate"
+        />
+        <VIcon
+          v-if="node.icon"
+          :size="24"
+          :icon="node.icon"
+          class="m-0"
         />
       </template>
       <template
@@ -314,7 +321,7 @@ const onChangeOrgChecked = (val: any, node: any) => {
     inset-inline-end: 0;
   }
   .checkbox-wrapper {
-    left: 17px;
+    left: 33px;
     opacity: 0;
     position: absolute;
     width: 25px;
@@ -347,15 +354,14 @@ const onChangeOrgChecked = (val: any, node: any) => {
     margin-left: -14px;
     margin-right: 24px;
   }
-  .v-selection-control__input input{
-    display: none;
-  }
+  // .v-selection-control__input input{
+  //   display: none;
+  // }
   // .dot-tree::before {
   //   content: url('https://webcoban.vn/image/banana.png')
   // }
-  input[type=checkbox] {
-    display: none;
-  }
+  // input[type=checkbox] {
+  //   display: none;
+  // }
 }
 </style>
-

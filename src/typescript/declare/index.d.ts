@@ -14,3 +14,19 @@ declare module 'vue-select' {
   const ISelect: DefineComponent<{}, {}, any>
   export default ISelect
 }
+declare module 'dom-to-image' {
+  import { DefineComponent } from 'vue'
+  const domToImage: DefineComponent<{}, {}, any>
+  export default domToImage
+}
+declare module 'vue3-tags-input' {
+  import { DefineComponent } from 'vue'
+  const Vue3TagsInput: DefineComponent<{}, {}, any>
+  export default Vue3TagsInput
+}
+declare module 'unplugin-vue-define-options/vite' {
+  import { DefineComponent } from 'vue'
+  const DefineOptions: DefineComponent<{}, {}, any>
+  export default DefineOptions
+}
+

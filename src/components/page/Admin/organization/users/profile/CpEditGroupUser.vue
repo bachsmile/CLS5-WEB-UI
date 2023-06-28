@@ -53,19 +53,19 @@ const dataComponent = reactive({
   selectedRowsIds: [], // list id các row table được chọn
   listId: [],
 })
-const disabledDelete = ref(true)
 const isShowDialogNotiDelete = ref(false)
 const isShowDialogAddGroup = ref(false)
 const queryBodyAdd = reactive({
   id: props.idUser !== null ? props.idUser : Number(route.params.id),
   listId: [],
 })
+const disabledDelete = computed(() => !dataComponent.selectedRowsIds.length)
 
 /**
  * method
  */
 // danh sách nhóm người dùng
-const getPagingByUser = async (queryParam: any) => {
+async function getPagingByUser(queryParam: any) {
   if (props.idUser != null || Number(route.params.id) != null) {
     await MethodsUtil.requestApiCustom(ApiUser.GetPagingByUser, TYPE_REQUEST.GET, queryParam).then((value: any) => {
       dataTableGroup.value = value?.data?.pageLists
@@ -75,7 +75,7 @@ const getPagingByUser = async (queryParam: any) => {
 }
 
 // lấy danh sách id
-const getListIdStructureUser = async () => {
+async function getListIdStructureUser() {
   dataComponent.listId = []
   const params = {
     id: queryParams.id,
@@ -87,29 +87,29 @@ const getListIdStructureUser = async () => {
 }
 
 // search ở fillter header
-const handleSearch = async (value: any) => {
+async function handleSearch(value: any) {
   queryParams.pageNumber = 1
   queryParams.searchData = value
   await getPagingByUser(queryParams)
 }
-const handleAddGroup = async (value: any) => {
+async function handleAddGroup(value: any) {
   await getListIdStructureUser()
   isShowDialogAddGroup.value = true
 }
-const handleDeleteMultiple = async (value: any) => {
+async function handleDeleteMultiple(value: any) {
   dataComponent.deleteIds = dataComponent.selectedRowsIds
   isShowDialogNotiDelete.value = true
 }
-const handlePageClick = async (value: any) => {
-  // console.log('handlePageClick')
+async function handlePageClick(value: any) {
+  queryParams.pageNumber = value
+  await getPagingByUser(queryParams)
 }
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   dataComponent.selectedRowsIds = e
-  disabledDelete.value = !(e.length > 0)
 }
 
 // Function to handle when click button Delete
-const handleDeleteItem = (context: any) => {
+function handleDeleteItem(context: any) {
   dataComponent.deleteIds = []
   dataComponent.deleteIds.push(context.id)
   isShowDialogNotiDelete.value = true
@@ -119,7 +119,7 @@ const handleDeleteItem = (context: any) => {
 }
 
 // delete action
-const deleteAction = async () => {
+async function deleteAction() {
   const params = {
     id: queryParams.id,
     listId: dataComponent.deleteIds,
@@ -127,21 +127,22 @@ const deleteAction = async () => {
 
   await MethodsUtil.requestApiCustom(ApiUser.DeleteGroupWithUser, TYPE_REQUEST.POST, params)
     .then(async (value: any) => {
-      toast('SUCCESS', value?.message)
+      toast('SUCCESS', t(value?.message))
       await getPagingByUser(queryParams)
+      dataComponent.selectedRowsIds = []
     })
     .catch((error: any) => {
-      toast('ERROR', t(error.message))
+      toast('ERROR', t(error.response.data.message))
     })
 }
 
 // hành động của dialog
-const confirmDialog = (event: any) => {
+function confirmDialog(event: any) {
   if (event)
     deleteAction()
 }
 
-const confirmDialogAddGroup = async (listGroup: any) => {
+async function confirmDialogAddGroup(listGroup: any) {
   if (listGroup.length > 0) {
     queryBodyAdd.listId = listGroup
     await MethodsUtil.requestApiCustom(ApiUser.PostAddGroupUser, TYPE_REQUEST.POST, queryBodyAdd)
@@ -150,16 +151,16 @@ const confirmDialogAddGroup = async (listGroup: any) => {
         getPagingByUser(queryParams)
       })
       .catch((error: any) => {
-        toast('ERROR', t(error.message))
+        toast('ERROR', t(error.response.data.message))
       })
   }
 }
 
 // cập nhật trạng thái dialog
-const updateDialogVisible = (event: any) => {
+function updateDialogVisible(event: any) {
   isShowDialogNotiDelete.value = event
 }
-const updateDialogVisibleAddStatus = (event: any) => {
+function updateDialogVisibleAddStatus(event: any) {
   isShowDialogAddGroup.value = event
 }
 
@@ -229,4 +230,3 @@ getPagingByUser(queryParams)
     />
   </div>
 </template>
-

@@ -1,7 +1,6 @@
 <script setup lang="ts">
+import axios from 'axios'
 import { validatorStore } from '@/stores/validatator'
-import MethodsUtil from '@/utils/MethodsUtil'
-import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -44,21 +43,19 @@ let apiInfo = reactive({
 })
 const myFormAdd = ref()
 
-const onCancel = async () => {
+async function onCancel() {
   emit('update:isDialogVisible', false)
 }
-const onConfirm = async () => {
+async function onConfirm() {
   myFormAdd.value.validate().then(async (success: any) => {
     if (success.valid) {
       window.showAllPageLoading('FULL-OPACITY')
-      await MethodsUtil.requestApiCustom(`${apiInfo.name}/${apiInfo.code}`, TYPE_REQUEST.GET)
+      await axios.get(`${apiInfo.name}/${apiInfo.code}`)
         .then((data: any) => {
-          toast('SUCCESS', t('approve-success'))
-          emit('confirm', data)
+          window.hideAllPageLoading()
+          toast('SUCCESS', t('success'))
+          emit('confirm', data.data)
           emit('update:isDialogVisible', false)
-        })
-        .catch(() => {
-          toast('ERROR', t('api-not-found'))
         })
       window.hideAllPageLoading()
     }

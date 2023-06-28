@@ -7,6 +7,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import ArraysUtil from '@/utils/ArrayUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
+import { load } from '@/stores/loadComponent.js'
 
 const { t } = window.i18n()
 const TITLE_PAGE = Object.freeze({
@@ -14,6 +15,8 @@ const TITLE_PAGE = Object.freeze({
   CANCEL: t('come-back'),
   RESET: t('reset'),
 })
+const store = load()
+const { unLoadComponent } = store
 const config = (idx: number) => {
   return {
     roots: [`node-${idx + 1}`],
@@ -97,7 +100,7 @@ const getListFeature = () => {
   return listFeature
 }
 
-const handleEditPer = () => {
+const handleEditPer = (idx: number) => {
   dataInput.value.listFeature = getListFeature()
   let message = 'USR_AddSuccess'
   let typeErr: any = 'SUCCESS'
@@ -109,12 +112,26 @@ const handleEditPer = () => {
   MethodsUtil.requestApiCustom(api, TYPE_REQUEST.POST, dataInput.value)
     .then((res: any) => {
       router.push({ name: 'admin-organization-permission-list' })
+      unLoadComponent(idx)
     })
     .catch((err: any) => {
+      unLoadComponent(idx)
       message = err.errors[0].message
       typeErr = 'ERROR'
     })
   toast(typeErr, t(message))
+}
+
+const reset = () => {
+  listFeaturePermission.value.forEach((element: any, index: number) => {
+    element[`node-p${index + 1}`].children.forEach((item: any, idx: number) => {
+      if ((element[item].state.checked || element[item].state.indeterminate) && element[item].children && element[item].children.length) {
+        element[item].state.checked = false
+        element[item].state.indeterminate = false
+        element[item].orgPermissionValue = 0
+      }
+    })
+  })
 }
 </script>
 
@@ -143,10 +160,12 @@ const handleEditPer = () => {
       variant="text"
       class="ml-3"
       color="50-primary"
+      @click="reset"
     />
     <CmButton
       :title="TITLE_PAGE?.ADD"
       class="ml-3"
+      is-load
       @click="handleEditPer"
     />
   </div>

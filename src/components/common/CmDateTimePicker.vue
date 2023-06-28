@@ -2,11 +2,11 @@
 import FlatPickr from 'vue-flatpickr-component'
 import { useTheme } from 'vuetify'
 
-// @ts-expect-error There won't be declaration file for it
+// // @ts-expect-error There won't be declaration file for it
 import { filterFieldProps, makeVFieldProps } from 'vuetify/lib/components/VField/VField'
 
-// @ts-expect-error There won't be declaration file for it
-import { filterInputProps, makeVInputProps } from 'vuetify/lib/components/VInput/VInput'
+// // @ts-expect-error There won't be declaration file for it
+// import { filterInputProps, makeVInputProps } from 'vuetify/lib/components/VInput/VInput'
 
 // @ts-expect-error There won't be declaration file for it
 import { filterInputAttrs } from 'vuetify/lib/util/helpers'
@@ -14,10 +14,10 @@ import { filterInputAttrs } from 'vuetify/lib/util/helpers'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
 const props = defineProps({
-  ...makeVInputProps({
-    density: 'compact',
-    hideDetails: 'auto',
-  }),
+  // ...makeVInputProps({
+  //   density: 'compact',
+  //   hideDetails: 'auto',
+  // }),
   ...makeVFieldProps({
     variant: 'outlined',
     color: 'primary',
@@ -46,8 +46,8 @@ defineOptions({
 const attrs = useAttrs()
 
 const [rootAttrs, compAttrs] = filterInputAttrs(attrs)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const [{ modelValue: _, ...inputProps }] = filterInputProps(props)
+
+// const [{ modelValue: _, ...inputProps }] = filterInputProps(props)
 const [fieldProps] = filterFieldProps(props)
 
 const refFlatPicker = ref()
@@ -62,7 +62,7 @@ if (compAttrs.config && compAttrs.config.inline) {
 }
 
 // v-field clear prop
-const onClear = (el: MouseEvent) => {
+function onClear(el: MouseEvent) {
   el.stopPropagation()
 
   nextTick(() => {
@@ -78,7 +78,7 @@ const vuetifyTheme = useTheme()
 const vuetifyThemesName = Object.keys(vuetifyTheme.themes.value)
 
 // Themes class added to flat-picker component for light and dark support
-const updateThemeClassInCalendar = (activeTheme: string) => {
+function updateThemeClassInCalendar(activeTheme: string) {
   // ℹ️ Flatpickr don't render it's instance in mobile and device simulator
   if (!refFlatPicker.value.fp.calendarContainer)
     return
@@ -95,7 +95,7 @@ onMounted(() => {
   updateThemeClassInCalendar(vuetifyTheme.name.value)
 })
 const valuePrivate = ref(computed(() => props.modelValue).value)
-const emitModelValue = (val: any) => {
+function emitModelValue(val: any) {
   emit('update:modelValue', val)
 }
 watch(valuePrivate, val => {

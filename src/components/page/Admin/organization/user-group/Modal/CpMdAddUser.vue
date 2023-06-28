@@ -26,7 +26,7 @@ const { fetchDataModal, handleAddUser } = store
 watch(queryParams.value, val => {
   fetchDataModal()
 })
-const hidden = (val: any) => {
+function hidden(val: any) {
   emit('update:isShow', false)
 }
 
@@ -37,9 +37,14 @@ const headers = [
   { text: t('email'), value: 'email' },
 ]
 
-const confirm = async () => {
+async function confirm() {
   const data: boolean = await handleAddUser(listItem.value)
   emit('update:isShow', data)
+}
+
+function clearStore() {
+  store.$reset()
+  store.$dispose()
 }
 </script>
 
@@ -52,6 +57,7 @@ const confirm = async () => {
     @cancel="hidden"
     @confirm="confirm"
     @show="fetchDataModal"
+    @hide="clearStore"
   >
     <CpHeaderMdGroupUser
       v-model:is-course="store.dataUser.isCourse"

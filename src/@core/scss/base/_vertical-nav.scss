@@ -16,6 +16,7 @@
       // ℹ️ Add styles for collapsed vertical nav
       .layout-vertical-nav-collapsed#{$sl-layout-nav-type-vertical}.hovered {
         @include elevation.elevation(6);
+        border-radius: 24px !important;
       }
     }
 

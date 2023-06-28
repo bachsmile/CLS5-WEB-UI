@@ -2,7 +2,7 @@
 import CpImportFile from '@/components/page/gereral/CpImportFile.vue'
 import type { Action, Config } from '@/typescript/interface/import'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import ApiGroupUser from '@/api/group-user/index'
+import ApiGroupUser from '@/api/user'
 
 // Cập nhật năng lực
 const dataColumnExcel = (rowData: Array<any>) => {

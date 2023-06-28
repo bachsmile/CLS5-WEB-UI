@@ -8,49 +8,77 @@ const CmSwitch = defineAsyncComponent(() => import('@/components/common/CmSwitch
  * lib
  */
 interface Emit {
-  (e: 'click', type: string): void
+  (e: 'click', data: string): void
   (e: 'search', type: any): void
   (e: 'exportExcel'): void
+  (e: 'changeView', type: boolean): void
 }
 
 // Khởi tạo biến đa ngôn ngữ
 const { t } = window.i18n()
+const router = useRouter()
 
 /**
  * params
  */
+
+/**
+ * method
+ */
+const actionAddFromApi = () => {
+  emit('click', 'actionAddFromApi')
+}
+const actionAddFromApiTitle = () => {
+  emit('click', 'actionAddFromApiTitle')
+}
+
+const handlerPreButton = () => {
+  emit('click', 'handlerAddButton')
+}
+
+/** action */
 const actionAdd = [
   {
     title: t('add-from-file'),
     icon: 'tabler:file-plus',
 
-    // action: () => {
-    //   router.push({ name: 'admin-organization-user-import-file-add-user' })
-    // },
+    action: () => {
+      router.push({ name: 'admin-organization-org-struct-import-file' })
+    },
   },
   {
     title: t('add-from-api'),
     icon: 'tabler:folder-plus',
 
-    // action: actionAddFromApi,
+    action: actionAddFromApi,
+  },
+  {
+    title: t('add-title-from-api'),
+    icon: 'tabler:folder-plus',
+
+    action: actionAddFromApiTitle,
   },
 ]
-const action = [{
+const activeSwitch = ref(false)
+const action = reactive([{
   icon: 'ic:baseline-format-list-bulleted',
+  value: false,
 
-  // action: handleItem1,
+  action: handleOrgTree,
 },
 {
   icon: 'tabler:layout-grid',
+  value: true,
 
-  // action: handleItem2,
-}]
-
-/**
- * method
- */
-const handlerPreButton = () => {
-  emit('click', 'handlerAddButton')
+  action: handleOrgTreeDiagram,
+}])
+function handleOrgTree() {
+  activeSwitch.value = false
+  emit('changeView', false)
+}
+function handleOrgTreeDiagram() {
+  activeSwitch.value = true
+  emit('changeView', true)
 }
 </script>
 
@@ -71,7 +99,8 @@ const handlerPreButton = () => {
         <CmButton
           :title="t('export-excel')"
           icon="tabler:download"
-          color="50-primary"
+          color="primary"
+          variant="tonal"
           @click="emit('exportExcel')"
         />
       </div>
@@ -94,7 +123,11 @@ const handlerPreButton = () => {
         md="3"
         class="d-flex justify-end"
       >
-        <CmSwitch :list-item="action" />
+        <CmSwitch
+          v-model="activeSwitch"
+          color="secondary"
+          :list-item="action"
+        />
       </div>
     </div>
   </div>

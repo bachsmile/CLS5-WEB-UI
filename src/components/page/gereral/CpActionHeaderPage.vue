@@ -1,12 +1,15 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<Props>(), ({
   title: '',
+  titleCustomAddGroup: 'Add-new',
   actionUpdate: () => ([]),
   actionAdd: () => ([]),
   actionExport: () => ([]),
   isUpdateBtn: false,
   isExportBtn: false,
-  isApproveBtn: false,
+  isCustomBtn: false,
+  isCustomGroupBtn: false,
+  bgCustom: 'bg-success',
 }))
 
 const emit = defineEmits<Emit>()
@@ -16,10 +19,15 @@ const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDrop
 const CmButtonGroup = defineAsyncComponent(() => import('@/components/common/CmButtonGroup.vue'))
 interface Props {
   title: string
-  titleAprove?: string
+  titleCustom?: string
+  titleCustomAdd?: string
+  titleCustomAddGroup?: string
+  bgCustom?: string
   isUpdateBtn?: boolean
   isExportBtn?: boolean
-  isApproveBtn?: boolean
+  isCustomGroupBtn?: boolean
+  isCustomBtn?: boolean
+  isCustomAddBtn?: boolean
   actionUpdate?: Array<any>
   actionAdd?: Array<any>
   actionExport?: Array<any>
@@ -33,23 +41,23 @@ interface Emit {
 
 const router = useRouter()
 
-const handlerPreButton = () => {
+function handlerPreButton() {
   emit('click', 'handlerAddButton')
 }
-const handlerApproveButton = () => {
-  emit('click', 'handlerApproveButton')
+function handlerCustomButton() {
+  emit('click', 'handlerCustomButton')
 }
 </script>
 
 <template>
   <div
-    class="d-flex justify-space-between my-8"
+    class="d-flex justify-space-between my-6"
     style="flex-wrap: wrap;"
   >
     <div class="text-medium-lg">
       {{ title }}
     </div>
-    <div class="d-flex">
+    <div class="d-flex justify-end">
       <div
         v-if="isExportBtn"
         cols="12"
@@ -60,13 +68,14 @@ const handlerApproveButton = () => {
           v-if="!actionExport?.length"
           :title="t('export-excel')"
           icon="tabler:download"
-          color="50-primary"
+          color="primary"
+          variant="tonal"
           @click="emit('exportExcel')"
         />
         <CmDropDown
           v-else
           :title="t('export-excel')"
-          color="dark"
+          color="secondary"
           :list-item="actionExport"
           :type="2"
           icon="tabler:chevron-down"
@@ -80,27 +89,42 @@ const handlerApproveButton = () => {
       >
         <CmDropDown
           :title="t('Update')"
-          color="dark"
+          color="secondary"
           :list-item="actionUpdate"
           :type="2"
           icon="tabler:chevron-down"
         />
       </div>
       <div
-        v-if="isApproveBtn"
+        v-if="isCustomBtn"
         cols="12"
         md="3"
         class="d-flex justify-end  mr-2"
       >
         <CmButton
-          bg-color="bg-success"
-          text-color="color-white"
-          @click="handlerApproveButton"
+          color="success"
+          @click="handlerCustomButton"
         >
-          {{ titleAprove }}
+          {{ titleCustom }}
         </CmButton>
       </div>
+      <slot name="actions" />
       <div
+        v-if="isCustomAddBtn"
+        cols="12"
+        md="3"
+        class="d-flex justify-end ml-2"
+      >
+        <CmButton
+          @click="handlerPreButton"
+        >
+          {{ titleCustomAdd }}
+        </CmButton>
+      </div>
+      <slot />
+
+      <div
+        v-if="isCustomGroupBtn"
         cols="12"
         md="3"
         class="d-flex justify-end"
@@ -108,10 +132,10 @@ const handlerApproveButton = () => {
         <CmButtonGroup
           is-load
           :list-item="actionAdd"
-          :title="t('Add-new')"
+          :title="t(titleCustomAddGroup)"
           @click-prepend="handlerPreButton"
         >
-          {{ t('Add-new') }}
+          {{ t(titleCustomAddGroup) }}
         </CmButtonGroup>
       </div>
     </div>
@@ -126,7 +150,6 @@ const handlerApproveButton = () => {
   &-field {
     inline-size: $input-min-width;
     max-inline-size: $input-min-width;
-
     // min-inline-size: $input-min-width;
   }
 }

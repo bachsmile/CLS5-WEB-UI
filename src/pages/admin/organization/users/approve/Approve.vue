@@ -12,6 +12,7 @@ const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gere
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
 const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/gereral/CpConfirmDialog.vue'))
 const CpModalApprove = defineAsyncComponent(() => import('@/components/page/Admin/organization/users/approve/modal/CpModalApprove.vue'))
+const CpCustomInfo = defineAsyncComponent(() => import('@/components/page/gereral/CpCustomInfo.vue'))
 
 /**
  * lib
@@ -61,7 +62,7 @@ const keyModal = ref('')
  * method
  */
 // filter
-const handleFilter = async (dataFilter: any) => {
+async function handleFilter(dataFilter: any) {
   queryParam = {
     ...queryParam,
     ...dataFilter,
@@ -70,12 +71,12 @@ const handleFilter = async (dataFilter: any) => {
 }
 
 // cập nhật trạng thái dialog
-const updateDialogVisible = (event: any) => {
+function updateDialogVisible(event: any) {
   isShowDialogNoti.value = event
 }
 
 // Function to handle when click button Delete
-const deleteItem = (id: number) => {
+function deleteItem(id: number) {
   data.customerIds = [id as never]
   modalContent.content = t('deleteUser')
   modalContent.subContent = t('delete')
@@ -84,7 +85,7 @@ const deleteItem = (id: number) => {
 }
 
 // click  multi delete btn to show modal confirm
-const deleteItems = () => {
+function deleteItems() {
   data.customerIds = data.listId
   modalContent.content = t('deleteUser')
   modalContent.subContent = t('delete')
@@ -93,14 +94,14 @@ const deleteItems = () => {
 }
 
 // delete action
-const deleteAction = async () => {
+async function deleteAction() {
   const params = {
     ids: data.customerIds,
   }
 
   await MethodsUtil.requestApiCustom(ApiUser.deleteCustomer, TYPE_REQUEST.DELETE, params)
     .then(async (value: any) => {
-      toast('SUCCESS', value?.message)
+      toast('SUCCESS', t(value?.message))
       queryParam.pageNumber = 1
       await fectchListUsers()
       data.customerIds = []
@@ -111,8 +112,7 @@ const deleteAction = async () => {
       toast('ERROR', t('USR_DeleteFail'))
     })
 }
-const approveItems = async (id?: any) => {
-  console.log('approve')
+async function approveItems(id?: any) {
   if (id)
     data.customerIds = [id]
 
@@ -121,11 +121,9 @@ const approveItems = async (id?: any) => {
   await MethodsUtil.requestApiCustom(ApiUser.GetRegisterConfig, TYPE_REQUEST.GET).then((value: any) => {
     configRegister.value = value.data
     isShowDialogApprove.value = true
-    console.log(value)
   })
 }
-const rebackItems = async (id?: any) => {
-  console.log('approve')
+async function rebackItems(id?: any) {
   if (id)
     data.customerIds = [id]
 
@@ -136,7 +134,7 @@ const rebackItems = async (id?: any) => {
   keyModal.value = 'back'
   isShowDialogNoti.value = true
 }
-const handleReturnCustomer = async () => {
+async function handleReturnCustomer() {
   const params = {
     ids: [...data.customerIds],
   }
@@ -146,12 +144,12 @@ const handleReturnCustomer = async () => {
       fectchListUsers()
     })
     .catch((error: any) => {
-      toast('ERROR', t(error.message))
+      toast('ERROR', t(error.response.data.message))
     })
 }
 
 // hành động của dialog
-const confirmDialog = (event: any, key: string) => {
+function confirmDialog(event: any, key: string) {
   if (event) {
     switch (key) {
       case 'delete':
@@ -168,7 +166,7 @@ const confirmDialog = (event: any, key: string) => {
 }
 
 // hàm trả về các loại action từ header filter
-const handleClickBtn = (type: string) => {
+function handleClickBtn(type: string) {
   switch (type) {
     case 'fillter':
       isShowFilter.value = !isShowFilter.value
@@ -189,25 +187,23 @@ const handleClickBtn = (type: string) => {
 }
 
 // search ở fillter header
-const handleSearch = async (value: any) => {
+async function handleSearch(value: any) {
   queryParam.pageNumber = 1
   queryParam.keyword = value
   await fectchListUsers()
 }
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   data.listId = e
 }
 
 // click pagination
-const handlePageClick = async (page: any) => {
+async function handlePageClick(page: any) {
   queryParam.pageNumber = page
   await fectchListUsers()
 }
 
 // hàm trả về các loại action khi click
-const actionItem = (type: any) => {
-  console.log(type)
-
+function actionItem(type: any) {
   switch (type[0]?.name) {
     case 'ActionDelete':
       deleteItem(type[1].id)
@@ -223,7 +219,7 @@ const actionItem = (type: any) => {
       break
   }
 }
-const handleModalApproveAccept = async (infor: any) => {
+async function handleModalApproveAccept(infor: any) {
   const params = {
     userTypeId: infor.userTypeId,
     orgId: infor.organizationalStructureId,
@@ -237,11 +233,10 @@ const handleModalApproveAccept = async (infor: any) => {
       fectchListUsers()
     })
     .catch((error: any) => {
-      toast('ERROR', t(error.message))
+      toast('ERROR', t(error.response.data.messagee))
     })
 }
-const confirmDialogApprove = (infor: any) => {
-  console.log(infor)
+function confirmDialogApprove(infor: any) {
   handleModalApproveAccept(infor)
 }
 
@@ -263,8 +258,9 @@ async function fectchListUsers() {
             id: 9,
             name: 'ActionAgree',
           },
+
           {
-            id: 17,
+            id: 23,
             name: 'ActionDeclined',
           },
         ]
@@ -316,6 +312,11 @@ window.hideAllPageLoading()
       @update:selected="selectedRows"
     >
       <template #rowItem="{ col, context }">
+        <div v-if="col === 'fullName'">
+          <CpCustomInfo
+            :context="context"
+          />
+        </div>
         <div v-if="col === 'statusId'">
           <VChip
             class="ma-2"
@@ -350,4 +351,3 @@ window.hideAllPageLoading()
     @confirm="confirmDialogApprove"
   />
 </template>
-

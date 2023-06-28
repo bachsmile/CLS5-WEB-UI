@@ -30,8 +30,9 @@ const props = withDefaults(defineProps<Props>(), ({
 
 const emit = defineEmits<Emit>()
 
-const checkAllValue = () =>
-  props.data.map(item => item.value)
+function checkAllValue() {
+  return props.data.map(item => item.value)
+}
 
 const panel = props.isOpen ? ref(checkAllValue()) : ref([])
 </script>
@@ -133,6 +134,9 @@ const panel = props.isOpen ? ref(checkAllValue()) : ref([])
 }
 
 .v-expansion-panel-text__wrapper {
-  padding-inline: 40px 16px !important;
+  padding-inline: 2.5rem 1rem !important;
+}
+.v-expansion-panel-title{
+  padding: 0px !important;
 }
 </style>

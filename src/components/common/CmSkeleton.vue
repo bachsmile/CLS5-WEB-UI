@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { createVuetify } from 'vuetify'
-
 // Styles
 import '@core/scss/template/libs/vuetify/index.scss'
 import 'vuetify/styles'
@@ -16,7 +14,7 @@ import {
 import type { typeSkeleton } from '@/typescript/enums/enums'
 
 interface Props {
-  type: typeof typeSkeleton[number]
+  type?: typeof typeSkeleton[number]
   height?: number
 }
 
@@ -24,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), ({
   type: 'ContentLoader',
   height: 500,
 }))
-const skeletonComponent = (type: string) => {
+function skeletonComponent(type: string) {
   let component = null
   switch (type) {
     case 'BulletListLoader':
@@ -69,4 +67,3 @@ const skeletonComponent = (type: string) => {
     </Component>
   </div>
 </template>
-

@@ -22,4 +22,29 @@ export default [
       },
     ],
   },
+  {
+    title: 'Quản lý nội dung',
+    icon: { icon: 'tabler-file' },
+    children: [
+      { title: 'Ngân hàng câu hỏi', to: { name: 'admin-content' } },
+    ],
+  },
+  {
+    title: 'Quản lý đào tạo',
+    icon: { icon: 'tabler-file' },
+    children: [
+      { title: 'Quản lý chủ đề', to: { name: 'topic-list' } },
+      { title: 'Quản lý chi phí', to: { name: 'cost-list' } },
+      { title: 'Quản lý học tập', to: { name: 'education' } },
+      { title: 'Lịch đào tạo', to: { name: 'admin-calendar' } },
+    ],
+  },
+  {
+    title: 'Tổ chức đào tạo',
+    icon: { icon: 'tabler-file' },
+    children: [
+      { title: 'Quản lý khóa học', to: { name: 'course-list' } },
+      { title: 'Quản lý kỳ thi', to: { name: 'list-exam' } },
+    ],
+  },
 ] as VerticalNavItems

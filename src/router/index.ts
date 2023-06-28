@@ -1,7 +1,7 @@
 import { setupLayouts } from 'virtual:generated-layouts'
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import { getHomeRouteForLoggedInUser, getUserData, parseJwt } from './utils'
+import { getUserData, parseJwt } from './utils'
 import error from './errors/error.router'
 import admin from '@/router/admin/admin.router'
 import MethodsUtil from '@/utils/MethodsUtil'
@@ -30,7 +30,7 @@ const token = localStorage.getItem('accessToken')
 
 const permission: any = token ? parseJwt(token) : null
 
-const isUserLoggedIn = () => {
+function isUserLoggedIn() {
   return !!permission
 }
 

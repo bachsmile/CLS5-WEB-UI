@@ -19,7 +19,7 @@ import type { size } from '@/typescript/enums/enums'
 */
 
 interface Props {
-  listItem: ListItem[]
+  listItem: Item[]
   icon?: string
   color?: string
   isBorder?: boolean
@@ -29,10 +29,11 @@ interface Props {
   title: string
   type?: string
 }
-interface ListItem {
+interface Item {
   title: string
   icon?: string
   colorClass?: string
+  color?: string
   action?: any
   key?: any
 }
@@ -55,17 +56,17 @@ const props = withDefaults(defineProps<Props>(), ({
 
 const emit = defineEmits<Emit>()
 
-const handlerPrepend = (event: any) => {
+function handlerPrepend(event: any) {
   emit('clickPrepend')
 }
 
 const buttonActive = ref(false)
 
-const activeButton = () => {
+function activeButton() {
   buttonActive.value = !buttonActive.value
 }
 
-const clickItem = (item: object) => {
+function clickItem(item: object) {
   emit('clickItem', item)
 }
 </script>
@@ -110,8 +111,9 @@ const clickItem = (item: object) => {
           >
             <VListItemTitle class="jutify-content-center">
               <VIcon
-                v-if="item.icon"
-                :icon="item.icon"
+                v-if="item?.icon"
+                :icon="item?.icon"
+                :color="item?.color"
                 size="18"
                 :class="[item.colorClass]"
               />
@@ -133,15 +135,15 @@ const clickItem = (item: object) => {
 .button-group-prepend {
   border-end-end-radius: unset;
   border-start-end-radius: unset;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  border-top-left-radius: $border-radius-xs;
+  border-bottom-left-radius: $border-radius-xs;
 }
 
 .button-group-append {
   border-end-start-radius: unset;
   border-start-start-radius: unset;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-top-right-radius: $border-radius-xs;
+  border-bottom-right-radius: $border-radius-xs;
   min-width: 40px;
   &:focus{
     box-shadow: none !important;
@@ -152,13 +154,13 @@ const clickItem = (item: object) => {
  height:  -webkit-fill-available;
 }
 
-.text-style-btn {
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 20px;
-  padding-block: 10px;
-  padding-inline: 16px;
-  text-transform: inherit;
-}
+// .text-style-btn {
+//   font-size: 14px;
+//   font-style: normal;
+//   font-weight: 600;
+//   line-height: 20px;
+//   padding-block: 10px;
+//   padding-inline: 16px;
+//   text-transform: inherit;
+// }
 </style>

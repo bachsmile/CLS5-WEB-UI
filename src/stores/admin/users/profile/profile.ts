@@ -162,7 +162,7 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
 
   // lấy mã code
   const getAutoCode = async () => {
-    await MethodsUtil.requestApiCustom(ApiUser.getAutoCode, TYPE_REQUEST.GET).then(value => {
+    await MethodsUtil.requestApiCustom(ApiUser.getAutoCode, TYPE_REQUEST.GET).then((value: any) => {
       values.userCode = value?.data?.data
     })
   }
@@ -184,7 +184,7 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
     const params = { userId: id }
 
     idUpdate.value = id
-    await MethodsUtil.requestApiCustom(ApiUser.fetchDetailUpdate, TYPE_REQUEST.GET, params).then(value => {
+    await MethodsUtil.requestApiCustom(ApiUser.fetchDetailUpdate, TYPE_REQUEST.GET, params).then((value: any) => {
       setValues(value.data)
     })
   }
@@ -206,7 +206,7 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
           const params = dataObj
 
           await MethodsUtil.requestApiCustom(ApiUser.fetchCreateUser, TYPE_REQUEST.POST, params)
-            .then(value => {
+            .then((value: any) => {
               if (titleTable.value?.isChange)
                 titleTable.value.updateTitle(value.data)
               toast('SUCCESS', t(value.message))

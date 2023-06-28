@@ -52,7 +52,7 @@ const listTab = [
 
 const isShowButton = ref(true)
 
-const backUser = () => {
+function backUser() {
   router.push({ name: 'admin-organization-users-manager' })
   resetFormInfor()
 }
@@ -76,7 +76,6 @@ window.hideAllPageLoading()
   <div>
     <div
       class="d-flex justify-content-center mb-5"
-      style="margin-top: 20px;"
     >
       <CmTab
         :is-render="true"
@@ -100,4 +99,3 @@ window.hideAllPageLoading()
     </div>
   </div>
 </template>
-

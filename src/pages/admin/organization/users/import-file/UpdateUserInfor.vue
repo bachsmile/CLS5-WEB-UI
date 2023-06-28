@@ -22,7 +22,7 @@ const store = useImportFileStore()
 const { type } = storeToRefs(store)
 
 // Cập nhật năng lực
-const dataColumnExcel = (rowData: Array<any>) => {
+function dataColumnExcel(rowData: Array<any>) {
   // eslint-disable-next-line prefer-const
   let [userInformation, infoUpdate] = rowData
   return { userInformation, infoUpdate }
@@ -94,8 +94,6 @@ const getTableHeader = computed(() => {
 })
 const columnNewInfo = computed(() => {
   const item = filterConfig.list.find((col: any) => col.value === typeUpdate.value)
-  console.log(typeUpdate.value)
-
   return `${item?.key} ${t('New')}`
 })
 
@@ -126,7 +124,7 @@ const config = reactive<Config>(
   },
 )
 
-const filterType = (typeOption: any) => {
+function filterType(typeOption: any) {
   if (config.dowloadSample)
     config.dowloadSample.urlFileDefault = `${ApiUser.DownloadFileSampleUser}/${typeOption}`
   if (config.importFile && config.importFile.paramsImport) {

@@ -50,23 +50,26 @@ interface Emit {
   (e: string, data: any): void
   (e: 'activeTab', data: tab): void
 }
-const tabActive = ref<any>({})
+const tabActive = ref<string>('')
+const dataTab = ref<any>(null)
+function getTabActive() {
+  if (route.params[props.label] && !dataTab.value) {
+    dataTab.value = props.listTab.find(e => e.key === route.params[props.label]) as object
 
-const getTabActive = () => {
-  if (route.params[props.label] && !tabActive.value[props.label])
-    tabActive.value = props.listTab.find(e => e.key === route.params[props.label]) as object
+    tabActive.value = dataTab.value?.key
+    console.log(tabActive.value)
+  }
 }
-
 getTabActive()
-
-const activeTab = (value: any) => {
-  value.isRendered = true
-  router.push({ name: props.routeName || undefined, params: { [props.label]: value.key } })
-  tabActive.value = value
+function activeTab(value: any) {
+  // value.isRendered = true
+  dataTab.value = props.listTab.find(x => x.key === value) as tab
+  dataTab.value.isRendered = true
+  router.push({ name: props.routeName || undefined, params: { [props.label]: value } })
   emit('activeTab', tabActive.value)
 }
 
-const useEmitter = () => {
+function useEmitter() {
   const emitEvent = (event: any, data: any) => {
     emit(event, data)
   }
@@ -86,14 +89,15 @@ watch(() => route.params[props.label], val => {
         v-model="tabActive"
         class="cm-tabs"
         :hide-slider="type === 'button'"
+        show-arrows
         @update:modelValue="activeTab"
       >
         <VTab
           v-for="(item, index) in listTab"
           :key="index"
           :disabled="item.isDisabled"
-          :value="item"
-          :class="`item-tab ${tabActive.key === item.key ? 'active' : ''} `"
+          :value="item?.key"
+          :class="`item-tab ${dataTab?.key === item?.key ? 'active' : ''} `"
         >
           <VIcon
             v-if="item.icon"
@@ -119,17 +123,18 @@ watch(() => route.params[props.label], val => {
             :is="item?.component"
             :emit="useEmitter"
             :data-general="dataGeneral"
-            v-bind="tabActive?.dataTab"
+            v-bind="dataTab?.dataTab"
           />
         </div>
       </div>
     </div>
     <div v-else>
       <Component
-        :is="tabActive?.component"
+        :is="dataTab?.component"
+        :key="dataTab?.key"
         :emit="useEmitter"
         :data-general="dataGeneral"
-        v-bind="tabActive?.dataTab"
+        v-bind="dataTab?.dataTab"
       />
     </div>
   </div>
@@ -151,6 +156,7 @@ watch(() => route.params[props.label], val => {
   .item-tab {
     border-radius: 6px !important;
     text-transform: capitalize !important;
+    box-shadow: unset !important;
   }
 }
 
@@ -174,5 +180,14 @@ watch(() => route.params[props.label], val => {
 .content-tab {
   inline-size: 100%;
   margin-block-start: 5px;
+}
+</style>
+
+<style lang="scss">
+.cm-tabs {
+  .v-slide-group__content {
+   display: flex;
+   flex-wrap: wrap !important;
+  }
 }
 </style>

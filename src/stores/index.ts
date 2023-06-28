@@ -6,12 +6,17 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import { connectionStore } from '@/stores/connections'
 
 export const configStore = defineStore('appConfig', () => {
-  /** variable */
+  /** store */
+  const connectionControl = connectionStore()
+  const { isLoginOneDevice } = storeToRefs(connectionControl)
+
+  /** state */
   const config = reactive({
     isRTL: 'ltr',
   })
-  const connectionControl = connectionStore()
-  const { isLoginOneDevice } = storeToRefs(connectionControl)
+  const permission = ref<any>(null)
+
+  /** end state */
   const settingDefaults = ref(defaultSetting)
   const isTreeBinding = () => {
     const treeBindItem = settingDefaults.value?.find((item: any) => item.typeId === 1)
@@ -30,5 +35,5 @@ export const configStore = defineStore('appConfig', () => {
       return value.data
     })
   }
-  return { config, settingDefaults, isTreeBinding, getDefaultSetting }
+  return { config, settingDefaults, permission, isTreeBinding, getDefaultSetting }
 })

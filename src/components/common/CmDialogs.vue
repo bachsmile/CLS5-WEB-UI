@@ -18,17 +18,21 @@ interface Props {
   buttonOkName?: string
   buttonCancleName?: string
   isHideFooter?: boolean
-  persistent?: boolean
+  persistent?: boolean // ngăn không cho tắt modal
   size?: typeof sizeDialog[] | string
   height?: number | string
   disabledOk?: boolean
   disabledCancel?: boolean
+  appendToBody?: boolean
+  isDivSpace?: boolean
+  isOk?: boolean
 }
 
 interface Emit {
   (e: 'cancel', type?: string): void
   (e: 'confirm', type?: string): void
   (e: 'show'): void
+  (e: 'hide'): void
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -39,6 +43,9 @@ const props = withDefaults(defineProps<Props>(), ({
   isHideFooter: false,
   persistent: false,
   size: 'lg',
+  appendToBody: false,
+  isDivSpace: true,
+  isOk: true,
 }))
 
 const emit = defineEmits<Emit>()
@@ -47,24 +54,26 @@ const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
-const onCancel = () => {
+function onCancel() {
   emit('cancel')
 }
 
-const onConfirmation = () => {
+function onConfirmation() {
   emit('confirm')
 }
 
-const onDialogShown = (e: any) => {
+function onDialogShown(e: any) {
   // console.log('onDialogShown', e)
 }
-const onDialogHidden = (e: any) => {
+function onDialogHidden(e: any) {
   // console.log('onDialogHidden', e)
 }
 
 watch(() => props.isDialogVisible, val => {
   if (val)
     emit('show')
+  else
+    emit('hide')
 })
 const sizeModal = computed(() => {
   switch (props.size) {
@@ -83,11 +92,11 @@ const sizeModal = computed(() => {
 <template>
   <VRow
     justify="center"
-    class="dialog-common"
+    class="dialog-common ma-0"
   >
     <VDialog
-      class="abc"
-      content-class="cm-dialogs"
+      class="cm-dialogs"
+      :content-class="`cm-dialogs ${appendToBody ? 'appendToBody' : ''}`"
       :model-value="props.isDialogVisible"
       :width="sizeModal"
       :height="height"
@@ -96,7 +105,10 @@ const sizeModal = computed(() => {
       @update:model-value="onCancel"
       @before-enter="onDialogShown"
     >
-      <CmCard backgroud="bg-white">
+      <CmCard
+        :class="{ 'modal-custom-divspace': isDivSpace }"
+        backgroud="bg-white"
+      >
         <template #title>
           <VCardTitle>
             {{ title }}
@@ -107,27 +119,39 @@ const sizeModal = computed(() => {
             {{ subTitle }}
             <slot name="sub-title" />
           </VCardSubtitle>
+          <VIcon
+            class="btn-close-x"
+            @click="onCancel"
+          >
+            mdi-close
+          </VIcon>
         </template>
         <template
           #text
         >
           <slot />
         </template>
-        <VDivider class="mb-1" />
-        <template #actions>
+        <VDivider
+          v-if="isDivSpace"
+          class="mb-1"
+        />
+        <template
+          v-if="!isHideFooter"
+          #actions
+        >
           <div class="d-flex justify-end my-3 w-100">
+            <slot name="actions" />
             <CmButton
               variant="outlined"
-              bg-color="bg-white"
-              color="dark"
+              color="secondary"
               :disabled="disabledCancel"
-              text-color="color-dark"
               @click="onCancel"
             >
               {{ t(buttonCancleName) }}
             </CmButton>
 
             <CmButton
+              v-if="isOk"
               variant="elevated"
               :disabled="disabledOk"
               :color="color"
@@ -150,13 +174,23 @@ const sizeModal = computed(() => {
   padding-inline: 24px;
 }
 
-.v-card-item {
+.modal-custom-divspace .v-card-item {
   border-block-end: 1px solid $color-line-default;
 }
-.cm-dialogs {
-  .v-card-text {
-    // overflow: auto;
-    // max-height: 90vh;
+.cm-dialogs.appendToBody {
+  .v-card {
+    overflow: unset !important;
+    .v-card-text {
+      overflow: unset !important;
+      overflow-y: unset !important;
+      // max-height: 90vh;
+    }
+
   }
+}
+.btn-close-x{
+  position: absolute;
+  top: 14px;
+  right: 24px;
 }
 </style>

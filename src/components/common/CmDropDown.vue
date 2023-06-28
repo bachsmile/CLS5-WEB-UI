@@ -2,6 +2,8 @@
 import CmCheckBox from './CmCheckBox.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { typeVariant } from '@/typescript/enums/enums'
+import CmButton from '@/components/common/CmButton.vue'
+import { tableStore } from '@/stores/table'
 
 const propsValue = withDefaults(defineProps<Props>(), ({
   listItem: () => ([]),
@@ -9,14 +11,16 @@ const propsValue = withDefaults(defineProps<Props>(), ({
   checkbox: true,
   multiple: false,
   customKey: 'title',
-  dataResend: '',
+  dataResend: null,
   type: undefined,
   data: undefined,
   index: 0,
   variant: 'outlined',
+  isAction: false,
 }))
 const emit = defineEmits<Emit>()
-const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
+const storeTable = tableStore()
+const { handleActionTable } = storeTable
 
 /**
  * listItem: danh sách các item
@@ -37,6 +41,7 @@ interface Props {
   icon?: string
   data?: any
   multiple?: boolean
+  isAction?: boolean
   customKey: string
   dataResend?: any
   type?: number
@@ -73,11 +78,11 @@ interface Emit {
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
-const handleChange = (event: any) => {
+function handleChange(event: any) {
   emit('change', event)
 }
 
-const handleClickItem = (event: any) => {
+function handleClickItem(event: any) {
   // if (propsValue.multiple)
   //   event.stopPropagation()
 }
@@ -93,10 +98,14 @@ const textButton = computed(() => {
 
   return ''
 })
-const checkIconAction = (data: any) => {
-  console.log(data)
+function handleClickItemList(item: any) {
+  if (propsValue.isAction)
+    propsValue.type === 1 ? handleActionTable(MethodsUtil.checlActionKey(item, propsValue.data), propsValue.index, propsValue.dataResend) : handleActionTable()
+  else if (item?.action)
+    propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, propsValue.data), propsValue.index, propsValue.dataResend) : item?.action()
 
-  console.log(MethodsUtil.checlActionKey(data))
+  else
+    emit('click', item, propsValue.dataResend)
 }
 </script>
 
@@ -139,9 +148,11 @@ const checkIconAction = (data: any) => {
         <VListItem
           v-for="(item, i) in propsValue.listItem"
           :key="i"
-          class="border-bottom-item cursor-pointer"
+          class="cursor-pointer"
+          :class="{ 'border-bottom-item': item.underline }"
           :value="item"
-          @click="handleClickItem($event)"
+          :disabled="item?.disabled"
+          @click="($event) => handleClickItem($event)"
         >
           <template
             v-if="propsValue.multiple"
@@ -154,7 +165,8 @@ const checkIconAction = (data: any) => {
             />
           </template>
           <VListItemTitle
-            @click="item?.action ? propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, data), index, dataResend) : item?.action() : emit('click', item, dataResend)"
+
+            @click="handleClickItemList(item)"
           >
             <VIcon
               v-if="item?.icon || MethodsUtil.checlActionKey(item)[0]?.icon"
@@ -163,7 +175,7 @@ const checkIconAction = (data: any) => {
               class="mr-2"
               :class="[item.colorClass, MethodsUtil.checlActionKey(item)[0]?.color]"
             />
-            <span class="text-medium-sm">{{ t(item[customKey]) }}
+            <span>{{ t(item[customKey]) }}
             </span>
           </VListItemTitle>
           <template #append>
@@ -179,6 +191,7 @@ const checkIconAction = (data: any) => {
             > {{ item?.appendItem[customKey] }}</span>
           </template>
         </VListItem>
+        <slot />
       </VList>
     </VMenu>
   </div>
@@ -188,15 +201,15 @@ const checkIconAction = (data: any) => {
 @use "/src/styles/style-global" as *;
 
 .cm-drop-down {
-  .border-bottom-item {
-    border-radius: 0 !important;
-    border-block-end: 1px solid $color-gray-100;
-    margin-inline: 0 !important;
-  }
+
   .text-button-dropdown{
     font-style: inherit;
     text-transform: initial !important;
   }
 }
+.border-bottom-item {
+    border-radius: 0 !important;
+    border-block-end: 1px solid $color-gray-100;
+    margin-inline: 0 !important;
+  }
 </style>
-

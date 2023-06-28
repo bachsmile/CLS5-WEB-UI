@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), ({
 const emit = defineEmits<Emit>()
 interface Emit {
   (e: 'ok', value: any): void
-  (e: 'edit', value: any): voidf
+  (e: 'edit', value: any): void
   (e: 'update:isShow', value: any): void
 }
 
@@ -50,21 +50,23 @@ watch(() => props.dataDetail, val => {
   }
 })
 
-const cancelModal = () => {
-  dataInput.value = {
-    id: '',
-    name: '',
-    description: '',
-  }
+function cancelModal() {
   emit('update:isShow', false)
 }
 
-const confirmModal = () => {
+function confirmModal() {
   if (dataInput.value.id)
     emit('edit', dataInput.value)
   else
     emit('ok', dataInput.value)
   emit('update:isShow', false)
+}
+function resetData() {
+  dataInput.value = {
+    id: '',
+    name: '',
+    description: '',
+  }
 }
 </script>
 
@@ -75,6 +77,7 @@ const confirmModal = () => {
     :sub-title="title"
     @cancel="cancelModal"
     @confirm="confirmModal"
+    @hide="resetData"
   >
     <Form>
       <VRow>

@@ -6,7 +6,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import CmButton from '@/components/common/CmButton.vue'
 import { validatorStore } from '@/stores/validatator'
 import { load } from '@/stores/loadComponent'
-import ApiGroupUser from '@/api/group-user/index'
+import ApiGroupUser from '@/api/user'
 import toast from '@/plugins/toast'
 
 // Khởi tạo biến đa ngôn ngữ
@@ -59,7 +59,11 @@ const router = useRouter()
 
 // thêm nhóm người dùng
 const handleEdit = (idx: number, isUpdate: boolean) => {
-  MethodsUtil.requestApiCustom(ApiGroupUser.AddGroup, TYPE_REQUEST.POST, dataInput.value).then((res: any) => {
+  const payload = {
+    ...dataInput.value,
+    id: route.params.id ? route.params.id : null,
+  }
+  MethodsUtil.requestApiCustom(ApiGroupUser.AddGroup, TYPE_REQUEST.POST, payload).then((res: any) => {
     toast('SUCCESS', t('common.add-success'))
     if (isUpdate)
       router.push({ name: 'admin-organization-user-groups-edit', params: { id: res.data, tab: 'info' } })
@@ -155,7 +159,7 @@ const cancel = () => {
     <VCol class="d-flex justify-end flex-wrap">
       <CmButton
         variant="outlined"
-        color="dark"
+        color="secondary"
         :title="TITLE.titleCancel"
         @click="cancel"
       />
@@ -164,7 +168,7 @@ const cancel = () => {
         :title="TITLE.titleButton"
         is-load
         class="ml-2"
-        color="50-primary"
+        color="primary"
         @click="handleEdit($event, false)"
       />
       <CmButton

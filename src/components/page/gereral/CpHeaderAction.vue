@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<Props>(), ({
+const props = withDefaults(defineProps<Props>(), {
   isDelete: false,
   isBack: false,
   disabledBack: false,
@@ -9,7 +9,7 @@ const props = withDefaults(defineProps<Props>(), ({
   disabledDelete: false,
   disabledApprove: false,
   disabledFillter: false,
-}))
+})
 
 const emit = defineEmits<Emit>()
 
@@ -18,11 +18,15 @@ interface Emit {
   (e: 'deleteMultiple'): void
   (e: 'addHandler'): void
   (e: 'back'): void
-  (e: 'search', type: any): void
+  (e: 'update:keyword', type: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
-const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
-const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
+const CmButton = defineAsyncComponent(
+  () => import('@/components/common/CmButton.vue'),
+)
+const CmTextField = defineAsyncComponent(
+  () => import('@/components/common/CmTextField.vue'),
+)
 
 /*
   isDelete: Hiện thị button delete
@@ -39,11 +43,12 @@ interface Props {
   isAdd?: boolean
   addButtonName?: string
   disabledFillter?: boolean
+  keyword?: string
 }
 
 const isShowFilter = ref(props.isFillter)
 
-const handleClickBtn = (type: string) => {
+function handleClickBtn(type: string) {
   switch (type) {
     case 'fillter':
       isShowFilter.value = !isShowFilter.value
@@ -61,22 +66,12 @@ const handleClickBtn = (type: string) => {
     default:
       break
   }
-
   emit('click', type)
 }
 
-const timer = ref<any>(null)
-const handleSearch = (value: any) => {
-  if (timer.value) {
-    clearTimeout(timer.value)
-    timer.value = null
-  }
-  timer.value = setTimeout(() => {
-    console.log(value)
-
-    emit('search', value)
-  }, 500)
-}
+const handleSearch = window._.debounce((value: any) => {
+  emit('update:keyword', value)
+}, 500)
 </script>
 
 <template>
@@ -95,9 +90,7 @@ const handleSearch = (value: any) => {
           :disabled="disabledDelete"
           @click="handleClickBtn('delete')"
         >
-          <VIcon
-            icon="tabler:trash"
-          />
+          <VIcon icon="tabler:trash" />
         </CmButton>
         <CmButton
           v-if="isBack"
@@ -107,9 +100,7 @@ const handleSearch = (value: any) => {
           class="mr-3"
           @click="handleClickBtn('back')"
         >
-          <VIcon
-            icon="tabler:corner-down-left"
-          />
+          <VIcon icon="tabler:corner-down-left" />
         </CmButton>
         <CmButton
           v-if="isApprove"
@@ -118,10 +109,9 @@ const handleSearch = (value: any) => {
           color="success"
           @click="handleClickBtn('approve')"
         >
-          <VIcon
-            icon="mdi-checkbox-marked-circle-outline"
-          />
+          <VIcon icon="mdi-checkbox-marked-circle-outline" />
         </CmButton>
+        <slot name="actionLeft" />
       </div>
     </VCol>
     <VSpacer />
@@ -130,38 +120,34 @@ const handleSearch = (value: any) => {
       md="7"
       sm="8"
     >
-      <VRow>
-        <VCol class="d-flex justify-end pr-0">
-          <CmButton
-            v-if="isAdd"
-            class="ml-3"
-            color="primary"
-            @click="handleClickBtn('addHandler')"
-          >
-            {{ addButtonName }}
-          </CmButton>
-          <CmTextField
-            label="Tìm kiếm"
-            class="header-action-field ml-3"
-            placeholder="Tìm kiếm"
-            prepend-inner-icon="tabler-search"
-            @update:model-value="handleSearch"
-          />
-          <CmButton
-            v-if="isFillter"
-            class="ml-3"
-            :disabled="disabledFillter"
-            variant="outlined"
-            bg-color="bg-white"
-            color="color-dark-300"
-            text-color="color-dark"
-            :size-icon="20"
-            icon="ic:round-filter-list"
-            :title="isShowFilter ? t('hide-filter') : t('show-filter')"
-            @click="handleClickBtn('fillter')"
-          />
-        </VCol>
-      </VRow>
+      <div class="d-flex justify-end align-center ">
+        <CmButton
+          v-if="isAdd"
+          class="ml-3"
+          color="primary"
+          @click="handleClickBtn('addHandler')"
+        >
+          {{ addButtonName }}
+        </CmButton>
+        <CmTextField
+          :model-value="keyword"
+          class="header-action-field ml-3"
+          placeholder="Tìm kiếm"
+          prepend-inner-icon="tabler-search"
+          @update:model-value="handleSearch"
+        />
+        <CmButton
+          v-if="isFillter"
+          class="ml-3"
+          :disabled="disabledFillter"
+          variant="outlined"
+          color="secondary"
+          :size-icon="20"
+          icon="ic:round-filter-list"
+          :title="isShowFilter ? t('hide-filter') : t('show-filter')"
+          @click="handleClickBtn('fillter')"
+        />
+      </div>
     </VCol>
   </VRow>
 </template>

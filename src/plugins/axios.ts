@@ -104,7 +104,7 @@ axiosIns.interceptors.response.use(
     // else if (response && response.status === 403) {
     //   // window.location = '/not-authorized'
     // }
-    return Promise.reject(error?.response?.data)
+    return Promise.reject(error)
   },
 )
 export default axiosIns

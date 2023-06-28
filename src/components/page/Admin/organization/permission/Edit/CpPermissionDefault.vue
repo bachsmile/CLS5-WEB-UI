@@ -30,7 +30,6 @@ const handleChecked = (node: any, idx: number) => {
   else {
     // eslint-disable-next-line vue/no-mutating-props
     props.listFeaturePermission[idx][node.parent].permissionValue += node.permission
-    console.log(props.listFeaturePermission[idx])
   }
 }
 
@@ -42,7 +41,6 @@ const handleUnChecked = (node: any, idx: number) => {
   else {
     // eslint-disable-next-line vue/no-mutating-props
     props.listFeaturePermission[idx][node.parent].permissionValue -= node.permission
-    console.log(props.listFeaturePermission[idx])
   }
 }
 </script>

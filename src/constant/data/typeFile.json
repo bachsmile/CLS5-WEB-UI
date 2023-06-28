@@ -1,0 +1,22 @@
+{
+    "typeFile": {
+        "application/msword": {
+            "color": "primary",
+            "name": "word",
+            "icon": "ri:file-word-2-line",
+            "type": 1
+        },
+        "video/mp4": {
+            "color": "primary",
+            "name": "Video",
+            "icon": "tabler:video",
+            "type": 2
+        },
+        "default": {
+            "color": "primary",
+            "name": "file",
+            "icon": "tabler:file",
+            "type": 0
+        }
+    }
+}

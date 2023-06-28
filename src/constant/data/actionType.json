@@ -38,14 +38,14 @@
     {
       "id": 6,
       "name": "ActionRecallRequest",
-      "icon": "tabler:circle-minus",
+      "icon": "bi:arrow-return-left",
       "color": "color-primary",
       "note": "Yêu cầu thu hồi"
     },
     {
       "id": 7,
       "name": "ActionAcceptRecallRequest",
-      "icon": "prime-check-circle",
+      "icon": "prime-check",
       "color": "color-success",
       "note": "Cho phép thu hồi"
     },
@@ -107,17 +107,57 @@
     },
     {
       "id": 16,
-      "name": "AddOrStructure",
-      "icon": "tabler:circle-plus",
+      "name": "DownloadContentCourse",
+      "icon": "tabler:download",
       "color": "color-orange",
-      "note": ""
+      "note": "Tải nội dung khóa học"
     },
     {
       "id": 17,
+      "name": "QrCode",
+      "icon": "tabler:qrcode",
+      "color": "color-orange",
+      "note": "Mã QR"
+    },
+    {
+      "id": 18,
+      "name": "CopyCourse",
+      "key": "CopyCourse",
+      "icon": "tabler:copy",
+      "color": "color-primary",
+      "note": "Sao chép khóa học"
+    },
+    {
+      "id": 19,
+      "name": "AddQuestionContent",
+      "key": "AddQuestionContent",
+      "icon": "fe:file",
+      "color": "color-primary",
+      "note": "Thêm vào ngân hàng nội dung"
+    },
+    {
+      "id": 20,
+      "name": "MoveUp",
+      "key": "MoveUp",
+      "icon": "tabler:corner-left-up",
+      "color": "color-purple",
+      "note": " Di chuyển lên trên"
+    },
+    {
+      "id": 21,
+      "name": "MoveDown",
+      "key": "MoveDown",
+      "icon": "tabler:corner-right-down",
+      "color": "color-purple",
+      "note": "Di chuyển lên trên"
+    },
+    {
+      "id": 23,
       "name": "ActionDeclined",
+      "key": "ActionDeclined",
       "icon": "bi:arrow-return-left",
       "color": "color-orange",
-      "note": ""
+      "note": "Di chuyển lên trên"
     }
   ],
   "ApproveType": [

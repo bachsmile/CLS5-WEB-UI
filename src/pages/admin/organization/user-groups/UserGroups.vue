@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ApiGroupUser from '@/api/group-user/index'
+import ApiGroupUser from '@/api/user'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Params } from '@/typescript/interface/params'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
@@ -86,7 +86,7 @@ const handleDeleteUserGroup = () => {
 const HEADER = Object.freeze({
   TITLE_PAGE: t('list-group-user'),
   BUTTON_EXCEL: t('export-excel'),
-  BUTTON_ADD: t('common.add'),
+  BUTTON_ADD: t('Add-new'),
 })
 
 const listItemButtonGroup = [

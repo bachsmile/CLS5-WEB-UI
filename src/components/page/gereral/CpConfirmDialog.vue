@@ -30,8 +30,8 @@ const props = withDefaults(defineProps<Props>(), ({
   buttonOkName: 'ok-title',
   buttonCancleName: 'cancel-title',
   isHideFooter: false,
-  minWidth: 300,
-  maxWidth: 300,
+  minWidth: 400,
+  maxWidth: 400,
 }))
 
 const emit = defineEmits<Emit>()
@@ -45,21 +45,21 @@ const prefixColor = computed(() => {
   return 'btn'
 })
 
-const checkTypeDialog = (type: number) => {
+function checkTypeDialog(type: number) {
   return DialogType[type]
 }
 
-const updateModelValue = (val: boolean) => {
+function updateModelValue(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 
-const onConfirmation = () => {
+function onConfirmation() {
   emit('confirm', true, props?.keyModal)
   updateModelValue(false)
 }
 
-const onCancel = () => {
-  emit('confirm', false)
+function onCancel() {
+  // emit('confirm', false)
   emit('update:isDialogVisible', false)
 }
 </script>

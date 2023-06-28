@@ -12,19 +12,19 @@ const emit = defineEmits<Emit>()
 
 const phoneNumber = ref(structuredClone(toRaw(props.mobileNumber)))
 
-const formSubmit = () => {
+function formSubmit() {
   if (phoneNumber.value) {
     emit('submit', phoneNumber.value)
     emit('update:isDialogVisible', false)
   }
 }
 
-const resetPhoneNumber = () => {
+function resetPhoneNumber() {
   phoneNumber.value = structuredClone(toRaw(props.mobileNumber))
   emit('update:isDialogVisible', false)
 }
 
-const dialogModelValueUpdate = (val: boolean) => {
+function dialogModelValueUpdate(val: boolean) {
   emit('update:isDialogVisible', val)
 }
 </script>

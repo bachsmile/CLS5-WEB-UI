@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import jwt_decode from 'jwt-decode'
 import { validatorStore } from '@/stores/validatator'
 import { comboboxStore } from '@/stores/combobox'
-import { load } from '@/stores/loadComponent'
 import { profileUserManagerStore } from '@/stores/admin/users/profile/profile'
+import constant from '@/constant/constant'
 
 const emit = defineEmits<Emit>()
 
@@ -18,11 +19,11 @@ const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTex
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CpTitleTable = defineAsyncComponent(() => import('./CpTitleTable.vue'))
 const CmRadioGroup = defineAsyncComponent(() => import('@/components/common/CmRadioGroup.vue'))
-const CpUserProfileAvatarEdit = defineAsyncComponent(() => import('@/components/page/gereral/CpUserProfileAvatarEdit.vue'))
+const CmImgUpload = defineAsyncComponent(() => import('@/components/common/CmImgUpload.vue'))
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const storeValidate = validatorStore()
-const storeCombobox = comboboxStore()
 const { Field, Form } = storeValidate
+const storeCombobox = comboboxStore()
 const { userTypeCombobox, statusesCombobox } = storeToRefs(storeCombobox)
 const { fetchTypeUsersCombobox, fetchStatusUsersCombobox } = storeCombobox
 const storeProfileUserManager = profileUserManagerStore()
@@ -44,7 +45,7 @@ const formUserInfor = ref()
 const valuesComponent = ref(computed(() => values.value))
 
 // method
-const handleFormValue = (value: any) => {
+function handleFormValue(value: any) {
   //
 }
 
@@ -63,14 +64,11 @@ if (window._.isEmpty(userTypeCombobox.value))
   fetchTypeUsersCombobox()
 
 const isOwner = computed(() => {
-  // const token = useJwt.getToken()
-  // if (!token)
-  //   return true
-  // const permission = parseJwt(token)
-  // if (Number(permission?.OwnerId) === Number(this.$route.params.id))
-  //   return true
-
-  return false
+  const token = window.localStorage.getItem('accessToken')
+  if (!token)
+    return true
+  const permission: any = jwt_decode(token)
+  return Number(permission?.OwnerId) === Number(route.params.id)
 })
 if (Number(route.params.id) >= 0)
   titleTable.value?.checkGetListOrgStruct()
@@ -97,9 +95,11 @@ window.hideAllPageLoading()
             cols="12"
             md="2"
           >
-            <CpUserProfileAvatarEdit
+            <CmImgUpload
               v-if="valuesComponent"
               v-model:src="valuesComponent.avatar"
+              is-avatar
+              is-badge
               :tooltip="t('system-management.100x100')"
             />
           </VCol>
@@ -328,6 +328,7 @@ window.hideAllPageLoading()
               v-model="valuesComponent.kpiLearn"
               name="kpiLearn"
               type="number"
+
               :rules="schema.kpiLearn"
             >
               <CmTextField
@@ -336,6 +337,8 @@ window.hideAllPageLoading()
                 :text="`${t('kpi-learning')}`"
                 :placeholder="$t('kpi-learning')"
                 type="number"
+                :min="constant.MIN_NUMBER"
+                :max="constant.MAX_NUMBER"
                 @change="handleFormValue"
               />
             </Field>
@@ -357,6 +360,8 @@ window.hideAllPageLoading()
                 :errors="errors"
                 :text="`${t('kpi-teaching')}`"
                 :placeholder="$t('kpi-teaching')"
+                :min="constant.MIN_NUMBER"
+                :max="constant.MAX_NUMBER"
                 type="number"
                 @change="handleFormValue"
               />

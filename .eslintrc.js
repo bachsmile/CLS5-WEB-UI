@@ -27,6 +27,8 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
 
+    // 'antfu/top-level-function': 'off',
+
     // indentation (Already present in TypeScript)
     'indent': ['error', 2, { SwitchCase: 1 }],
 
