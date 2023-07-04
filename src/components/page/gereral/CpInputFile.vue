@@ -9,7 +9,7 @@ import CmTextField from '@/components/common/CmTextField.vue'
 
 const props = withDefaults(defineProps<Props>(), ({
   accept: '',
-  isBtnDownload: true,
+  isBtnDownload: false,
   isSecure: false,
   isBackground: false,
   isRequestFileInstall: false,
@@ -21,7 +21,7 @@ const CpMdRequestInstall = defineAsyncComponent(() => import('@/components/page/
 interface Emit {
   (e: 'onChangeFile', value: any): void
   (e: 'update:acceptDownload', value: any): void
-  (e: 'change', value: any): void
+  (e: 'change', value: any, file?: any): void
   (e: 'haveFile', value: any): void
   (e: 'update:fileUpload', value: any): void
 }
@@ -47,6 +47,7 @@ const haveFile = ref(false)
 const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
 const userData = JSON.parse(localStorage.getItem('userData') || '')
 const dataFile = ref(props.modelValue)
+const fileNameInput = ref(props.fileName)
 const params = ref({
   files: null as any,
   isSecure: props.isSecure || false as any,
@@ -108,7 +109,7 @@ function checkTimeDelay(size: number) {
 async function onFileSelected(event: any) {
   filesData.value.processing = 0
   const tmpFiles = event.target.files || event.dataTransfer.files
-  if (!tmpFiles.length)
+  if (!tmpFiles?.length)
     return
   const file = tmpFiles[0]
   params.value.files = file
@@ -163,13 +164,14 @@ async function upFileServer(file: any) {
           ...filesData.value,
           ...value.data,
         }
+        fileNameInput.value = filesData.value.name
         filesData.value.processing = 100
-        emit('update:fileUpload', filesData.value)
-        emit('change', filesData.value)
         clearInterval(intervalProgress.value)
         isShowModalProcessing.value = false
         toast('SUCCESS', t('up-file'))
         haveFile.value = true
+        emit('update:fileUpload', filesData.value)
+        emit('change', filesData.value, file)
       }
     })
     .catch(() => {
@@ -191,8 +193,8 @@ function cancelProcessing(index: any) {
   }
 }
 async function dowloadFile(idx: any) {
-  await MethodsUtil.dowloadSampleFile(
-    SERVERFILE + filesData.value.filePath,
+  MethodsUtil.dowloadSampleFile(
+    `${SERVERFILE}${filesData.value.filePath}`,
     'GET',
     filesData.value.name,
   ).then(value => {
@@ -203,6 +205,9 @@ async function dowloadFile(idx: any) {
 }
 watch(() => props.isSecure, (val: any) => {
   params.value.isSecure = val
+})
+watch(() => props.fileName, (val: any) => {
+  fileNameInput.value = val
 })
 watch(() => props.modelValue, (val: any) => {
   if (window._.isEmpty(val)) {
@@ -229,7 +234,8 @@ watch(() => props.modelValue, (val: any) => {
       <CmTextField
         class="w-100 mr-3"
         disabled
-        :model-value="fileName"
+        :errors="errors"
+        :model-value="fileNameInput"
       />
 
       <VFileInput
@@ -247,7 +253,7 @@ watch(() => props.modelValue, (val: any) => {
         @change="onFileSelected"
       >
         <template
-          v-if="!dataFile.length"
+          v-if="!dataFile?.length"
           #prepend-inner
         >
           <span>{{ fileName }}</span>

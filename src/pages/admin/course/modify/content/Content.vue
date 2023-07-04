@@ -5,7 +5,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import { contentTypeManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
 
 const CpVideoContent = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/content/type/video/CpVideoContent.vue'))
-
+const CpDocumentContent = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/content/type/document/CpDocumentContent.vue'))
 const CpContent = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/content/type/CpContent.vue'))
 
 const component = ref(CpContent)
@@ -28,11 +28,14 @@ getDetailCourse()
 
 onMounted(() => {
   switch (route.params?.type) {
-    case 'content':
+    case 'text-content':
       component.value = CpContent
       break
-    case 'video':
+    case 'video-content':
       component.value = CpVideoContent
+      break
+    case 'document-content':
+      component.value = CpDocumentContent
       break
 
     default:

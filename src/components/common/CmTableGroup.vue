@@ -193,10 +193,11 @@ const bodyRowClassName = computed(() => {
     return ''
   }
 })
-
+function iconEvents(e: any, status: boolean) {
+  e.isShow = status
+}
 watch(() => props.items, (val: Item[]) => {
   isLoading.value = true
-  console.log(val)
 
   itemsData.value = val
   itemsData.value?.forEach((element: any, index: any) => {
@@ -219,16 +220,12 @@ onMounted(() => {
   nextTick(() => {
     console.timeEnd('mout')
 
-    // isLoading.value = false
+    isLoading.value = false
   })
 })
 
 console.time('mout')
 console.time('update')
-function iconEvents(e: any, status: boolean) {
-  console.log(e)
-  e.isShow = status
-}
 </script>
 
 <template>

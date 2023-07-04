@@ -57,7 +57,6 @@ function getTabActive() {
     dataTab.value = props.listTab.find(e => e.key === route.params[props.label]) as object
 
     tabActive.value = dataTab.value?.key
-    console.log(tabActive.value)
   }
 }
 getTabActive()

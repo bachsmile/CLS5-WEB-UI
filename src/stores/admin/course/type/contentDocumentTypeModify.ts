@@ -5,7 +5,7 @@ import CourseService from '@/api/course/index'
 import { load } from '@/stores/loadComponent.js'
 import toast from '@/plugins/toast'
 
-export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
+export const contentDocTypeManagerStore = defineStore('contentDocTypeManager', () => {
   /** lib ****************************************************************/
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
   const router = useRouter()
@@ -26,13 +26,13 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
   const isAllowRetake = ref(false)
   const minuteWork = ref(0)
   const secondWork = ref(0)
-  const videoData = ref({
+  const documentData = ref({
     courseId: null as null | number,
     archiveTypeId: 0,
     description: '',
     name: '',
     url: null as null | string,
-    urlFileName: null as null | string,
+    urlFileName: null as any,
     urlCdn: '',
     ownerId: null,
     courseContentId: null,
@@ -123,10 +123,9 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
   const isViewDetail = ref(false)
   const isUpdate = ref(false)
   const timeComplete = ref(0)
-  const dataInitVideo = ref(window._.cloneDeep(videoData.value))
+  const dataInitVideo = ref(window._.cloneDeep(documentData.value))
 
   /** method */
-
   function getErrorsMessage(errorsMess: Array<any>) {
     let str = ''
     errorsMess.forEach(element => {
@@ -136,29 +135,31 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
 
     return str
   }
-  function resetDataVideo() {
-    videoData.value = dataInitVideo.value
+  function resetDataDoc() {
+    documentData.value = dataInitVideo.value
   }
   async function handleUpdateContent(idx: any, isSaveAndUpdate: boolean) {
     let response = null
-    const isUpdates = videoData.value.courseContentId && videoData.value.courseContentId !== null
+    const isUpdates = documentData.value.courseContentId && documentData.value.courseContentId !== null
     window.showAllPageLoading('COMPONENT')
 
-    if (videoData.value.acceptDownload === null)
-      videoData.value.acceptDownload = false
+    if (documentData.value.acceptDownload === null)
+      documentData.value.acceptDownload = false
+    console.log(documentData)
 
     if (isUpdates) {
-      response = await MethodsUtil.requestApiCustom(CourseService.PostUpdateContent, TYPE_REQUEST.POST, videoData.value)
+      response = await MethodsUtil.requestApiCustom(CourseService.PostUpdateContent, TYPE_REQUEST.POST, documentData.value)
     }
     else {
-      videoData.value.courseId = Number(route.params.id)
-      response = await MethodsUtil.requestApiCustom(CourseService.PostCreateContent, TYPE_REQUEST.POST, videoData.value)
+      documentData.value.courseId = Number(route.params.id)
+      response = await MethodsUtil.requestApiCustom(CourseService.PostCreateContent, TYPE_REQUEST.POST, documentData.value)
     }
     window.hideAllPageLoading()
+
     let variant = true
     let message = response?.message
     if (response.code === 200) {
-      videoData.value = dataInitVideo.value
+      documentData.value = dataInitVideo.value
       if (isSaveAndUpdate === true) {
         contentId.value = response.data
         unLoadComponent(idx)
@@ -231,15 +232,15 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
     return await MethodsUtil.requestApiCustom(CourseService.GetInforContentById, TYPE_REQUEST.GET, params).then(async (value: any) => {
       if (value?.data) {
         value.data.themeticId = value.data.themeticId ? value.data.themeticId : null
-        videoData.value = value?.data
+        documentData.value = value?.data
       }
 
-      if (videoData.value.archiveTypeId !== 12)
-        await fetchConditionAttend(videoData.value.courseContentId)
-      if (videoData.value.archiveTypeId !== 10 && videoData.value.archiveTypeId !== 11 && videoData.value.archiveTypeId !== 12)
-        await fetchConditionComplete(videoData.value.courseContentId)
+      if (documentData.value.archiveTypeId !== 12)
+        await fetchConditionAttend(documentData.value.courseContentId)
+      if (documentData.value.archiveTypeId !== 10 && documentData.value.archiveTypeId !== 11 && documentData.value.archiveTypeId !== 12)
+        await fetchConditionComplete(documentData.value.courseContentId)
       isUpdate.value = true
-      typeContent.value = MethodsUtil.getTypeContent(videoData.value.archiveTypeId)
+      typeContent.value = MethodsUtil.getTypeContent(documentData.value.archiveTypeId)
     })
   }
   function changeType(val: any, type: string) {
@@ -269,7 +270,7 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
   return {
     /** Nội dung video */
     courseData,
-    videoData,
+    documentData,
     timeComplete,
     isUpdate,
     contentId,
@@ -287,7 +288,7 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
     secondWork,
     handleUpdateContent,
     fetchContent,
-    resetDataVideo,
+    resetDataDoc,
     fetchConditionAttend,
     changeType,
     getQuestionsData,

@@ -63,7 +63,7 @@ const isShowFilter = ref(true)
 
 /** method */
 // hàm trả về các loại action từ header filter
-const handleClickBtn = (type: string) => {
+function handleClickBtn(type: string) {
   switch (type) {
     case 'fillter':
       isShowFilter.value = !isShowFilter.value
@@ -74,23 +74,25 @@ const handleClickBtn = (type: string) => {
 }
 
 // search ở fillter header
-const handleSearch = async (value: any) => {
+async function handleSearch(value: any) {
   queryParams.pageNumber = 1
   queryParams.keyword = value
   getCourseAsignOrg()
 }
-const changeTopic = async (value: any) => {
+async function changeTopic(value: any) {
   queryParams.topicCourseId = value
   queryParams.pageNumber = 1
   getCourseAsignOrg()
 }
-const onCancel = async () => {
+async function onCancel() {
   emit('update:isDialogVisible', false)
 }
-const onConfirm = async () => {
+async function onConfirm() {
   if (props.disabledOk)
     return
-  if (!dataComponent.selectedRowsIds?.length) { toast('WARNING', t('please-choose-at-least') + t('course').toLowerCase()) }
+  if (!dataComponent.selectedRowsIds?.length) {
+    toast('WARNING', t('please-choose-at-least') + t('course').toLowerCase())
+  }
   else {
     emit('update:disabledOk', true)
     emit('confirm', dataComponent.selectedRowsIds)
@@ -125,7 +127,6 @@ watch(() => props.isDialogVisible, async (isShow: any) => {
 
 <template>
   <CmDialogs
-    ref="dialog"
     :is-dialog-visible="isDialogVisible"
     :title="LABEL.TITLE"
     persistent
@@ -148,12 +149,11 @@ watch(() => props.isDialogVisible, async (isShow: any) => {
       <CpHeaderAction
         is-fillter
         @click="handleClickBtn"
-        @search="handleSearch"
+        @update:keyword="handleSearch"
       />
     </div>
     <div>
       <CmTable
-        ref="tableAsignUser"
         v-model:pageNumber="queryParams.pageNumber"
         v-model:pageSize="queryParams.pageSize"
         v-model:selected="dataComponent.selectedRowsIds"

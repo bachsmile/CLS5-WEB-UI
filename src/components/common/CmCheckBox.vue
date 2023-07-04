@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import MethodsUtil from '@/utils/MethodsUtil'
+
 interface Props {/** ** Interface */
   modelValue?: any
   color?: string
@@ -27,6 +29,7 @@ interface Props {/** ** Interface */
   tooltip?: boolean
   tooltipLabel?: string
   text?: string
+  colorInterminate?: string
   field?: any
   value?: any
 }
@@ -39,6 +42,7 @@ interface Emit {
 const propsValue = withDefaults(defineProps<Props>(), ({
   modelValue: false,
   color: 'primary',
+  colorInterminate: 'primary',
   disabled: false,
   indeterminate: false,
   error: false,
@@ -66,7 +70,6 @@ const propsValue = withDefaults(defineProps<Props>(), ({
 
 const emit = defineEmits<Emit>()
 const checkbox = ref(propsValue.modelValue)
-
 function onChangeChecked(val: boolean) {
   emit('update:modelValue', val)
 }
@@ -87,6 +90,7 @@ watch(() => propsValue.modelValue, value => {
       :id="propsValue.id"
       v-model="checkbox"
       v-intersect="() => {}"
+      :style="`color: ${MethodsUtil.checkColorCustim(colorInterminate)}`"
       :color="color"
       :disabled="propsValue.disabled"
       :indeterminate="propsValue.indeterminate"

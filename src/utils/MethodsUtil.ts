@@ -6,6 +6,7 @@ import ApiUser from '@/api/user/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import UserService from '@/api/user/index'
 import ServerFileService from '@/api/server-file/index'
+import axios from '@axios'
 
 import type { Any } from '@/typescript/interface'
 
@@ -56,38 +57,34 @@ export default class MethodsUtil {
    * @param {any} payload =>  Dữ liệu đính kèm api
    * @return {string}
    */
-  static dowloadSampleFile = async (url: string, method: string, nameFile: string, payload?: any): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
-      const model = {
-        language: localStorage.getItem('lang') === null ? 'vi' : localStorage.getItem('lang'),
-      }
+  static dowloadSampleFile = async (url: string, method: string, nameFile: string, payload?: any) => {
+    const model = {
+      language: localStorage.getItem('lang') === null ? 'vi' : localStorage.getItem('lang'),
+    }
 
-      const data = method === 'GET' ? model : !window._.isEmpty(payload) ? payload : model
-      const params = method === 'GET' ? payload : null
+    const data = method === 'GET' ? model : !window._.isEmpty(payload) ? payload : model
+    const params = method === 'GET' ? payload : null
 
-      window.axios({
-        url,
-        method,
-        responseType: 'blob',
-        data,
-        params,
-      })
-        .then((response: any) => {
-          const fileURL = window.URL.createObjectURL(new Blob([response.data]))
-
-          const fileLink = document.createElement('a')
-
-          fileLink.href = fileURL
-          fileLink.setAttribute('download', nameFile)
-          document.body.appendChild(fileLink)
-          fileLink.click()
-
-          resolve()
-        })
-        .catch((error: any) => {
-          reject(error)
-        })
+    return axios({
+      url,
+      method,
+      responseType: 'blob',
+      data,
+      params,
     })
+      .then((response: any) => {
+        const fileURL = window.URL.createObjectURL(new Blob([response]))
+        const fileLink = document.createElement('a')
+
+        fileLink.href = fileURL
+        fileLink.setAttribute('download', nameFile)
+        document.body.appendChild(fileLink)
+        fileLink.click()
+
+        // Remove the link element from the document body and revoke the blob URL
+        document.body.removeChild(fileLink)
+        window.URL.revokeObjectURL(fileURL)
+      })
   }
 
   /**
@@ -130,6 +127,24 @@ export default class MethodsUtil {
     dataFormat.name = action?.name
 
     return dataFormat
+  }
+
+  static checkColorCustim = (key: string) => {
+    switch (key) {
+      case 'error':
+        return 'rgb(var(--v-error-600))'
+      case 'primary':
+        return 'rgb(var(--v-primary-600))'
+      case 'infor':
+        return 'rgb(var(--v-gray-600))'
+      case 'success':
+        return 'rgb(var(--v-success-600))'
+      case 'warrning':
+        return 'rgb(var(--v-warrning-600))'
+
+      default:
+        return 'rgb(var(--v-gray-300))'
+    }
   }
 
   static checkStatusTypeUser = (key: number | string) => {
@@ -276,5 +291,38 @@ export default class MethodsUtil {
 
   static checkTypeFile(type: string) {
     return (typeFile as any)[type ?? 'default']
+  }
+
+  static getTypeContent(value: number) {
+    switch (value) {
+      case 1:
+        return 'text-content'
+      case 2:
+        return 'web-content'
+      case 3:
+        return 'online-content'
+      case 4:
+        return 'video-content'
+      case 5:
+        return 'audio-content'
+      case 6:
+        return 'document-content'
+      case 7:
+        return 'scorm-content'
+      case 8:
+        return 'flash-content'
+      case 9:
+        return 'iframe-content'
+      case 10:
+        return 'test-content'
+      case 11:
+        return 'survey-content'
+      case 12:
+        return 'essay-content'
+      case 16:
+        return 'offline-content'
+      default:
+        return 'text-content'
+    }
   }
 }

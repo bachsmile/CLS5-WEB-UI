@@ -1,5 +1,7 @@
 <script setup lang="ts">
-
+onUnmounted(() => {
+  console.log('onUnmounted')
+})
 </script>
 
 <template>
@@ -7,7 +9,3 @@
     pos
   </div>
 </template>
-
-<style scoped>
-
-</style>

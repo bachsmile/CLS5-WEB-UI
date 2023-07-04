@@ -20,11 +20,11 @@ const headers = reactive([
   { text: '', value: 'action', width: 150 },
 ])
 
-const actionItemView = () => {
+function actionItemView() {
   // console.log('view')
 }
 
-const actionItemEdit = () => {
+function actionItemEdit() {
   // console.log('edit')
 }
 
@@ -173,15 +173,15 @@ const items = reactive ([
   },
 ])
 
-const handleClickRow = (e: any) => {
+function handleClickRow(e: any) {
   // console.log(e)
 }
 
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   // console.log(e)
 }
 
-const splitRow = () => {
+function splitRow() {
   // console.log(headers)
   headers.splice(1, 1)
 }
@@ -199,4 +199,3 @@ const splitRow = () => {
     />
   </div>
 </template>
-

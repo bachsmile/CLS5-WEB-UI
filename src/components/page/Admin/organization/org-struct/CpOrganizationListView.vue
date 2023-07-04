@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MethodsUtil from '@/utils/MethodsUtil'
 import { orgStructManagerStore } from '@/stores/admin/org-struct/orgStruct'
+
 import SkTree from '@/components/page/gereral/skeleton/SkTree.vue'
 
 const emit = defineEmits<Emit>()
@@ -64,17 +65,15 @@ function handleAction(value: any, dataResend: any) {
   }
 }
 onUpdated(() => {
-  setTimeout(() => {
+  nextTick(() => {
     isLoading.value = false
-  }, 200)
+  })
 })
-
 watch(render, val => {
   isLoading.value = true
 })
 isView.value = true
 getListOrgStruct()
-render.value++
 </script>
 
 <template>
@@ -84,6 +83,7 @@ render.value++
     class="page-containter-box"
   >
     <CmTreeView
+      v-if="config?.roots.length"
       :key="render"
       :nodes="nodes"
       :config="config"

@@ -32,13 +32,13 @@ const headers = ref<HeaderPermission[]>([
 ])
 const items = ref<Item[]>([])
 const totalRecord = ref<number>(0)
-const getListUserType = async () => {
+async function getListUserType() {
   const { data } = await MethodsUtil.requestApiCustom(apiPermission.listUserType, TYPE_REQUEST.GET, params)
   items.value = data?.pageLists
   totalRecord.value = data.totalRecord
 }
 getListUserType()
-const search = () => {
+function search() {
   params.pageNumber = 1
   getListUserType()
 }
@@ -48,10 +48,10 @@ const search = () => {
 // })
 
 // Chuyển trang thêm quyền
-const addPermission = () => {
+function addPermission() {
   router.push({ name: 'admin-organization-permission-add' })
 }
-const detailPermission = (val: any) => {
+function detailPermission(val: any) {
   router.push({ name: 'admin-organization-permission-edit', params: { id: val.id } })
 }
 const isShowModalDelete = ref<boolean>(false)
@@ -60,18 +60,18 @@ const TITLE_MODAL_DELETE = Object.freeze({
   TITLE_FEILD: t('instead-user-type'),
 })
 const comboboxUserType = ref<any[]>([])
-const getComboboxUserType = async () => {
+async function getComboboxUserType() {
   const { data } = await MethodsUtil.requestApiCustom(apiPermission.comboboxUserType, TYPE_REQUEST.GET)
   comboboxUserType.value = data
 }
 const deleteId = ref<number>(0)
-const deleteItem = async (val: any) => {
+async function deleteItem(val: any) {
   deleteId.value = val
   await getComboboxUserType()
   isShowModalDelete.value = true
 }
 
-const handleDelete = (val: number) => {
+function handleDelete(val: number) {
   const payload = {
     deleteingUserTypeId: deleteId.value,
     newUserTypeId: val,
@@ -120,4 +120,3 @@ const handleDelete = (val: number) => {
     @confirm="handleDelete"
   />
 </template>
-

@@ -4,7 +4,6 @@ import ApiGroupCapacity from '@/api/group-capacity/index'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Params } from '@/typescript/interface/params'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import { list } from '@/mock/capacity/index'
 import toast from '@/plugins/toast'
 
 // Khởi tạo
@@ -42,7 +41,7 @@ const params = ref<Params>({
   pageSize: 10,
 })
 
-const getDataTable = async () => {
+async function getDataTable() {
   const res = await MethodsUtil.requestApiCustom(ApiGroupCapacity.GroupCapacityList, TYPE_REQUEST.POST, params.value)
 
   items.value = res.data.pageLists
@@ -51,12 +50,12 @@ const getDataTable = async () => {
 
 getDataTable()
 
-const handlePageClick = async (page: any) => {
+async function handlePageClick(page: any) {
   params.value.pageNumber = page
   await getDataTable()
 }
 
-const changeCellvalue = (val: number) => {
+function changeCellvalue(val: number) {
 }
 
 /**
@@ -68,22 +67,22 @@ const deleteIds = ref<any[]>()
 const disabledDelete = ref<boolean>(false)
 const isShowModalConfirmDelete = ref<boolean>(false)
 
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   deleteIds.value = e
   disabledDelete.value = e.length > 0
 }
 
-const selectedAll = (e: any) => {
+function selectedAll(e: any) {
   deleteIds.value = items.value.map((e: any) => e.id)
 
   disabledDelete.value = e
 }
 
-const showModalConfirmDelete = () => {
+function showModalConfirmDelete() {
   isShowModalConfirmDelete.value = true
 }
 
-const handleDeleteMultiple = async (val: boolean) => {
+async function handleDeleteMultiple(val: boolean) {
   if (val) {
     const res = await MethodsUtil.requestApiCustom(ApiGroupCapacity.DeleteGroup, TYPE_REQUEST.POST, { ids: deleteIds.value })
     if (res && res.code === 200) {
@@ -106,15 +105,15 @@ const MODAL = Object.freeze({
 
 const isShow = ref(false)
 
-const showModalAdd = () => {
+function showModalAdd() {
   isShow.value = true
 }
 
-const hideModalAdd = (val: any) => {
+function hideModalAdd(val: any) {
   isShow.value = val
 }
 
-const addGroup = async (val: any) => {
+async function addGroup(val: any) {
   const res = await MethodsUtil.requestApiCustom(ApiGroupCapacity.AddGroup, TYPE_REQUEST.POST, val)
   if (res && res.code === 200)
     toast('SUCCESS', t('common.add-success'))
@@ -128,7 +127,7 @@ const addGroup = async (val: any) => {
  * */
 const dataDetail = ref({})
 
-const getDetail = async (val: any) => {
+async function getDetail(val: any) {
   const res = await MethodsUtil.requestApiCustom(ApiGroupCapacity.DetailGroup, TYPE_REQUEST.GET, { id: val.id })
 
   dataDetail.value = { ...res.data }
@@ -136,7 +135,7 @@ const getDetail = async (val: any) => {
     isShow.value = true
 }
 
-const editGroup = async (val: any) => {
+async function editGroup(val: any) {
   const res = await MethodsUtil.requestApiCustom(ApiGroupCapacity.UpdateGroup, TYPE_REQUEST.POST, val)
   if (res && res.code === 200) {
     toast('SUCCESS', t('USR_UpdateSuccess'))
@@ -146,7 +145,7 @@ const editGroup = async (val: any) => {
 }
 
 // Xóa nhóm năng  lực deleteItem
-const deleteItem = async (val: any) => {
+async function deleteItem(val: any) {
   deleteIds.value = [val.id]
   isShowModalConfirmDelete.value = true
 }

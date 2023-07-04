@@ -3438,6 +3438,7 @@
   "permistion-fringed": "Cho phép tua video",
   "setting-dowload-video": "Cài đặt lựa chọn tải file nội dung khóa học",
   "choose-file-video": "Chọn file video",
+  "choose-file-doc": "Chọn file tài liệu",
   "time-min-0": "Thời lượng phải lớn hơn 0",
   "content-time-less-than-success-time": "Thời lượng nội dung phải lớn hơn thời gian hoàn thành",
   "choose-file-cdn": "Chọn đường dẫn cdn",
@@ -3466,5 +3467,6 @@
   "Fr": "T6",
   "Sa": "T7",
   "Su": "CN",
-  "today": "Hôm nay"
+  "today": "Hôm nay",
+  "please-select-day": "Vui lòng chọn thời gian!"
 }

@@ -25,8 +25,8 @@ const headers = reactive([
  * Store
  */
 const storeConditionInforManager = conditionManagerStore()
-const { disabledDeleteCapacity, queryParamsCapacity, itemsCapacity, totalRecordCapacity, isShowDialogNotiDeleteCapacity } = storeToRefs(storeConditionInforManager)
-const { deleteItemsCapacity, handleSearchCapacity, handlePageClickCapacity, selectedRowsCapacity, getCapacityRequired, confirmDialogDeleteCapacity, addCapacity } = storeConditionInforManager
+const { disabledDeleteCapacity, queryParamsCapacity, itemsCapacity, totalRecordCapacity, isShowDialogNotiDeleteCapacity, callBackAction } = storeToRefs(storeConditionInforManager)
+const { deleteItemsCapacity, handleSearchCapacity, handlePageClickCapacity, selectedRowsCapacity, getCapacityRequired, confirmDialogDeleteCapacity, addCapacity, actionItemCapacity } = storeConditionInforManager
 
 /** method */
 /* ==> thực hiện các action được chọn ở header page CP */
@@ -48,6 +48,7 @@ function handleClickBtn(type: string) {
   }
 }
 onMounted(async () => {
+  callBackAction.value = actionItemCapacity
   await getCapacityRequired()
 })
 </script>
@@ -68,7 +69,7 @@ onMounted(async () => {
         :is-fillter="false"
         :disabled-delete="disabledDeleteCapacity"
         @click="handleClickBtn"
-        @search="handleSearchCapacity"
+        @update:keyword="handleSearchCapacity"
       />
     </div>
     <div>

@@ -6,11 +6,14 @@ import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { configStore } from '@/stores/index'
+import { tableStore } from '@/stores/table'
 
 export const courseInforManagerStore = defineStore('courseInforManager', () => {
   /** store */
   const configControl = configStore()
   const { settingDefaults } = storeToRefs(configControl)
+  const storeTable = tableStore()
+  const { callBackAction } = storeToRefs(storeTable)
 
   /** variable ********************************************************************************/
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -132,7 +135,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
       element.isOwner = false
       element.userId = element.id
       element.actions = [
-        MethodsUtil.checkActionType({ id: 2 }, actionItem),
+        MethodsUtil.checkActionType({ id: 2 }),
       ]
       courseData.value.authorList[courseData.value.authorList.length] = element
     })
@@ -149,6 +152,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
         break
     }
   }
+  callBackAction.value = actionItem
   async function addOrginAuthor() {
     const userData = JSON.parse(window.localStorage.getItem('userData') || '')
     const params = {
@@ -166,7 +170,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
           firstName: value.data.firstName,
           lastName: value.data.lastName,
           actions: [
-            MethodsUtil.checkActionType({ id: 2 }, actionItem),
+            MethodsUtil.checkActionType({ id: 2 }),
           ],
         })
       }
@@ -189,7 +193,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
             element.avatar = user.avatar
             element.code = user.code
             element.actions = [
-              MethodsUtil.checkActionType({ id: 2 }, actionItem),
+              MethodsUtil.checkActionType({ id: 2 }),
             ]
           }
         })

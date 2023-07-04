@@ -6,7 +6,6 @@ export const tableStore = defineStore('table', () => {
     return resultAction(data)
   }
   function resultAction(data: any) {
-    console.log(data)
     callBackAction.value(data)
   }
   return {

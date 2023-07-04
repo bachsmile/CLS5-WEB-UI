@@ -14,7 +14,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emit>()
 
-const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CmDialogs = defineAsyncComponent(() => import('@/components/common/CmDialogs.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))

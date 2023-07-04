@@ -27,6 +27,7 @@ const UserService = {
   RoleFeaturePermission: '/usertype/get-feature-permission-by-portal',
 
   /** GET */
+  GetMenu: '/menu/get-menu-by-role',
   GetListIdStructureUser: '/user/get-list-id-from-structure-by-user',
   GetOrganizationalStructure: '/organizationalstructure/get-all',
   GetListCustomerRequest: '/Customer/get-list',

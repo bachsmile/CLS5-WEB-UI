@@ -31,10 +31,10 @@ export default class ArraysUtil {
    */
   static formatTreeData = (data: Array<any>, root: any, t: any, customKey = 'permissions') => {
     return data.reduce((object, permiss) => {
-      const { permissions, children, ...rest } = permiss // loại bỏ permissions ra khỏi object
+      // const { permissions, children, ...rest } = permiss // loại bỏ permissions ra khỏi object
 
       const perId = permiss.orgId ? permiss.orgId : permiss.id
-      object[`node-${perId}`] = rest
+      object[`node-${perId}`] = permiss
       object[`node-${perId}`].ids = permiss.id
       object[`node-${perId}`].text = t(object[`node-${perId}`].name)
 
@@ -56,6 +56,92 @@ export default class ArraysUtil {
         object[`node-${perId}`].children = permiss[customKey]?.map((item: any) => `node-${item.orgId ? item.orgId : item.id}`)
       return object
     }, {})
+  }
+
+  static convertTreeViewOrg = (listData: any[], result: any, listFeature: any[], mapPermissionParent: any, root: string[] = [], t: any, customKey = 'permissions', parent?: any) => {
+    let checked = 0
+    let indeterminate = 0
+    listData?.forEach((item: any) => {
+      const mapPermission: any = listFeature ? listFeature.find(x => x.featureId === Number(item.orgId)) : []
+      const perId = item.orgId ? item.orgId : item.id
+      if (item[customKey] && item[customKey]?.length > 0) {
+        result[`node-${perId}`] = {
+          ...item,
+          ids: item.id,
+          text: t(item.name),
+          children: item?.permissions.map((child: any) => `node-${child.orgId ? child.orgId : child.id}`),
+          permission: item.permissionValue,
+          orgPermission: item.orgPermissionValue,
+          permissionValue: mapPermission?.permissionValue ? mapPermission.permissionValue : 0,
+          orgPermissionValue: mapPermission?.permissionOrganizationalStructure ? mapPermission.permissionOrganizationalStructure : 0,
+          state: {
+            ...item.state,
+            ...(root.includes(`node-${perId}`) ? { opened: true } : {}),
+          },
+        }
+        const checkParrent: any = ArraysUtil.convertTreeViewOrg(item?.permissions, result, listFeature, mapPermission, root, t, customKey = 'permissions', item)
+        if (checkParrent.indeterminate || checkParrent.checked) {
+          result[`node-${perId}`].state.indeterminate = true
+          indeterminate = indeterminate + 1
+        }
+
+        if (checkParrent.checked === item.permissions.length) {
+          result[`node-${perId}`].state.checked = true
+          result[`node-${perId}`].state.indeterminate = false
+          checked = checked + 1
+        }
+      }
+      else {
+        result[`node-${perId}`] = {
+          ...item,
+          ids: item.id,
+          text: t(item.name),
+          permission: item.permissionValue,
+          orgPermission: item.orgPermissionValue,
+          permissionValue: 0,
+          orgPermissionValue: 0,
+          state: {
+            ...item.state,
+            checked: !item.id && (mapPermissionParent?.permissionValue & item.permissionValue) > 0,
+          },
+        }
+        checked = (!item.id && (mapPermissionParent?.permissionValue & item.permissionValue) > 0) ? checked + 1 : checked
+      }
+    })
+    return {
+      checked,
+      indeterminate,
+    }
+  }
+
+  static convertTreeView = (listData: any[], result: any, root: string[] = [], t: any, customKey = 'permissions', customNode = 'id') => {
+    listData?.forEach((item: any) => {
+      const perId = item[customNode]
+      if (item[customKey] && item[customKey]?.length > 0) {
+        result[`node-${perId}`] = {
+          ...item,
+          ids: item.id,
+          text: t(item.name),
+          children: item[customKey].map((child: any) => `node-${child[customNode]}`),
+          state: {
+            ...item.state,
+            ...(root.includes(`node-${perId}`) ? { opened: true } : {}),
+          },
+        }
+
+        ArraysUtil.convertTreeView(item[customKey], result, root, t, customKey = 'children', customNode = 'id')
+      }
+      else {
+        result[`node-${perId}`] = {
+          ...item,
+          text: t(item.name),
+          ids: item.id,
+          state: {
+            ...item.state,
+          },
+        }
+      }
+    })
   }
 
   // static formatTreeMaxSpeed = (data: any) => {
@@ -222,6 +308,8 @@ export default class ArraysUtil {
    * @return {object}
    */
   static formatSelectTree = (items: Array<any>, keyParent = 'parentId', customId = 'id') => {
+    console.log('formatSelectTree')
+
     const orderedNodes = window._.orderBy(items, ['left'], ['desc'])
     const groupedNodes = window._.groupBy(orderedNodes, keyParent)
     return window._.map(groupedNodes['0'], parent => {
@@ -253,4 +341,3 @@ export default class ArraysUtil {
     return Array.isArray(arr) && arr.length === 0
   }
 }
-

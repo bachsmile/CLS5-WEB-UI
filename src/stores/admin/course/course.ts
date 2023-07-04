@@ -6,6 +6,7 @@ import { courseInforManagerStore } from '@/stores/admin/course/infor'
 import ShareService from '@/api/shared/index'
 import { comboboxStore } from '@/stores/combobox'
 import CourseService from '@/api/course'
+import { tableStore } from '@/stores/table'
 
 export const courseManagerStore = defineStore('courseManager', () => {
   /** store */
@@ -14,6 +15,9 @@ export const courseManagerStore = defineStore('courseManager', () => {
 
   const combobox = comboboxStore()
   const { compoboxCostTypes } = storeToRefs(combobox)
+
+  const storeTable = tableStore()
+  const { callBackAction } = storeToRefs(storeTable)
 
   /** variable */
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -110,8 +114,8 @@ export const courseManagerStore = defineStore('courseManager', () => {
         if (type)
           element.costTypeName = type.value
         element.actions = [
-          MethodsUtil.checkActionType({ id: 1 }, actionItemCost),
-          MethodsUtil.checkActionType({ id: 2 }, actionItemCost),
+          MethodsUtil.checkActionType({ id: 1 }),
+          MethodsUtil.checkActionType({ id: 2 }),
         ]
       })
       itemsCost.value = value.data.pageLists
@@ -210,7 +214,7 @@ export const courseManagerStore = defineStore('courseManager', () => {
           element.lastName = user.lastName
         }
         element.actions = [
-          MethodsUtil.checkActionType({ id: 2 }, actionItemEval),
+          MethodsUtil.checkActionType({ id: 2 }),
         ]
       })
       itemsEval.value = value.data.pageLists
@@ -316,6 +320,8 @@ export const courseManagerStore = defineStore('courseManager', () => {
   })
 
   return {
+    callBackAction,
+
     // cost
     disabledDeleteCost,
     queryParamsCost,
@@ -334,6 +340,7 @@ export const courseManagerStore = defineStore('courseManager', () => {
     handlePageClickCost,
     getCostCourseById,
     resetStateCostData,
+    actionItemCost,
 
     // đánh giá sau đào tạo
     itemsEval,
@@ -352,6 +359,7 @@ export const courseManagerStore = defineStore('courseManager', () => {
     handlePageClickEval,
     getEvaluetionAllRequired,
     addSurveyCourse,
+    actionItemEval,
 
     // coppy course
     coppyData,

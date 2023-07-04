@@ -13,7 +13,7 @@ import CmDropDown from '@/components/common/CmDropDown.vue'
 import CmButtonGroup from '@/components/common/CmButtonGroup.vue'
 import CmSwitch from '@/components/common/CmSwitch.vue'
 import CmTab from '@/components/common/CmTab.vue'
-import CmDateTimpickerNew from '@/components/common/CmDateTimpickerNew.vue'
+import CmDateTimpicker from '@/components/common/CmDateTimepicker.vue'
 
 function showToast() {
   // console.log(button123.value.unLoadButton())
@@ -129,7 +129,6 @@ const { loadMultiplecomponents, unLoadComponent } = store
 const router = useRouter()
 
 function handlerPreButton() {
-  debugger
 }
 
 const toast = useToast()
@@ -137,8 +136,21 @@ const toast = useToast()
 const button123 = ref(null)
 
 function abcd(val: any) {
-  //
+  console.log(val)
 }
+
+const date = ref(null)
+watch(date, val => {
+  console.log(val)
+})
+const fromDate = ref(null)
+watch(fromDate, val => {
+  console.log(val)
+})
+const toDate = ref(null)
+watch(toDate, val => {
+  console.log(val)
+})
 </script>
 
 <template>
@@ -352,8 +364,14 @@ function abcd(val: any) {
     />
   </div>
   <div style="width: 300px">
-    <CmDateTimpickerNew
+    <CmDateTimpicker
+      v-model="date"
+      v-model:from-date="fromDate"
+      v-model:to-date="toDate"
       class="w-100"
+      range
+      multi-calendars
+      @updated:model-value="abcd"
     />
   </div>
 </template>

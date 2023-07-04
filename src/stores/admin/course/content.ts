@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { defineStore } from 'pinia'
 import StringJwt from '@/utils/Jwt'
 import CourseService from '@/api/course/index'
@@ -94,12 +95,14 @@ export const contentManagerStore = defineStore('contentManager', () => {
           })
         }
         else {
+          console.log(type[1].contentArchiveTypeId)
+
           router.push({
             name: 'content-edit',
             params: {
               id: Number(route.params.id),
               tab: 'content',
-              type: 'video',
+              type: MethodsUtil.getTypeContent(type[1].contentArchiveTypeId),
               contentTab: 'infor',
               contentId: type[1]?.courseContentId,
             },
@@ -139,7 +142,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
         break
     }
   }
-  callBackAction.value = actionItemUserReg
   function selectedRows(e: any) {
     data.selectedRowsIds = e
   }
@@ -181,12 +183,20 @@ export const contentManagerStore = defineStore('contentManager', () => {
   async function handleSearch(val: any) {
     paramsContent.value.search = val
     const result: any[] = []
-    console.log(updateStatusListCourse(cloneData.value, val))
     convertNoneLv(updateStatusListCourse(cloneData.value, val), result, 0)
 
-    // let dataRow = ArraysUtil.unFlatMapTree(updateStatusListCourse(cloneData.value, val))
-    // dataRow = ArraysUtil.formatTreeTable(dataRow, customId.value)
-    console.log(result)
+    // result.forEach((element: any) => {
+    //   element.actions = [
+    //     MethodsUtil.checkActionType({ id: 1 }),
+    //     MethodsUtil.checkActionType({ id: 2 }),
+    //     MethodsUtil.checkActionType({ id: 3 }),
+    //     MethodsUtil.checkActionType({ id: 5 }),
+    //     MethodsUtil.checkActionType({ id: 6 }),
+    //     MethodsUtil.checkActionType({ id: 7 }),
+    //     MethodsUtil.checkActionType({ id: 9 }),
+    //     MethodsUtil.checkActionType({ id: 19 }),
+    //   ]
+    // })
     items.value = result
   }
   function handlerActionHeader(type: any) {
@@ -296,25 +306,22 @@ export const contentManagerStore = defineStore('contentManager', () => {
     return parent ?? null
   }
   function formatDataTableTree(dataFormat: any) {
-    let dataRow = ArraysUtil.unFlatMapTree(dataFormat)
-    dataRow = ArraysUtil.formatTreeTable(dataRow, customId.value)
-    dataRow.forEach((element: any) => {
-      // element.actions = element.actions?.map((el: any) => {
-      //   return MethodsUtil.checkActionType(el, actionItemUserReg)
-      // })
-      element.actions = [
-        MethodsUtil.checkActionType({ id: 2 }, actionItemUserReg),
-        MethodsUtil.checkActionType({ id: 3 }, actionItemUserReg),
-        MethodsUtil.checkActionType({ id: 5 }, actionItemUserReg),
-        MethodsUtil.checkActionType({ id: 6 }, actionItemUserReg),
-        MethodsUtil.checkActionType({ id: 7 }, actionItemUserReg),
-        MethodsUtil.checkActionType({ id: 19 }, actionItemUserReg),
+    const result: any[] = []
+    convertNoneLv(dataFormat, result, 0)
 
-        // MethodsUtil.checkActionType({ id: 20 }, actionItemUserReg),
-        // MethodsUtil.checkActionType({ id: 21 }, actionItemUserReg),
-      ]
-    })
-    return dataRow
+    // result.forEach((element: any) => {
+    //   element.actions = [
+    //     MethodsUtil.checkActionType({ id: 1 }),
+    //     MethodsUtil.checkActionType({ id: 2 }),
+    //     MethodsUtil.checkActionType({ id: 3 }),
+    //     MethodsUtil.checkActionType({ id: 5 }),
+    //     MethodsUtil.checkActionType({ id: 6 }),
+    //     MethodsUtil.checkActionType({ id: 7 }),
+    //     MethodsUtil.checkActionType({ id: 9 }),
+    //     MethodsUtil.checkActionType({ id: 19 }),
+    //   ]
+    // })
+    return result
   }
 
   // kiểm tra di chuyển
@@ -324,6 +331,7 @@ export const contentManagerStore = defineStore('contentManager', () => {
       let index = 0
       if (parent?.id === item?.id) {
         index = window._.findIndex(cloneData.value, (element: any) => window._.isEqual(element.id, parent.id))
+
         if (isMoveUp === true)
           return index > 0
         return index < cloneData.value.length - 1
@@ -434,25 +442,46 @@ export const contentManagerStore = defineStore('contentManager', () => {
       })
   }
 
-  function convertNoneLv(listData: any[], result: any[], level: number) {
+  function convertNoneLv(listData: any[], result: any[], level: number, parent?: any) {
     listData?.forEach((item: any) => {
       if (item?.children && item?.children?.length > 0) {
-        result.push({ ...item, level })
-        convertNoneLv(item?.children, result, level + 1)
+        result.push({
+          ...item,
+          level,
+          ...(
+            parent
+              ? ({
+                  parent: {
+                    [customId.value]: parent[customId.value],
+                  },
+                })
+              : {}
+          ),
+        })
+        convertNoneLv(item?.children, result, level + 1, item)
       }
       else {
-        result.push({ ...item, level })
+        result.push({
+          ...item,
+          level,
+          ...(
+            parent
+              ? ({
+                  parent: {
+                    [customId.value]: parent[customId.value],
+                  },
+                })
+              : {}
+          ),
+        })
       }
-      return { ...item, level }
     })
   }
 
   /** *****Lấy danh sách nội dung */
   async function getListContentCourse() {
     console.time('updates')
-    console.log('updates')
     paramsContent.value.id = Number(route.params?.id)
-    console.log(route.params?.id)
 
     const value = await MethodsUtil.requestApiCustom(CourseService.GetListContentCourse, TYPE_REQUEST.GET, paramsContent.value)
     if (value.data) {
@@ -460,12 +489,19 @@ export const contentManagerStore = defineStore('contentManager', () => {
 
       cloneData.value = window._.cloneDeep(value.data)
       convertNoneLv(value.data, result, 0)
-      console.log(result)
 
-      // let dataRow = ArraysUtil.unFlatMapTree(value.data)
-      // console.log('unFlatMapTree', dataRow)
-      // dataRow = ArraysUtil.formatTreeTable(dataRow, customId.value)
-      // console.log('formatTreeTable', dataRow)
+      // result.forEach((element: any) => {
+      //   element.actions = [
+      //     MethodsUtil.checkActionType({ id: 1 }),
+      //     MethodsUtil.checkActionType({ id: 2 }),
+      //     MethodsUtil.checkActionType({ id: 3 }),
+      //     MethodsUtil.checkActionType({ id: 5 }),
+      //     MethodsUtil.checkActionType({ id: 6 }),
+      //     MethodsUtil.checkActionType({ id: 7 }),
+      //     MethodsUtil.checkActionType({ id: 9 }),
+      //     MethodsUtil.checkActionType({ id: 19 }),
+      //   ]
+      // })
       items.value = result
 
       // updatePosition()
@@ -486,6 +522,7 @@ export const contentManagerStore = defineStore('contentManager', () => {
     courseId: route.params.id,
     archiveTypeId: 0,
     description: '',
+    urlFileName: null,
     name: null,
     url: null,
     dateTimeStart: null,
@@ -502,7 +539,23 @@ export const contentManagerStore = defineStore('contentManager', () => {
     deleteIds: [], // list id các row table muốn xóa
     selectedRowsIds: [], // list id các row table được chọn
   })
+  const dataSelectRef = ref<any>()
   const disabledDeleteRefer = computed(() => !dataRefer.selectedRowsIds.length)
+
+  function resetRefer() {
+    contentRefer.value = {
+      courseId: route.params.id,
+      archiveTypeId: 0,
+      description: '',
+      urlFileName: null,
+      name: null,
+      url: null,
+      dateTimeStart: null,
+      dateTimeEnd: null,
+      isRewind: false,
+      isPdf: false,
+    }
+  }
 
   // Xóa từng item
   function deleteItemRefer(id: number) {
@@ -541,6 +594,13 @@ export const contentManagerStore = defineStore('contentManager', () => {
       case 'ActionDelete':
         deleteItemRefer(type[1].courseContentId)
         break
+      case 'ActionEdit':
+        console.log(type)
+
+        dataSelectRef.value = type[1]
+        getDataContentRefer(type[1].courseContentId)
+
+        break
 
       default:
         break
@@ -553,7 +613,7 @@ export const contentManagerStore = defineStore('contentManager', () => {
     dataRow = ArraysUtil.formatTreeTable(dataRow, customIdRefer.value)
     dataRow.forEach((element: any) => {
       element.actions = [
-        MethodsUtil.checkActionType({ id: 2 }, actionItemRefer),
+        MethodsUtil.checkActionType({ id: 2 }),
       ]
     })
     itemsRefer.value = dataRow
@@ -568,9 +628,18 @@ export const contentManagerStore = defineStore('contentManager', () => {
         let dataRow = ArraysUtil.unFlatMapTree(value.data)
         dataRow = ArraysUtil.formatTreeTable(dataRow, customIdRefer.value)
         dataRow.forEach((element: any) => {
-          element.actions = [
-            MethodsUtil.checkActionType({ id: 2 }, actionItemRefer),
-          ]
+          console.log(element.parent?.id)
+          if (element?.parent?.id === 0) {
+            element.actions = [
+              MethodsUtil.checkActionType({ id: 1 }),
+              MethodsUtil.checkActionType({ id: 2 }),
+            ]
+          }
+          if (element?.parent?.id === 1) {
+            element.actions = [
+              MethodsUtil.checkActionType({ id: 2 }),
+            ]
+          }
         })
         itemsRefer.value = dataRow
       })
@@ -583,6 +652,18 @@ export const contentManagerStore = defineStore('contentManager', () => {
     await MethodsUtil.requestApiCustom(CourseService.PostSaveRefContent, TYPE_REQUEST.POST, params).then((value: any) => {
       toast('SUCCESS', t(value?.message))
       getListReferContentCourse(Number(route?.params?.id))
+    })
+      .catch((error: any) => {
+        toast('ERROR', t(error.response.data.message))
+      })
+  }
+  async function getDataContentRefer(contentId: any) {
+    const params = {
+      id: Number(contentId),
+    }
+    return await MethodsUtil.requestApiCustom(CourseService.GetInforContentById, TYPE_REQUEST.GET, params).then((value: any) => {
+      contentRefer.value = value?.data
+      viewModeRefer.value = 'file'
     })
       .catch((error: any) => {
         toast('ERROR', t(error.response.data.message))
@@ -634,6 +715,8 @@ export const contentManagerStore = defineStore('contentManager', () => {
   })
 
   return {
+    callBackAction,
+
     /** Nội dung */
     items,
     data,
@@ -667,12 +750,15 @@ export const contentManagerStore = defineStore('contentManager', () => {
     isShowDialogNotiDeleteRefer,
     disabledDeleteRefer,
     isShowModalAddRefStock,
+    dataSelectRef,
     confirmDialogDeleteRefer,
     getListReferContentCourse,
     selectedRowsRefer,
     deleteItemsRefer,
     handleSearchRefer,
     handleAddRefContentStock,
+    actionItemRefer,
+    resetRefer,
 
     /** Stock content */
     dataStock,

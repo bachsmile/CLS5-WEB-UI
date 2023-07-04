@@ -20,8 +20,8 @@ const { compoboxCostTypes } = storeToRefs(combobox)
 const { categoryCostCombobox } = combobox
 
 const storecourseManager = courseManagerStore()
-const { disabledDeleteCost, queryParamsCost, itemsCost, totalRecordCost, isShowDialogNotiDeleteCost, courseData, isShowModalAddCost } = storeToRefs(storecourseManager)
-const { deleteItemsCost, handleSearchCost, handlePageClickCost, selectedRowsCost, getCostRequired, confirmDialogDeleteCost } = storecourseManager
+const { disabledDeleteCost, queryParamsCost, itemsCost, totalRecordCost, isShowDialogNotiDeleteCost, courseData, isShowModalAddCost, callBackAction } = storeToRefs(storecourseManager)
+const { deleteItemsCost, handleSearchCost, handlePageClickCost, selectedRowsCost, getCostRequired, confirmDialogDeleteCost, actionItemCost } = storecourseManager
 
 /** state */
 const excludeIds = computed(() => {
@@ -57,6 +57,7 @@ function handleClickBtn(type: string) {
   }
 }
 onMounted(async () => {
+  callBackAction.value = actionItemCost
   if (!compoboxCostTypes.value?.length)
     await categoryCostCombobox()
   await getCostRequired()
@@ -79,7 +80,7 @@ onMounted(async () => {
         :is-fillter="false"
         :disabled-delete="disabledDeleteCost"
         @click="handleClickBtn"
-        @search="handleSearchCost"
+        @update:keyword="handleSearchCost"
       />
     </div>
     <div>

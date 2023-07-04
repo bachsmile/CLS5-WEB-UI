@@ -79,7 +79,7 @@ watch(() => courseData.value?.id, (Val: any) => {
         :is-fillter="false"
         :disabled-delete="disabledDelete"
         @click="handleClickBtn"
-        @search="handleSearchTeacher"
+        @update:keyword="handleSearchTeacher"
       />
     </div>
 

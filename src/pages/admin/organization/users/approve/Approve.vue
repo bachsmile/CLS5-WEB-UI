@@ -4,6 +4,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
 import { ApproveType } from '@/constant/data/actionType.json'
+import { tableStore } from '@/stores/table'
 
 window.showAllPageLoading('COMPONENT')
 
@@ -18,6 +19,9 @@ const CpCustomInfo = defineAsyncComponent(() => import('@/components/page/gerera
  * lib
  */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
+
 /**
  * data
  */
@@ -219,6 +223,7 @@ function actionItem(type: any) {
       break
   }
 }
+callBackAction.value = actionItem
 async function handleModalApproveAccept(infor: any) {
   const params = {
     userTypeId: infor.userTypeId,
@@ -264,9 +269,6 @@ async function fectchListUsers() {
             name: 'ActionDeclined',
           },
         ]
-        item.actions = item.actions.map((el: any) => {
-          return MethodsUtil.checkActionType(el, actionItem)
-        })
       })
     })
     .catch(() => {
@@ -299,12 +301,11 @@ window.hideAllPageLoading()
       :disabled-approve="disabledApprove"
       :disabled-back="disabledBack"
       @click="handleClickBtn"
-      @search="handleSearch"
+      @update:keyword="handleSearch"
     />
   </div>
   <div>
     <CmTable
-      ref="refTableUserList"
       :headers="headers"
       :items="items"
       :total-record="totalRecord"

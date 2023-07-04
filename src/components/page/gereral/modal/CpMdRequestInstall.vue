@@ -18,6 +18,7 @@ interface Emit {
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const acceptDownload = ref(false)
+const acceptCLone = ref(window._.cloneDeep(acceptDownload.value))
 const LABEL = Object.freeze({
   TITLE: t('api-info'),
   TITLE1: t('api-name'),
@@ -25,9 +26,12 @@ const LABEL = Object.freeze({
 })
 
 async function onCancel() {
+  acceptDownload.value = acceptCLone.value
+  emit('updateOptionUpload', acceptCLone.value)
   emit('update:isDialogVisible', false)
 }
 async function onConfirm() {
+  acceptCLone.value = acceptDownload.value
   emit('confirm')
 }
 watch(() => props.isDialogVisible, isShow => {

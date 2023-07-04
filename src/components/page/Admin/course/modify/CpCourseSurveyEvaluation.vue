@@ -25,8 +25,8 @@ const combobox = comboboxStore()
 // const { categoryEvalCombobox } = combobox
 
 const storecourseManager = courseManagerStore()
-const { disabledDeleteEval, excludeIdsEval, queryParamsEval, itemsEval, totalRecordEval, isShowDialogNotiDeleteEval, courseData, isShowModalAddEval } = storeToRefs(storecourseManager)
-const { addSurveyCourse, deleteItemsEval, handleSearchEvaluation, getEvaluetionAllRequired, handlePageClickEval, selectedRowsEval, getEvaluetionRequired, confirmDialogDeleteEval, handleFilterEvaluationCombobox } = storecourseManager
+const { callBackAction, disabledDeleteEval, excludeIdsEval, queryParamsEval, itemsEval, totalRecordEval, isShowDialogNotiDeleteEval, courseData, isShowModalAddEval } = storeToRefs(storecourseManager)
+const { actionItemEval, addSurveyCourse, deleteItemsEval, handleSearchEvaluation, getEvaluetionAllRequired, handlePageClickEval, selectedRowsEval, getEvaluetionRequired, confirmDialogDeleteEval, handleFilterEvaluationCombobox } = storecourseManager
 
 /** state */
 
@@ -64,6 +64,8 @@ async function handleClickBtn(type: string) {
   }
 }
 onMounted(async () => {
+  callBackAction.value = actionItemEval
+
   // if (!compoboxEvalTypes.value?.length)
   //   await categoryEvalCombobox()
   await getEvaluetionRequired()
@@ -89,7 +91,7 @@ onMounted(async () => {
         is-fillter
         :disabled-delete="disabledDeleteEval"
         @click="handleClickBtn"
-        @search="handleSearchEvaluation"
+        @update:keyword="handleSearchEvaluation"
       />
     </div>
     <div>

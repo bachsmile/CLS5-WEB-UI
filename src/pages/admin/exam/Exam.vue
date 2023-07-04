@@ -11,8 +11,11 @@ import DateUtil from '@/utils/DateUtil'
 import CpCustomInforCourse from '@/components/page/gereral/CpCustomInforCourse.vue'
 import { _ } from '@/utils/LodashUtil'
 import ObjectUtil from '@/utils/ObjectUtil'
+import { tableStore } from '@/stores/table'
 
 const { t } = window.i18n()
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
 
 const headers = [
   { text: '', value: 'checkbox', width: 50 },
@@ -49,11 +52,6 @@ const queryParams = reactive<QueryParams>({
 const route = useRoute()
 async function getListExam() {
   const { data } = await MethodsUtil.requestApiCustom(QuestionService.GetListExam, TYPE_REQUEST.GET, queryParams)
-  data.pageLists.forEach((element: Any) => {
-    element.actions = element.actions.map((el: Any) => {
-      return MethodsUtil.checkActionType(el, actionItem)
-    })
-  })
   items.value = data.pageLists
   totalRecord.value = data.totalRecord
 }
@@ -84,6 +82,7 @@ function actionItem(type: any) {
       break
   }
 }
+callBackAction.value = actionItem
 const router = useRouter()
 watch(queryParams, (val: Any) => {
   const params = ObjectUtil.omitByDeep(val)

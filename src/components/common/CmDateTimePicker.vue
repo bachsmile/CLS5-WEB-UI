@@ -1,478 +1,513 @@
-<script setup lang="ts">
-import FlatPickr from 'vue-flatpickr-component'
-import { useTheme } from 'vuetify'
+<script lang="ts" setup>
+import VueDatePicker from '@vuepic/vue-datepicker'
+import moment from 'moment'
+import CmButton from './CmButton.vue'
+import CmTextField from '@/components/common/CmTextField.vue'
 
-// // @ts-expect-error There won't be declaration file for it
-import { filterFieldProps, makeVFieldProps } from 'vuetify/lib/components/VField/VField'
-
-// // @ts-expect-error There won't be declaration file for it
-// import { filterInputProps, makeVInputProps } from 'vuetify/lib/components/VInput/VInput'
-
-// @ts-expect-error There won't be declaration file for it
-import { filterInputAttrs } from 'vuetify/lib/util/helpers'
-
-import { useThemeConfig } from '@core/composable/useThemeConfig'
-
-const props = defineProps({
-  // ...makeVInputProps({
-  //   density: 'compact',
-  //   hideDetails: 'auto',
-  // }),
-  ...makeVFieldProps({
-    variant: 'outlined',
-    color: 'primary',
-  }),
-  placeholder: {
-    type: String,
-  },
-  text: {
-    type: String,
-  },
-
+const props = withDefaults(defineProps<Props>(), {
+  range: false,
+  multiCalendars: false,
+  timePicker: false,
+  modalValue: null,
+  fromDate: null,
+  toDate: null,
 })
-
 const emit = defineEmits<Emit>()
-
+const { t } = window.i18n()
+const LABEL = Object.freeze({
+  selectText: t('implement'),
+  cancelText: t('cancel-title'),
+})
+interface Props {
+  range?: boolean
+  multiCalendars?: boolean
+  timePicker?: boolean
+  modalValue?: any
+  fromDate?: any
+  toDate?: any
+  text?: string
+}
 interface Emit {
-  (e: 'update:modelValue', val: string): void
-  (e: 'click:clear', el: MouseEvent): void
+  (e: 'update:modelValue', data: any): void
+  (e: 'update:fromDate', data: any): void
+  (e: 'update:toDate', data: any): void
 }
 
-// inherit Attribute make false
-defineOptions({
-  inheritAttrs: false,
+const marginHeader = computed(() => {
+  if (props.multiCalendars)
+    return 'auto'
+
+  return '60px'
+})
+const displayCalendar = computed(() => {
+  if (props.timePicker)
+    return 'none'
+
+  return 'block'
 })
 
-const attrs = useAttrs()
+function getDay(params: number) {
+  switch (params) {
+    case 0:
+      return 'Mo'
+    case 1:
+      return 'Tu'
+    case 2:
+      return 'We'
+    case 3:
+      return 'Th'
+    case 4:
+      return 'Fr'
+    case 5:
+      return 'Sa'
+    case 6:
+      return 'Su'
+    default:
+  }
+}
+const time = props.range ? ref<any[]>([]) : ref<any>(null)
 
-const [rootAttrs, compAttrs] = filterInputAttrs(attrs)
-
-// const [{ modelValue: _, ...inputProps }] = filterInputProps(props)
-const [fieldProps] = filterFieldProps(props)
-
-const refFlatPicker = ref()
-const { focused } = useFocus(refFlatPicker)
-const isCalendarOpen = ref(false)
-const isInlinePicker = ref(false)
-
-// flat picker prop manipulation
-if (compAttrs.config && compAttrs.config.inline) {
-  isInlinePicker.value = compAttrs.config.inline
-  Object.assign(compAttrs, { altInputClass: 'inlinePicker' })
+// hiển thị thời gian chọn chưa xác nhận
+function formatPreview(val: any, isRangeEnd = false) {
+  let startTime: any = time.value.length ? time.value[0] : null
+  let endTime: any
+  if (!isRangeEnd) {
+    startTime = val
+  }
+  else {
+    endTime = val
+    const start = moment(startTime).valueOf()
+    const end = moment(val).valueOf()
+    if ((start - end) > 0) {
+      time.value = [endTime, startTime]
+      return
+    }
+  }
+  time.value = [startTime, endTime]
+}
+function showPreview(val: any) {
+  if (!props.range && val)
+    time.value = moment(val).format('DD/MM/YYYY hh:mm') || ''
 }
 
-// v-field clear prop
-function onClear(el: MouseEvent) {
-  el.stopPropagation()
+const datepicker = ref()
 
-  nextTick(() => {
-    emit('update:modelValue', '')
-
-    emit('click:clear', el)
-  })
+function show() {
+  datepicker.value.openMenu()
 }
+const placeholder = computed(() => {
+  if (props.range)
+    return 'DD/MM/YYYY hh:mm - DD/MM/YYYY hh:mm'
+  else return 'DD/MM/YYYY hh:mm'
+})
 
-const { theme } = useThemeConfig()
-const vuetifyTheme = useTheme()
+const date = ref()
+const temp = ref()
 
-const vuetifyThemesName = Object.keys(vuetifyTheme.themes.value)
+function updateInput(val: any, isUpdate: any) {
+  if (isUpdate) {
+    emit('update:modelValue', val)
+    if (props.range && val) {
+      emit('update:fromDate', val[0] ? val[0] : null)
+      emit('update:toDate', val[1] ? val[1] : null)
+    }
+  }
 
-// Themes class added to flat-picker component for light and dark support
-function updateThemeClassInCalendar(activeTheme: string) {
-  // ℹ️ Flatpickr don't render it's instance in mobile and device simulator
-  if (!refFlatPicker.value.fp.calendarContainer)
+  if (!val) {
+    temp.value = null
     return
-
-  vuetifyThemesName.forEach(t => {
-    refFlatPicker.value.fp.calendarContainer.classList.remove(`v-theme--${t}`)
-  })
-  refFlatPicker.value.fp.calendarContainer.classList.add(`v-theme--${activeTheme}`)
+  }
+  date.value = val
+  if (props.range) {
+    temp.value = `${moment(val[0]).format('DD/MM/YYYY hh:mm a')} - ${moment(val[1]).format('DD/MM/YYYY hh:mm a')}`
+    return
+  }
+  temp.value = moment(val).format('DD/MM/YYYY hh:mm a')
 }
 
-watch(theme, updateThemeClassInCalendar)
-
-onMounted(() => {
-  updateThemeClassInCalendar(vuetifyTheme.name.value)
+function updateDate(val: string) {
+  debugger
+  if (props.range && val.search(' - ') > 0) {
+    const arrayDate = val.split(' - ')
+    const start = arrayDate[0].split('/').reverse().join('-')
+    const end = arrayDate[1].split('/').reverse().join('-')
+    date.value = [new Date(start), end ? new Date(end) : null]
+  }
+  else if (val) {
+    date.value = new Date(val.split('/').reverse().join('-'))
+  }
+}
+watch(() => props.modalValue, (val: any) => {
+  date.value = val
+}, { immediate: true })
+watch(date, (val: any) => {
+  updateInput(val, false)
 })
-const valuePrivate = ref(computed(() => props.modelValue).value)
-function emitModelValue(val: any) {
-  emit('update:modelValue', val)
-}
-watch(valuePrivate, val => {
-  emitModelValue(val)
+
+// watch(() => props.fromDate, val => {
+//   date.value = [val, (date.value && date.value.length) ? date.value[1] : null]
+// }, { immediate: true })
+// watch(() => props.toDate, val => {
+//   date.value = [date.value[0], val]
+// }, { immediate: true })
+watchEffect(() => {
+  if (props.fromDate || props.toDate)
+    date.value = [props.fromDate, props.toDate]
 })
 </script>
 
 <template>
-  <div class="mb-1">
-    <label
-      class="text-medium-sm color-dark"
-    >{{ props.text }}</label>
-  </div>
-  <!-- v-input -->
-  <VInput
-    v-bind="{ ...inputProps, ...rootAttrs }"
-    :model-value="modelValue"
-    :hide-details="props.hideDetails"
-    class="position-relative cm-datetime"
-  >
-    <template #default="{ isDirty, isValid, isReadonly }">
-      <!-- v-field -->
-      <VField
-        v-bind="fieldProps"
-        :active="focused || isDirty.value || isCalendarOpen"
-        :focused="focused || isCalendarOpen"
-        role="textbox"
-        :dirty="isDirty.value || props.dirty"
-        :error="isValid.value === false"
-        @click:clear="onClear"
+  <div class="cm-date-time-picker">
+    <div class="mb-1 ">
+      <label class="text-medium-sm color-dark"> {{ text }}</label>
+    </div>
+    <div style="position: relative;">
+      <VueDatePicker
+        ref="datepicker"
+        :model-value="date"
+        time-picker-inline
+        v-bind="LABEL"
+        locale="vi"
+        text-input
+        :multi-calendars-solo="multiCalendars"
+        class="rounded-lg date-picker"
+        :multi-calendars="multiCalendars"
+        :time-picker="timePicker"
+        :range="props.range"
+        :placeholder="placeholder"
+        @range-start="val => formatPreview(val, false)"
+        @range-end="val => formatPreview(val, true)"
+        @update:model-value="updateInput($event, true)"
+        @cleared="() => { date = null }"
       >
-        <template #default="{ props: vFieldProps }">
-          <div v-bind="vFieldProps">
-            <!-- flat-picker  -->
-            <FlatPickr
-              v-if="!isInlinePicker"
-              v-bind="compAttrs"
-              ref="refFlatPicker"
-              v-model="valuePrivate"
-              class="flat-picker-custom-style  text-regular-md"
-              :disabled="isReadonly.value"
-              :placeholder="placeholder"
-              :options="flatpickrOptions"
-              @on-open="isCalendarOpen = true"
-              @on-close="isCalendarOpen = false"
-            />
-
-            <!-- simple input for inline prop -->
-            <input
-              v-if="isInlinePicker"
-              :value="valuePrivate"
-              class="flat-picker-custom-style text-regular-md"
-              type="text"
-            >
+        <template #calendar-header="{ index }">
+          <div>
+            {{ t(getDay(index)) }}
           </div>
         </template>
-      </VField>
-    </template>
-  </VInput>
 
-  <!-- flat picker for inline props -->
-  <FlatPickr
-    v-if="isInlinePicker"
-    v-bind="compAttrs"
-    ref="refFlatPicker"
-    :model-value="valuePrivate"
-    @update:model-value="emitModelValue"
-    @on-open="isCalendarOpen = true"
-    @on-close="isCalendarOpen = false"
-  />
+        <template
+          v-if="!multiCalendars && !timePicker"
+          #action-extra="item"
+        >
+          <div class="action-extra">
+            <div
+              v-if="time"
+              class="w-100"
+            >
+              <div
+                v-if="!props.range"
+                class="time-preview v-btn outlined-secondary pa-2 rounded-lg w-100 mr-2"
+              >
+                {{ time }}
+              </div>
+              <div
+                v-else
+                class="d-flex justify-center align-center w-100"
+              >
+                <div
+                  class="time-preview v-btn outlined-secondary pa-2 rounded-lg"
+                >
+                  {{ moment(time[0]).format('DD/MM/YYYY') }}
+                </div>
+                <span>
+                  <VIcon
+                    icon="fe:minus"
+                    size="14"
+                    class="mx-2"
+                  />
+                </span>
+                <div
+
+                  class="time-preview v-btn outlined-secondary pa-2 rounded-lg"
+                >
+                  {{ moment(time[1]).format('DD/MM/YYYY') }}
+                </div>
+              </div>
+            </div>
+
+            <span v-else>{{ t('please-select-day') }}</span>
+            <CmButton
+              v-if="!props.range"
+              :title="t('today')"
+              variant="outlined"
+              color="secondary"
+              @click="item.selectCurrentDate"
+            />
+          </div>
+        </template>
+
+        <template #action-preview="{ value }">
+          {{ showPreview(value) }}
+          <div
+            v-if="props.multiCalendars"
+            class="d-flex justify-center align-center w-100"
+          >
+            <div
+              class="time-preview v-btn outlined-secondary pa-2 rounded-lg"
+            >
+              {{ moment(time[0]).format('DD/MM/YYYY') }}
+            </div>
+            <span>
+              <VIcon
+                icon="fe:minus"
+                size="14"
+                class="mx-2"
+              />
+            </span>
+            <div
+
+              class="time-preview v-btn outlined-secondary pa-2 rounded-lg"
+            >
+              {{ moment(time[1]).format('DD/MM/YYYY') }}
+            </div>
+          </div>
+        </template>
+      </VueDatePicker>
+
+      <CmTextField
+        class="input-date-time"
+        :model-value="temp"
+        @focused="show"
+        @update:model-value="updateDate"
+      />
+    </div>
+  </div>
 </template>
 
 <style lang="scss">
-/* stylelint-disable no-descending-specificity */
-@use "flatpickr/dist/flatpickr.css";
 @use "@/styles/style-global.scss" as *;
-
-.flat-picker-custom-style {
-  position: absolute;
-  color: inherit;
-  inline-size: 95%;
-  inset: 0;
-  outline: none;
-  padding-block: 0;
-  padding-inline: var(--v-field-padding-start);
+:root {
+  --dp-primary-color: rgb(var(--v-primary-600))
+  --dp-border-radius: $border-radius-xs
 }
-
-$heading-color: rgba(var(--v-theme-on-background), var(--v-high-emphasis-opacity));
-$body-color: rgba(var(--v-theme-on-background), var(--v-medium-emphasis-opacity));
-$disabled-color: rgba(var(--v-theme-on-background), var(--v-disabled-opacity));
-
-// hide the input when your picker is inline
-input[altinputclass="inlinePicker"] {
-  display: none;
-}
-
-.flatpickr-calendar {
-  background-color: rgb(var(--v-theme-surface));
-  inline-size: 16.625rem;
-  margin-block-start: 0.1875rem;
-
-  .flatpickr-rContainer {
-    .flatpickr-weekdays {
-      padding-inline: 0.8rem;
+.cm-date-time-picker {
+  position: relative;
+  .dp__main {
+    height: 40px;
+    .dp__input_icon_pad {
+      height: 40px;
+      border: 1px solid $color-gray-300;
+      border-radius: $border-radius-xs;
+    }
+  }
+  .input-date-time {
+    position: absolute;
+    top: 1px;
+    right: 28px;
+    width: calc(100% - 56px);
+    height: inherit;
+    .v-field__field {
+      height: 36px;
+    }
+    .v-field__input {
+        border: unset !important;
+        border-radius: $border-radius-xs;
+      }
+      .v-field__outline {
+        --v-field-border-width: 0
+      }
+  }
+  .dp__menu_inner {
+    width: auto;
+    .dp__month_year_row{
+      margin-bottom: v-bind(marginHeader);
+    }
+  }
+.dp__calendar {
+  width: 100%;
+  display: v-bind(displayCalendar);
+  .dp__calendar_item {
+    width: 40px;
+    height: 40px;
+    .dp__cell_inner {
+      border-radius: 20px;
+      width: 100%;
+      height: 100%;
+      &.dp__range_start {
+        border-radius: 20px;
+      }
+    }
+    .date-picker {
+      position: absolute;
+    }
+    .dp__range_start, .dp__range_end{
+      color: $color-white;
+      background-color: $color-primary-600 !important;
+    }
+    .dp__range_between {
+      background-color: $color-primary-50 !important;
+      border: 1px solid $color-primary-50;
+      color: $color-primary-600;
+    }
+  }
+    .dp__calendar_item:has(> .dp__range_start) {
+      background-color: $color-primary-50 !important;
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
+    }
+    .dp__calendar_item:has(> .dp__range_end) {
+      background-color: $color-primary-50 !important;
+      border-bottom-right-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    .dp__calendar_item:has(> .dp__range_between) {
+      background-color: $color-primary-50 !important;
+      border: 1px solid $color-primary-50;
+      color: $color-primary-600;
+      border-radius: 0;
+    }
+    .dp__calendar_item:has(> .dp__range_between):last-child {
+      border-bottom-right-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    .dp__calendar_item:has(> .dp__range_between):first-child {
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
+    }
+    .dp__calendar_item:has(> .dp__date_hover_end):hover {
+      background-color: $color-primary-50 !important;
+      border-bottom-right-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    .dp__calendar_item:has(> .dp__date_hover_start):hover {
+      background-color: $color-primary-50 !important;
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
     }
 
-    .flatpickr-days {
-      min-inline-size: 16.625rem;
-
-      .dayContainer {
-        justify-content: center !important;
-        inline-size: 16.625rem;
-        min-inline-size: 16.625rem;
-        padding-block-end: 0.5rem;
-        padding-block-start: 0;
-
-        .flatpickr-day {
-          block-size: 2.125rem;
-          line-height: 2.125rem;
-          margin-block-start: 0 !important;
-          max-inline-size: 2.125rem;
-        }
+  }
+  .dp__overlay {
+    height: 160px;
+    bottom: 0;
+    top: unset;
+    .dp__time_input {
+      width: 50% !important;
+      padding: 0;
+      .dp__time_col {
+        padding: 0;
+      }
+      .dp__button {
+        display: none;
       }
     }
   }
-
-  .flatpickr-day {
-    color: $body-color;
-
-    &.today {
-      border-color: rgb(var(--v-theme-primary));
-
-      &:hover {
-        border-color: rgb(var(--v-theme-primary));
-        background: transparent;
-        color: $body-color;
-      }
-    }
-
-    &.selected,
-    &.selected:hover {
-      border-color: rgb(var(--v-theme-primary));
-      background: rgb(var(--v-theme-primary));
-      color: rgb(var(--v-theme-on-primary));
-    }
-
-    &.inRange,
-    &.inRange:hover {
-      border: none;
-      background: rgba(var(--v-theme-primary), 0.1) !important;
-      box-shadow: none !important;
-      color: rgb(var(--v-theme-primary));
-    }
-
-    &.startRange {
-      box-shadow: none;
-    }
-
-    &.endRange {
-      box-shadow: none;
-    }
-
-    &.startRange,
-    &.endRange,
-    &.startRange:hover,
-    &.endRange:hover {
-      border-color: rgb(var(--v-theme-primary));
-      background: rgb(var(--v-theme-primary));
-      color: rgb(var(--v-theme-on-primary));
-    }
-
-    &.selected.startRange + .endRange:not(:nth-child(7n + 1)),
-    &.startRange.startRange + .endRange:not(:nth-child(7n + 1)),
-    &.endRange.startRange + .endRange:not(:nth-child(7n + 1)) {
-      box-shadow: -10px 0 0 rgb(var(--v-theme-primary));
-    }
-
-    &.flatpickr-disabled,
-    &.prevMonthDay:not(.startRange,.inRange),
-    &.nextMonthDay:not(.endRange,.inRange) {
-      opacity: var(--v-disabled-opacity);
-    }
-
-    &:hover {
-      border-color: rgba(var(--v-theme-surface-variant), var(--v-hover-opacity));
-      background: rgba(var(--v-theme-surface-variant), var(--v-hover-opacity));
-    }
+  .dp__action_button {
+    white-space: nowrap;
+    border-radius: 8px;
+    height: 40px !important;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    padding: 10px 16px;
+    text-transform: inherit;
+    font-family: inherit;
   }
-
-  .flatpickr-weekday {
-    color: $heading-color;
-    font-size: 0.875rem;
-    font-weight: 500;
+  .dp__action_row {
+    width: 100% !important;
+    border-top: 1px solid $color-gray-300;
   }
-
-  .flatpickr-days {
-    inline-size: 16.625rem;
+  .dp__action_select {
+    --v-theme-overlay-multiplier: var(--v-theme-primary-overlay-multiplier);
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
   }
-
-  &::after,
-  &::before {
-    display: none;
+  .dp__action_cancel {
+    --v-theme-overlay-multiplier: var(--v-theme-primary-overlay-multiplier);
+    background-color: transparent !important;
+    color: rgb(var(--v-theme-secondary)) !important;
+    border: 1px solid rgb(var(--v-gray-300)) !important;
   }
-
-  .flatpickr-months {
-    border-block-end: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-
-    .flatpickr-prev-month,
-    .flatpickr-next-month {
-      fill: $body-color;
-
-      &:hover i,
-      &:hover svg {
-        fill: $body-color;
-      }
-    }
+.custom-time-picker-component {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .select-input {
+    border: 1px solid rgb(var(--v-gray-300));
+    padding: 8px 14px;
+    gap: 8px;
+    border-radius: $xs
   }
-
-  .flatpickr-current-month span.cur-month {
-    font-weight: 300;
-  }
-
-  &.open {
-    z-index: 9999;
-  }
-
-  &.hasTime.open {
-    .flatpickr-time {
-      border-color: rgba(var(--v-border-color), var(--v-border-opacity));
-      block-size: auto;
-    }
+  .select-input:focus-visible {
+    // border: unset;
   }
 }
-
-// Time picker hover & focus bg color
-.flatpickr-time input:hover,
-.flatpickr-time .flatpickr-am-pm:hover,
-.flatpickr-time input:focus,
-.flatpickr-time .flatpickr-am-pm:focus {
-  background: transparent;
-}
-
-// Time picker
-.flatpickr-time {
-  .flatpickr-am-pm,
-  .flatpickr-time-separator,
-  input {
-    color: $body-color;
-  }
-
-  .numInputWrapper {
-    span {
-      &.arrowUp {
-        &::after {
-          border-block-end-color: rgb(var(--v-border-color));
-        }
-      }
-
-      &.arrowDown {
-        &::after {
-          border-block-start-color: rgb(var(--v-border-color));
-        }
-      }
+  .dp__time_picker_inline_container {
+  // .dp__time_input:first-child {
+  //   border-right: 1px solid $color-gray-300;
+  // }
+    .dp__flex {
+      width: 100%;
+    }
+    .dp__tp_inline_btn_top {
+      display: flex;
+      margin-bottom: 6px;
+    .dp__tp_inline_btn_bottom:hover .dp__tp_btn_in_l {
+      transform: rotate(-12deg) scale(1.15) translateY(0);
+    }
+    .dp__tp_inline_btn_bottom:hover .dp__tp_btn_in_r {
+      transform: rotate(12deg) scale(1.15) translateY(0);
+    }
+    .dp__tp_btn_in_l {
+      // transform: rotate(-12deg) scale(1.15) translateY(0);
+      border-top-left-radius: $border-radius-xs;
+      border-bottom-left-radius: $border-radius-xs;
+    }
+    .dp__tp_btn_in_r {
+      // transform: rotate(12deg) scale(1.15) translateY(0);
+      border-top-right-radius: $border-radius-xs;
+      border-bottom-right-radius: $border-radius-xs;
     }
   }
-}
-
-//  Added bg color for flatpickr input only as it has default readonly attribute
-.flatpickr-input[readonly],
-.flatpickr-input ~ .form-control[readonly],
-.flatpickr-human-friendly[readonly] {
-  background-color: inherit;
-  opacity: 1 !important;
-}
-
-// week sections
-.flatpickr-weekdays {
-  margin-block-start: 8px;
-}
-
-// Month and year section
-.flatpickr-current-month {
-  .flatpickr-monthDropdown-months {
-    appearance: none;
-  }
-
-  .flatpickr-monthDropdown-months,
-  .numInputWrapper {
-    padding: 2px;
-    border-radius: 4px;
-    color: $heading-color;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.15s ease-out;
-
-    span {
-      // display: none;
+  .dp__tp_inline_btn_bottom {
+    display: flex;
+    margin-top: 5px;
+    .dp__tp_btn_in_l {
+      // transform: rotate(12deg) scale(1.15) translateY(-2px);
+      border-top-left-radius: $border-radius-xs;
+      border-bottom-left-radius: $border-radius-xs;
     }
-
-    .flatpickr-monthDropdown-month {
-      background-color: rgb(var(--v-theme-surface));
-    }
-
-    .numInput.cur-year {
-      font-weight: 500;
+    .dp__tp_btn_in_r {
+      // transform: rotate(-12deg) scale(1.15) translateY(-2px);
+      border-top-right-radius: $border-radius-xs;
+      border-bottom-right-radius: $border-radius-xs;
     }
   }
-}
-
-.flatpickr-day.flatpickr-disabled,
-.flatpickr-day.flatpickr-disabled:hover {
-  color: $body-color;
-}
-
-// removing box shadow of calendar in dark and added a border
-.v-theme--dark.flatpickr-calendar {
-  border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  box-shadow: none;
-}
-
-.flatpickr-months {
-  padding-block: 0.75rem;
-  padding-inline: 1rem;
-
-  .flatpickr-prev-month,
-  .flatpickr-next-month {
-    background: rgba(var(--v-theme-surface-variant), var(--v-selected-opacity));
-    block-size: 1.75rem;
-    border-radius: 5rem;
-    inline-size: 1.75rem;
-    inset-block-start: 0.75rem !important;
-    padding-block: 0.25rem;
-    padding-inline: 0.4375rem;
+  .dp__time_col_reg_inline {
+    padding: 5px;
+  }
+  .dp__inc_dec_button_inline {
+    display: flex;
+    justify-content: center;
+    width: 16px  !important;
+  }
+  .dp__inc_dec_button_inline:focus {
+    outline:none;
+  }
+  .dp__tp_inline_btn_bar {
+    width: 10px;
+    height: 3px !important;
+  }
+  .dp__time_display {
+    border: 1px solid $color-gray-300;
+    padding: 8px 10px;
   }
 
-  .flatpickr-next-month {
-    inset-inline-end: 1.05rem !important;
-  }
-
-  .flatpickr-prev-month {
-    /* stylelint-disable-next-line liberty/use-logical-spec */
-    right: 3.5rem;
-    left: unset !important;
-  }
-
-  .flatpickr-month {
-    block-size: 1.75rem;
-
-    .flatpickr-current-month {
-      block-size: 1.75rem;
-      inset-inline-start: 0;
-      padding-block-start: 0.2rem;
-      text-align: start;
+}
+  .dp__action_extra {
+    width: 100%;
+    position: absolute;
+    top: 39px;
+    .action-extra {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+    }
+    .time-preview {
+      width: 128px;
+      height: 40px;
     }
   }
-}
-
-.cm-datetime .v-field__input{
-  color: $color-gray-900 !important;
-  /* Text md/Regular */
-  font-family: Inter, sans-serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 24px;
-  border: $border-input;
-  border-radius: $border-radius-input;
-}
-.cm-datetime .flatpickr-input[placeholder]{
-  color: $color-gray-900 !important;
-}
-.cm-datetime .v-field__outline__end,
-.cm-datetime .v-field__outline__start{
-  border: none !important;
-}
-.cm-datetime .v-field__field{
-  background: $color-input-default;
-  border-radius: $border-radius-xs;
 }
 </style>

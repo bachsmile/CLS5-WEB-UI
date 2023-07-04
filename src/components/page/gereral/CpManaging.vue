@@ -8,6 +8,7 @@ import type { Params } from '@/typescript/interface/params'
 import MethodsUtil from '@/utils/MethodsUtil'
 import DateUtil from '@/utils/DateUtil'
 import type { Any } from '@/typescript/interface'
+import { tableStore } from '@/stores/table'
 
 const props = withDefaults(defineProps<Props>(), {
   header: () => ([]),
@@ -68,6 +69,8 @@ interface Props {
   componentPropsEdit?: any
   emit?: any
 }
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
 
 interface QueryParams extends Params {
   keyword: string
@@ -156,6 +159,7 @@ async function actionItem(type: any) {
       break
   }
 }
+callBackAction.value = actionItem
 
 // lấy data table
 const items = ref<Item[]>([])
@@ -189,10 +193,6 @@ async function getDataTable() {
       }
 
       element.actions = props.actionsTable
-
-      element.actions = element.actions.map((el: any) => {
-        return MethodsUtil.checkActionType(el, actionItem)
-      })
     })
     emitEvent('updateFetchData', result)
     items.value = result

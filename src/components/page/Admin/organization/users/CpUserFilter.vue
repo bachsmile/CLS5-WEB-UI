@@ -21,8 +21,7 @@ const LABEL = Object.freeze({
   FILLTER1: t('status-action'),
   FILLTER2: t('orgStruct'),
   FILLTER3: t('role-user'),
-  FILLTER4: t('start-day'),
-  FILLTER5: t('to-day'),
+  FILLTER4: t('from-date-to-date'),
   FILLTER6: t('add-user-from'),
   FILLTER7: t('group-management'),
   FILLTER8: t('add-user-from'),
@@ -33,14 +32,16 @@ const formFilter = reactive({
   orStructure: null,
   userTypeList: null,
   groupUser: null,
-  timeFrom: null,
-  timeTo: null,
+  timeFrom: new Date('2022/06/22'),
+  timeTo: new Date('2023/06/22'),
   modeAdd: null,
 })
 
 // method
 
-function change() {
+function change(val: any) {
+  console.log(formFilter)
+
   emit('update', formFilter)
 }
 
@@ -54,6 +55,8 @@ if (window._.isEmpty(organizationsCombobox.value))
   fetchTOrgStructCombobox()
 if (window._.isEmpty(groupUserCombobox.value))
   fetchGroupUserCombobox()
+
+console.log(formFilter)
 </script>
 
 <template>
@@ -121,28 +124,33 @@ if (window._.isEmpty(groupUserCombobox.value))
     </VCol>
     <VCol
       cols="12"
-      md="2"
+      md="4"
       sm="4"
     >
       <CmDateTimePicker
-        :model-value="formFilter.timeFrom"
+        v-model:from-date="formFilter.timeFrom"
+        v-model:to-date="formFilter.timeTo"
         :text="LABEL.FILLTER4"
-        placeholder="dd/mm/yyyy"
+        range
+        multi-calendars
+        placeholder="dd/mm/yyyy - dd/mm/yyyy"
         @update:model-value="change"
       />
     </VCol>
-    <VCol
+    <!--
+      <VCol
       cols="12"
       md="2"
       sm="4"
-    >
+      >
       <CmDateTimePicker
-        :model-value="formFilter.timeTo"
-        :text="LABEL.FILLTER5"
-        placeholder="dd/mm/yyyy"
-        @update:model-value="change"
+      :model-value="formFilter.timeTo"
+      :text="LABEL.FILLTER5"
+      placeholder="dd/mm/yyyy"
+      @update:model-value="change"
       />
-    </VCol>
+      </VCol>
+    -->
     <VCol
       cols="12"
       md="4"

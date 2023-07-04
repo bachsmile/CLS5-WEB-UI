@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import CmCheckBox from '@/components/common/CmCheckBox.vue'
 import 'vue3-treeview/dist/style.css'
+import Treeview from 'vue3-treeview'
 import { configStore } from '@/stores/index'
 import { ActionType } from '@/constant/data/actionType.json'
+import CmCheckBox from '@/components/common/CmCheckBox.vue'
+import CmDropDown from '@/components/common/CmDropDown.vue'
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
@@ -27,8 +29,6 @@ const props = withDefaults(defineProps<Props>(), ({
 
 const emit = defineEmits<Emit>()
 
-const Treeview = defineAsyncComponent(() => import('vue3-treeview'))
-const CmDropDown = defineAsyncComponent(() => import('@/components/common/CmDropDown.vue'))
 interface Props {
   config?: Config
   nodes: NodeTree
@@ -280,6 +280,8 @@ function onChangeOrgChecked(val: any, node: any) {
           class="content-after"
         >
           <CmCheckBox
+            color="error"
+            color-interminate="error"
             tooltip-label="Phân quyền theo cơ cấu tổ chức"
             :model-value="node.orgPermissionValue
               && (node.orgPermissionValue & node.orgPermission) === node.orgPermission"
@@ -326,7 +328,7 @@ function onChangeOrgChecked(val: any, node: any) {
     position: absolute;
     width: 25px;
     height: 25px;
-    top: 5;
+    top: 5px;
     z-index: 1000;
   }
 
@@ -336,6 +338,7 @@ function onChangeOrgChecked(val: any, node: any) {
   .checkbox-tree-view {
     display: flex;
     align-items: center;
+    margin-left: 16px;
   }
   .tree-view {
     .tree-node {
@@ -352,7 +355,7 @@ function onChangeOrgChecked(val: any, node: any) {
     //gray 300
     background-color: #D0D5DD;
     margin-left: -14px;
-    margin-right: 24px;
+    margin-right: 8px;
   }
   // .v-selection-control__input input{
   //   display: none;

@@ -196,7 +196,7 @@ watch(queryParams, val => {
         :is-fillter="false"
         is-delete
         :disabled-delete="disabledDelete"
-        @search="handleSearch"
+        @update:keyword="handleSearch"
         @deleteMultiple="handleDeleteMultiple"
       />
     </div>

@@ -18,8 +18,8 @@ const CpActionFooterEdit = defineAsyncComponent(() => import('@/components/page/
  * Store
  */
 const storeContentManager = contentManagerStore()
-const { viewModeRefer, contentRefer, itemsRefer, isShowDialogNotiDeleteRefer, disabledDeleteRefer, isShowModalAddRefStock } = storeToRefs(storeContentManager)
-const { getListReferContentCourse, confirmDialogDeleteRefer, handleSearchRefer, selectedRowsRefer, deleteItemsRefer, handleAddRefContentStock } = storeContentManager
+const { viewModeRefer, contentRefer, callBackAction, itemsRefer, isShowDialogNotiDeleteRefer, disabledDeleteRefer, isShowModalAddRefStock, dataSelectRef } = storeToRefs(storeContentManager)
+const { getListReferContentCourse, actionItemRefer, confirmDialogDeleteRefer, handleSearchRefer, selectedRowsRefer, deleteItemsRefer, handleAddRefContentStock } = storeContentManager
 const groupOptions = {
   allowEmptySelect: false,
   collapsable: false,
@@ -80,6 +80,7 @@ function handleClickBtn(type: string) {
   }
 }
 onMounted(async () => {
+  callBackAction.value = actionItemRefer
   if (courseId)
     await getListReferContentCourse(courseId)
 })
@@ -121,7 +122,7 @@ onUnmounted(() => {
         :is-fillter="false"
         :disabled-delete="disabledDeleteRefer"
         @click="handleClickBtn"
-        @search="handleSearchRefer"
+        @update:keyword="handleSearchRefer"
       />
     </div>
     <div class="mb-6">
@@ -174,6 +175,7 @@ onUnmounted(() => {
     class="mt-6"
   >
     <CpReferenceFile
+      :data="dataSelectRef"
       @cancel="viewModeRefer = 'view'"
       @addSuccess="addSuccessFile"
     />

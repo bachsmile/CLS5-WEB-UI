@@ -18,6 +18,7 @@ import CpActionFooterEdit from '@/components/page/gereral/CpActionFooterEdit.vue
 import CpMdMoveThematicContent from '@/components/page/Admin/course/modal/CpMdMoveThematicContent.vue'
 import CpMdEditThematic from '@/components/page/Admin/course/modal/CpMdEditThematic.vue'
 import CpMdAddFromStockContent from '@/components/page/Admin/course/modal/CpMdAddFromStockContent.vue'
+import { tableStore } from '@/stores/table'
 
 /**
  * Store
@@ -32,7 +33,8 @@ const {
 const { getListContentCourse, handleMoveThematic, handleAddContentFromStock, confirmDialogDelete, handlerActionHeader, handleSearch, selectedRows, deleteItems, actionItemUserReg, checkMove, approveContent } = storeContentManager
 const storeCourseApproveManager = courseApproveManagerStore()
 const { idModalSendRatioPoint } = storeToRefs(storeCourseApproveManager)
-
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
 const groupOptions = {
   allowEmptySelect: false,
   collapsable: false,
@@ -80,7 +82,22 @@ const actionUpdate = [
         params: {
           id: Number(route.params.id),
           tab: route.params.tab,
-          type: 'video',
+          type: 'video-content',
+          contentTab: 'infor',
+        },
+      })
+    },
+  },
+  {
+    title: t('document-course'),
+    icon: 'tabler:file-description',
+    action: () => {
+      router.push({
+        name: 'content-add',
+        params: {
+          id: Number(route.params.id),
+          tab: route.params.tab,
+          type: 'document-content',
           contentTab: 'infor',
         },
       })
@@ -136,6 +153,7 @@ function handleClickBtn(type: string) {
   }
 }
 onMounted(() => {
+  callBackAction.value = actionItemUserReg
   getListContentCourse()
 })
 

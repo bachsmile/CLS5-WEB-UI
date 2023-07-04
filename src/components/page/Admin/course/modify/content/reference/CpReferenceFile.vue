@@ -7,11 +7,15 @@ import { contentManagerStore } from '@/stores/admin/course/content'
 import toast from '@/plugins/toast'
 import CmVideoUpload from '@/components/common/CmVideoUpload.vue'
 import { load } from '@/stores/loadComponent.js'
+import Globals from '@/constant/Globals'
+import ServerFileService from '@/api/server-file/index'
 
 const emit = defineEmits<Emit>()
 
-const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
+const CmItemFileUpload = defineAsyncComponent(() => import('@/components/common/CmItemFileUpload.vue'))
 
+const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
+const CmPreviewFile = defineAsyncComponent(() => import('@/components/common/CmPreviewFile.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 
 /** lib */
@@ -38,39 +42,31 @@ const { submitForm } = useForm()
 
 const storeContentManager = contentManagerStore()
 const { contentRefer } = storeToRefs(storeContentManager)
+const { resetRefer } = storeContentManager
 
 const schema = yup.object({
   name: schemaOption.requiredString(),
 })
 const myFormAddRefer = ref()
-const file = reactive({
+const files = ref({
   filePath: null as any,
+  fileFolder: null as any,
   type: null as any,
+  localDocFileName: null as any,
+  haveDocument: false,
 })
 const errorsInputFile = ref<any>([])
+const isLoadingFile = ref<any>(false)
 const LABEL = Object.freeze({
   TITLE1: `${t('name-files')}*`,
   TITLE2: `${t('choose-files-upload')}*`,
 })
+const fileUpload = ref([{ name: 'Real-Time', icon: 'tabler:file', size: 0, processing: 95 }])
+
 const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
 
-function handleChangeFile(data: any) {
-  if (data.fileExtension === '.mp4') {
-    file.filePath = data.filePath
-    file.type = 'mp4'
-  }
-
-  if (contentRefer.value.name === null)
-    contentRefer.value.name = data?.name
-
-  contentRefer.value.url = data?.fileFolder
-  if (!contentRefer.value.url)
-    errorsInputFile.value = [t('please-choose-files')]
-
-  else
-    errorsInputFile.value = []
-}
 function onCancel() {
+  resetRefer()
   emit('cancel')
 }
 
@@ -80,10 +76,15 @@ function resetData() {
   contentRefer.value.isPdf = false
   contentRefer.value.url = undefined
 }
-async function handleSave() {
+
+async function handleSave(idx: any) {
   myFormAddRefer.value.validate().then(async (success: any) => {
+    console.log(success)
+
     if (!contentRefer.value.url) {
       errorsInputFile.value = [t('please-choose-files')]
+      toast('ERROR', t('please-choose-files'))
+      unLoadComponent(idx)
       return
     }
     if (success.valid) {
@@ -100,6 +101,7 @@ async function handleSave() {
       if (response.code === 200) {
         resetData()
         toast('SUCCESS', t(response.message))
+        resetRefer()
         emit('cancel')
         emit('addSuccess')
       }
@@ -109,17 +111,120 @@ async function handleSave() {
     }
   })
 }
-async function dowloadFile(idx: any) {
-  await MethodsUtil.dowloadSampleFile(
-    SERVERFILE + file.filePath,
-    'GET',
-    contentRefer.value.name,
-  ).then(value => {
-    setTimeout(() => {
-      unLoadComponent(idx)
-    }, 1000)
+
+/** *****************************Preiview file********************************************** */
+// cập nhật dữ liệu chỉnh sửa
+function getDetailDocContent() {
+  console.log(contentRefer.value)
+
+  if (contentRefer.value.url && contentRefer.value.url !== null) {
+    files.value.fileFolder = contentRefer.value.url
+    getLocalInfo(contentRefer.value.url)
+  }
+  else { contentRefer.value.timeTypeId = 1 }
+}
+
+// lấy thông tin server file từ file folder
+async function getInfor(folder: any) {
+  return await MethodsUtil.requestApiCustom(`${SERVERFILE}${ServerFileService.GetInforFile}${folder}`, TYPE_REQUEST.GET)
+}
+
+// lấy thông tin server file từ file folder và cập nhật lại data file để hiển thị
+async function getLocalInfo(folder: any, getFileSize?: any) {
+  await MethodsUtil.requestApiCustom(`${SERVERFILE}${ServerFileService.GetInforFile}${folder}`, TYPE_REQUEST.GET).then((data: any) => {
+    files.value.localDocFileName = data.fileName
+    files.value = {
+      ...files.value,
+      ...data,
+    }
+    if (data.fileExtension === '.mp4') {
+      files.value.type = 'mp4'
+      files.value.filePath = data.filePath
+    }
+    console.log(data)
+    files.value.haveDocument = true
+    isLoadingFile.value = false
   })
 }
+
+// upload server file lần 2 với trạng thái isSecure = true để mã hóa file => file path có thể xem ở pdf
+async function upFileServerPreview(fileUp: any) {
+  const model = {
+    files: fileUp,
+    isSecure: true,
+  }
+  const data = await MethodsUtil.uploadFile(model)
+  files.value.fileFolder = data.fileFolder
+  contentRefer.value.url = data?.fileFolder
+  getLocalInfo(data.filePath)
+  console.log(data)
+}
+
+// thay đổi dữ liệu từ input file
+function handleChangeFile(data: any, fileUp: any) {
+  isLoadingFile.value = true
+  if (data.fileExtension === '.mp4') {
+    files.value.type = 'mp4'
+    files.value.filePath = data.filePath
+    contentRefer.value.url = data?.fileFolder
+    contentRefer.value.urlFileName = null
+    files.value.haveDocument = true
+  }
+  else {
+    files.value.type = data.fileExtension
+    contentRefer.value.urlFileName = data.fileFolder
+  }
+  if (contentRefer.value.name === null)
+    contentRefer.value.name = data?.name
+
+  if (!contentRefer.value.url)
+    errorsInputFile.value = [t('please-choose-files')]
+
+  else
+    errorsInputFile.value = []
+  if (Globals.documentExtention.includes(data.fileExtension))
+    upFileServerPreview(fileUp)
+
+  else
+    isLoadingFile.value = false
+}
+
+// Lấy thông tin file dowload từ urlFileName rồi dowload
+async function dowloadFile(idx: any) {
+  await getInfor(files.value.type === 'mp4' ? contentRefer.value.url : contentRefer.value.urlFileName).then((value: any) => {
+    MethodsUtil.dowloadSampleFile(
+      SERVERFILE + value.filePath,
+      'GET',
+      files.value.localDocFileName,
+    ).then(() => {
+      setTimeout(() => {
+        unLoadComponent(idx)
+      }, 1000)
+    })
+  })
+}
+function handleDeleteDoc(type: any, idx: any) {
+  switch (type) {
+    case 'local':
+      files.value = {
+        filePath: null as any,
+        fileFolder: null as any,
+        type: null as any,
+        localDocFileName: null as any,
+        haveDocument: false,
+      }
+      contentRefer.value.urlFileName = ''
+      contentRefer.value.url = ''
+      break
+
+    default:
+      break
+  }
+  unLoadComponent(idx)
+}
+onMounted(() => {
+  getDetailDocContent()
+})
 </script>
 
 <template>
@@ -129,7 +234,7 @@ async function dowloadFile(idx: any) {
       :validation-schema="schema"
       @submit.prevent="submitForm"
     >
-      <VRow class="mb-3">
+      <VRow>
         <VCol
           cols="12"
           sm="6"
@@ -159,30 +264,63 @@ async function dowloadFile(idx: any) {
           </div>
           <div>
             <CpInputFile
-              :is-btn-download="!['mp4'].includes(file.type)"
+              :file-name="files.localDocFileName"
+              :is-btn-download="!['mp4'].includes(files.type)"
               :errors="errorsInputFile"
               @change="handleChangeFile"
             />
           </div>
         </VCol>
         <VCol
-          v-if="['mp4'].includes(file.type) && file.filePath"
+          v-if="['mp4'].includes(files.type) && files.filePath"
           cols="12"
           sm="6"
         >
           <CmVideoUpload
-            class="mb-2"
-            :model-value="file.filePath"
+            :model-value="files.filePath"
           />
-          <div class="d-flex justify-center">
+        </VCol>
+        <VCol
+          v-else
+          cols="12"
+          sm="6"
+        >
+          <div v-if="isLoadingFile">
+            <CmItemFileUpload
+              :icon-status="false"
+              :files="fileUpload"
+            />
+          </div>
+          <CmPreviewFile
+            v-if="files?.filePath && files?.fileFolder && !isLoadingFile"
+            width="100"
+            :src="files?.filePath"
+            :file-folder="files?.fileFolder"
+          />
+        </VCol>
+      </VRow>
+      <VRow v-if="!isLoadingFile && files.haveDocument">
+        <VCol
+          cols="12"
+          sm="6"
+        >
+          <div class=" d-flex justify-center">
+            <CmButton
+              class="mr-2"
+              variant="outlined"
+              is-load
+              icon="tabler:download"
+              :size-icon="18"
+              @click="dowloadFile"
+            />
             <CmButton
               is-load
-              variant="tonal"
-              color="primary"
-              @click="dowloadFile"
-            >
-              {{ t('download') }}
-            </CmButton>
+              icon="tabler:trash"
+              variant="outlined"
+              color="error"
+              :size-icon="18"
+              @click="((idx: any) => handleDeleteDoc('local', idx))"
+            />
           </div>
         </VCol>
       </VRow>

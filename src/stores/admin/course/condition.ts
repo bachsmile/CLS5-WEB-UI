@@ -6,6 +6,7 @@ import CourseService from '@/api/course/index'
 import UserService from '@/api/user'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
+import { tableStore } from '@/stores/table'
 
 export const conditionManagerStore = defineStore('conditionManager', () => {
   /** store */
@@ -22,6 +23,8 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
   const combobox = comboboxStore()
   const { listTopicCourseCombobox } = storeToRefs(combobox)
   const { getlistTopicCourseCombobox } = combobox
+  const storeTable = tableStore()
+  const { callBackAction } = storeToRefs(storeTable)
 
   /** năng lực */
   const itemsCapacity = ref([])
@@ -75,7 +78,7 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
           if (profi)
             element.id = profi.courseProficiencyRequireId
           element.actions = [
-            MethodsUtil.checkActionType({ id: 2 }, actionItemCapacity),
+            MethodsUtil.checkActionType({ id: 2 }),
           ]
         })
         itemsCapacity.value = capacities.data
@@ -200,6 +203,7 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
         break
     }
   }
+
   async function getCourseRequired() {
     queryParamsCourse.value.courseId = courseData.value?.id
     await MethodsUtil.requestApiCustom(CourseService.GetRequiredCourse, TYPE_REQUEST.GET, queryParamsCourse.value).then(async (value: any) => {
@@ -210,7 +214,7 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
         if (topic)
           element.topicCourseName = topic.value
         element.actions = [
-          MethodsUtil.checkActionType({ id: 2 }, actionItemCourse),
+          MethodsUtil.checkActionType({ id: 2 }),
         ]
       })
       itemsCourse.value = value.data
@@ -245,6 +249,8 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
   })
 
   return {
+    callBackAction,
+
     //* *năng lực */
     disabledDeleteCapacity,
     isShowDialogNotiDeleteCapacity,
@@ -259,6 +265,7 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
     handleSearchCapacity,
     getCapacityRequired,
     addCapacity,
+    actionItemCapacity,
 
     //* *course */
     itemsCourse,
@@ -266,6 +273,7 @@ export const conditionManagerStore = defineStore('conditionManager', () => {
     disabledDeleteCourse,
     totalRecordCourse,
     queryParamsCourse,
+    actionItemCourse,
     getCourseRequired,
     deleteItemsCourse,
     deleteItemCourse,

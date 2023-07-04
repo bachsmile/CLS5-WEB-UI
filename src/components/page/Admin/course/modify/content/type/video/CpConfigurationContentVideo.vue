@@ -78,7 +78,6 @@ function allowRetakeChange() {
 }
 function changeCompleteEnoughPoints(valuePoint: any) {
   testConfig.value.isCompleteEnoughPoints = valuePoint
-  console.log(valuePoint)
 
   if (valuePoint === null)
     testConfig.value.isCompleteEnoughPoints = true

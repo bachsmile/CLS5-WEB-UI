@@ -7,6 +7,7 @@ import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { courseInforManagerStore } from '@/stores/admin/course/infor'
+import { tableStore } from '@/stores/table'
 
 export const asignUserManagerStore = defineStore('asignUserManager', () => {
   /** lib ****************************************************************/
@@ -18,6 +19,8 @@ export const asignUserManagerStore = defineStore('asignUserManager', () => {
  */
   const storeCourseInforManager = courseInforManagerStore()
   const { courseData } = storeToRefs(storeCourseInforManager)
+  const storeTable = tableStore()
+  const { callBackAction } = storeToRefs(storeTable)
 
   /** state */
   const queryParams = ref({
@@ -63,7 +66,7 @@ export const asignUserManagerStore = defineStore('asignUserManager', () => {
         itemsUserReg.value = value.data.pageLists
         value.data.pageLists.forEach((element: any) => {
           element.actions = [
-            MethodsUtil.checkActionType({ id: 2 }, actionItemUserReg),
+            MethodsUtil.checkActionType({ id: 2 }),
           ]
         })
         totalRecordUserReg.value = value.data.totalRecord
@@ -126,6 +129,7 @@ export const asignUserManagerStore = defineStore('asignUserManager', () => {
         break
     }
   }
+  callBackAction.value = actionItemUserReg
 
   // xác nhận xóa học viên
   function confirmDialogDeleteUserReg(event: any) {

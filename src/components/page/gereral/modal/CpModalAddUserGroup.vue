@@ -69,7 +69,7 @@ const disableSave = ref(false)
  */
 /** event dialog */
 // get danh sách nhóm người dùng
-const getListGroupModal = async (queryGetList: any) => {
+async function getListGroupModal(queryGetList: any) {
   queryGetList.listId = props.listId
   window.showAllPageLoading('FULL')
   if (queryGetList === null)
@@ -91,11 +91,11 @@ const getListGroupModal = async (queryGetList: any) => {
   window.hideAllPageLoading()
 }
 
-const onCancel = () => {
+function onCancel() {
   emit('update:isDialogVisible', false)
 }
 
-const addGroupUser = () => {
+function addGroupUser() {
   if (disableSave.value)
     return
   disableSave.value = true
@@ -111,23 +111,23 @@ const addGroupUser = () => {
     emit('update:isDialogVisible', false)
   }
 }
-const handlePageClick = async (page: any, size: any) => {
+async function handlePageClick(page: any, size: any) {
   queryGetLists.pageNumber = page
   queryGetLists.pageSize = size
   getListGroupModal(queryGetLists)
 }
-const onConfirmation = () => {
+function onConfirmation() {
   addGroupUser()
 }
-const filterData = () => {
+function filterData() {
   queryGetLists.pageNumber = 1
   getListGroupModal(queryGetLists)
 }
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   dataComponent.listId = e
 }
 
-const show = () => {
+function show() {
   if (autoAssignRef && Object.keys(autoAssignRef).length) {
     const autoCheckAssignUser = settingDefaults.value?.find(item => item.typeId === 7)
     if (autoCheckAssignUser && autoCheckAssignUser?.value) {

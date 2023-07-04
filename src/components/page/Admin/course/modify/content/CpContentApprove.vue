@@ -7,6 +7,7 @@ import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import CmTextField from '@/components/common/CmTextField.vue'
 import { contentManagerStore } from '@/stores/admin/course/content'
+import { tableStore } from '@/stores/table'
 
 const CpApproveContentFilter = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/content/CpApproveContentFilter.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
@@ -19,6 +20,8 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const route = useRoute()
 const storeContentManager = contentManagerStore()
 const { viewMode } = storeToRefs(storeContentManager)
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
 
 /** state */
 const headers = reactive([
@@ -71,6 +74,7 @@ function actionItem(type: any) {
       break
   }
 }
+callBackAction.value = actionItem
 
 //  fillter header
 async function handleFilterCombobox(dataFilter: any) {
@@ -175,9 +179,6 @@ async function getAuthorName(pageLists: any) {
     if (user)
       element.authorName = MethodsUtil.formatFullName(user.firstName, user.lastName)
     element.actions = actionsTable
-    element.actions = element.actions.map((el: any) => {
-      return MethodsUtil.checkActionType(el, actionItem)
-    })
   })
 }
 async function getListAprove() {
@@ -226,7 +227,7 @@ getListAprove()
         :disabled-back="disabledBack"
         :disabled-approve="disabledApprove"
         @click="handleClickBtn"
-        @search="handleSearch"
+        @update:keyword="handleSearch"
       />
     </div>
     <div class="mb-6">

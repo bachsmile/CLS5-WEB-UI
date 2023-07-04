@@ -31,24 +31,24 @@ interface Emit {
   (e: 'update:dataDelete', data: any): void
   (e: 'update:pageNumber', data: any): void
 }
-const getDetail = (val: any) => {
+function getDetail(val: any) {
   emit('update:dataDetail', val)
 }
 
-const deleteItem = (val: any) => {
+function deleteItem(val: any) {
   emit('update:dataDelete', val.id)
 }
 
-const selectedRows = (e: any) => {
+function selectedRows(e: any) {
   emit('update:listId', e)
 }
 
-const selectedAll = () => {
+function selectedAll() {
   const listId = props.items.map((e: Item) => e.id)
   emit('update:listId', listId)
 }
 
-const handlePageClick = (e: any) => {
+function handlePageClick(e: any) {
   emit('update:pageNumber', e)
 }
 </script>
@@ -129,4 +129,3 @@ const handlePageClick = (e: any) => {
     </template>
   </CmTable>
 </template>
-

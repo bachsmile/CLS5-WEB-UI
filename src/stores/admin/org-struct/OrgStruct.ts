@@ -107,20 +107,18 @@ export const orgStructManagerStore = defineStore('orgStructManager', () => {
       role: StringJwt.getRole(),
     }
     await MethodsUtil.requestApiCustom(ApiUser.GetOrganizationalStructure, TYPE_REQUEST.GET, params).then((value: any) => {
-      // cấu hình dạng cây cho cơ cấu tổ chức
-      for (let i = 0; i < value.data.length; i++) {
-        value.data[i] = {
-          ...value.data[i],
-        }
-      }
-      const result = ArraysUtil.formatTreeData(ArraysUtil.unFlatMapTree(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id')), config.value.roots, t, 'children')
+      console.time('start')
+      const result: any = {}
+      console.log('start')
+      console.log(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id'))
+
+      ArraysUtil.convertTreeView(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id'), result, config.value.roots, t, 'children')
 
       nodes.value = reactive(result)
 
       // Cấu hình node roots cho vue tree
       const filteredKeys = Object.keys(result).filter(key => result[key].parentId === 0)
       config.value.roots = filteredKeys
-      render.value++
     })
   }
   const getComboboxOwnerInf = async (loadMore?: any) => {

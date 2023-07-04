@@ -121,7 +121,7 @@ onMounted(async () => {
         :disabled-approve="disabledUserRegApprove"
         :disabled-delete="disabledUserRegDelete"
         @click="handleClickBtn"
-        @search="handleSearchUserReg"
+        @update:keyword="handleSearchUserReg"
       />
     </div>
 

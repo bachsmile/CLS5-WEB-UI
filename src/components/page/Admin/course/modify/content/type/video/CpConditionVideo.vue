@@ -107,14 +107,12 @@ async function getListContentCourse() {
       element.html = true
     }
   }
-  console.log(dataRow)
   items.value = dataRow
 }
 
 // lưu  dữ liệu
 async function saveDataCondition(idx: any) {
   myFormAddConditionVideo.value.validate().then(async (success: any) => {
-    console.log(success)
     if (success.valid) {
       if (!isStartTime.value)
         conditionAttend.value.dateTimeStart = null

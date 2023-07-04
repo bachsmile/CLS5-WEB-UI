@@ -176,7 +176,7 @@ getPagingByUser(queryParams)
         is-add
         :disabled-delete="disabledDelete"
         :add-button-name="t('add-group')"
-        @search="handleSearch"
+        @update:keyword="handleSearch"
         @add-handler="handleAddGroup"
         @deleteMultiple="handleDeleteMultiple"
       />
