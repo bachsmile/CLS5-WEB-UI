@@ -6,6 +6,7 @@ import apiPermission from '@/api/permission/index'
 import MethodsUtil from '@/utils/MethodsUtil'
 import ArraysUtil from '@/utils/ArrayUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
+
 import toast from '@/plugins/toast'
 import { load } from '@/stores/loadComponent.js'
 
@@ -100,27 +101,37 @@ function getListFeature() {
   })
   return listFeature
 }
+const myForm = ref()
+async function handleEditPer(idx: number) {
+  myForm.value.validate.validate().then(async (success: any) => {
+    if (success.valid) {
+      dataInput.value.listFeature = getListFeature()
+      let message = 'USR_AddSuccess'
+      let typeErr: any = 'SUCCESS'
+      let api = apiPermission.addPermission
+      if (route.params.id) {
+        message = 'USR_UpdateSuccess'
+        api = apiPermission.updatePermission
+      }
+      await MethodsUtil.requestApiCustom(api, TYPE_REQUEST.POST, dataInput.value)
+        .then((res: any) => {
+          router.push({ name: 'admin-organization-permission-list' })
+          unLoadComponent(idx)
+        })
+        .catch((err: any) => {
+          unLoadComponent(idx)
+          message = err.errors[0].message
+          typeErr = 'ERROR'
+        })
+      toast(typeErr, t(message))
+    }
+    else {
+      if (!myForm.value.isIntersecting)
+        toast('ERROR', t('check-info'))
 
-function handleEditPer(idx: number) {
-  dataInput.value.listFeature = getListFeature()
-  let message = 'USR_AddSuccess'
-  let typeErr: any = 'SUCCESS'
-  let api = apiPermission.addPermission
-  if (route.params.id) {
-    message = 'USR_UpdateSuccess'
-    api = apiPermission.updatePermission
-  }
-  MethodsUtil.requestApiCustom(api, TYPE_REQUEST.POST, dataInput.value)
-    .then((res: any) => {
-      router.push({ name: 'admin-organization-permission-list' })
       unLoadComponent(idx)
-    })
-    .catch((err: any) => {
-      unLoadComponent(idx)
-      message = err.errors[0].message
-      typeErr = 'ERROR'
-    })
-  toast(typeErr, t(message))
+    }
+  })
 }
 
 function reset() {
@@ -138,8 +149,10 @@ function reset() {
 
 <template>
   <CpHeaderEditPermission
+    ref="myForm"
     v-model:user-type-name="dataInput.userTypeName"
     v-model:default-role-id="dataInput.defaultRoleId"
+
     :list-role-default="listRoleDefault"
   />
 

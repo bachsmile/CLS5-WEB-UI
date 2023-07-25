@@ -8,7 +8,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits<Emit>()
 const storeValidate = validatorStore()
+const { schemaOption, Field, Form, useForm, yup } = storeValidate
+
+const { submitForm } = useForm()
 const { t } = window.i18n()
+const schema = reactive({
+  defaultRoleId: schemaOption.defaultSelectSingle,
+})
 interface Emit {
   (e: 'update:userTypeName', value: any): void
   (e: 'update:defaultRoleId', value: any): void
@@ -19,7 +25,6 @@ interface Props {
   defaultRoleId: number | null
   userTypeName: string | null
 }
-const { schemaOption, Field, Form, useForm, yup } = storeValidate
 interface DataInput {
   id?: number
   userTypeName: string
@@ -30,35 +35,60 @@ const dataInput = reactive<DataInput>({
   userTypeName: '',
   defaultRoleId: null,
 })
+const isIntersecting = ref<boolean>(false)
+function onIntersect(val: boolean) {
+  isIntersecting.value = val
+}
+watchEffect(() => {
+  dataInput.userTypeName = props.userTypeName || ''
+  dataInput.defaultRoleId = props.defaultRoleId
+})
+const formEdit = ref()
+defineExpose({
+  validate: formEdit,
+  isIntersecting,
+})
 </script>
 
 <template>
-  <Form>
+  <Form
+    ref="formEdit"
+    :validation-schema="schema"
+    @submit.prevent="submitForm"
+  >
     <VRow>
       <VCol
         cols="4"
       >
         <CmTextField
-          :model-value="userTypeName"
+          :model-value="dataInput.userTypeName"
           :text="`${t('userTypeName')}*`"
           :placeholder="t('userTypeName')"
           @update:model-value="emit('update:userTypeName', $event)"
         />
       </VCol>
       <VCol
+        v-intersect="onIntersect"
         cols="4"
       >
-        <CmSelect
-          :model-value="defaultRoleId"
-          :text="`${t('default-role')}*`"
-          :items="props.listRoleDefault"
-          custom-key="text"
-          item-value="roleValue"
-          :placeholder="t('default-role')"
-          @update:model-value="emit('update:defaultRoleId', $event)"
-        />
+        <Field
+          v-slot="{ field, errors }"
+          v-model:model-value="dataInput.defaultRoleId"
+          name="defaultRoleId"
+        >
+          <CmSelect
+            :field="field"
+            :errors="errors"
+            :model-value="dataInput.defaultRoleId"
+            :text="`${t('default-role')}*`"
+            :items="props.listRoleDefault"
+            custom-key="text"
+            item-value="roleValue"
+            :placeholder="t('default-role')"
+            @update:model-value="emit('update:defaultRoleId', $event)"
+          />
+        </Field>
       </VCol>
     </VRow>
   </Form>
 </template>
-

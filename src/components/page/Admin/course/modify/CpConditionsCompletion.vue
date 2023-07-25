@@ -109,7 +109,7 @@ onMounted(() => {
                 <span class="text-regular-md">/{{ condition.totalRequireContent }} {{ t('content').toLowerCase() }}</span>
               </div>
               <div class="styleError text-errors">
-                {{ errors[0] }}
+                {{ t(MethodsUtil.showErrorsYub(errors)) }}
               </div>
             </Field>
           </Form>

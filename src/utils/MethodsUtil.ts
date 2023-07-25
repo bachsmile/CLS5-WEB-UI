@@ -1,4 +1,5 @@
 import jwt_decode from 'jwt-decode'
+import JSZip from 'jszip'
 import { ActionType } from '@/constant/data/actionType.json'
 import { typeFile } from '@/constant/data/typeFile.json'
 import { StatusTypeUser } from '@/constant/data/status.json'
@@ -7,7 +8,6 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import UserService from '@/api/user/index'
 import ServerFileService from '@/api/server-file/index'
 import axios from '@axios'
-
 import type { Any } from '@/typescript/interface'
 
 const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
@@ -39,10 +39,10 @@ export default class MethodsUtil {
    * @param str
    * @return {string}
    */
-  static getErrorsMessage = (errors: Array<any>) => {
+  static getErrorsMessage(errorsMess: Array<any>, t: any) {
     let str = ''
-    errors.forEach(element => {
-      // str += `${i18n.t(element.message, element.params)}`
+    errorsMess.forEach(element => {
+      str += `${t(element.message, element.params)}`
       str += '. '
     })
 
@@ -99,7 +99,6 @@ export default class MethodsUtil {
       return
     const data = (method === 'GET') ? null : (payload || null)
     const params = (method === 'GET') ? payload : null
-
     return window.axios({
       url,
       method,
@@ -276,6 +275,14 @@ export default class MethodsUtil {
     }
   }
 
+  static formatCurrency(value: number, toFixed = 3) {
+    const currency = Math.floor (value * 10 ** toFixed) / 10 ** toFixed
+    const formatter = new Intl.NumberFormat('en-US', {
+      useGrouping: true,
+    })
+    return formatter.format(currency)
+  }
+
   static formatCapacity(val: any) {
     if (val < 1024)
       return `${val} Byte`
@@ -291,6 +298,23 @@ export default class MethodsUtil {
 
   static checkTypeFile(type: string) {
     return (typeFile as any)[type ?? 'default']
+  }
+
+  static showErrorsYub(errors: any) {
+    return errors[0] === 'this cannot be null' ? 'not-empty' : errors[0]
+  }
+
+  static getFolder(str: string, type: number) {
+    let strs
+    if (type === 7) {
+      strs = str.split('=')
+      return strs[strs.length - 1]
+    }
+    strs = str.split('/')
+    if (strs.length > 2)
+      return strs[strs.length - 2]
+
+    return str
   }
 
   static getTypeContent(value: number) {
@@ -323,6 +347,83 @@ export default class MethodsUtil {
         return 'offline-content'
       default:
         return 'text-content'
+    }
+  }
+
+  static registerState(listState: any, stateInit: any) {
+    listState.forEach((item: any) => {
+      const key = Object.keys(item)?.[0]
+
+      stateInit.value[key] = window._.cloneDeep(item[key].value)
+    })
+  }
+
+  static $reset(stateInit: any) {
+    return (listState: any) => {
+      if (!window._.isEmpty(listState)) {
+        window._.forEach(listState, (value, key) => {
+          listState[key] = window._.cloneDeep(stateInit.value[key])
+        })
+      }
+    }
+  }
+
+  /*
+      hàm ghi lại  file bằng blob
+      fileURL blob sau khi được khởi tạo
+      fileName tên file
+      dirHandle hàm mở system file
+      const dirHandle = await window.showDirectoryPicker()
+      chỉ hỗ trợ IDE và chrome
+    */
+  static async writeFileDownload(fileURL: any, fileName: any, dirHandle: any) {
+    try {
+      const fileHandle = await dirHandle.getFileHandle(fileName, { create: true })
+      const writable = await fileHandle.createWritable()
+      await writable.seek(fileURL)
+      await writable.write(fileURL)
+      await writable.close()
+      return 200
+    }
+    catch (error) {
+      return error
+    }
+  }
+
+  // Nén nhiều file vào file zip bằng blob trả về
+  static async exportBlobZipMulFile(model: any, document: any, window: any) {
+    let status
+    try {
+      const zip = new JSZip()
+      const folder = zip
+      console.log(folder, model)
+      model.blobs?.forEach((item: any, index: any) => {
+        folder.file(`${index + 1} ${model.fileNames[index]}`, item)
+      })
+      console.log(model)
+
+      // document.getElementById('main-loading').style.display = 'block'
+
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        const fileURL = window.URL.createObjectURL(new Blob([blob]))
+
+        // document.getElementById('main-loading').style.display = 'none'
+        const fileLink = document.createElement('a')
+        fileLink.href = fileURL
+        fileLink.setAttribute('download', model.zipName)
+        document.body.appendChild(fileLink)
+        fileLink.click()
+        document.body.removeChild(fileLink)
+        window.URL.revokeObjectURL(fileURL)
+        status = 200
+      }).catch(error => {
+        // document.getElementById('main-loading').style.display = 'none'
+        status = error
+      })
+      return status
+    }
+    catch (error) {
+      return error
     }
   }
 }

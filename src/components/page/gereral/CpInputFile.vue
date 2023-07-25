@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<Props>(), ({
   isSecure: false,
   isBackground: false,
   isRequestFileInstall: false,
+  acceptDownload: false,
+  icon: 'tabler:file',
 }))
 const emit = defineEmits<Emit>()
 const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
@@ -29,13 +31,16 @@ const store = load()
 const { unLoadComponent } = store
 interface Props {
   accept?: string
+  icon?: string
   fileName?: string | null
   errors?: any
   modelValue?: any
   isBtnDownload?: boolean
   isSecure?: boolean
   isBackground?: boolean
+  fileType?: string
   isRequestFileInstall?: boolean
+  acceptDownload?: boolean
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const inputFile = ref<HTMLInputElement | null>(null)
@@ -53,11 +58,12 @@ const params = ref({
   isSecure: props.isSecure || false as any,
   UserId: null as any,
   isBackground: props.isBackground as any,
+  fileType: null as any,
 })
 const filesData = ref(
   {
     name: '',
-    icon: 'tabler:file',
+    icon: props.icon,
     size: 0,
     processing: 0,
     fileName: '',
@@ -113,6 +119,9 @@ async function onFileSelected(event: any) {
     return
   const file = tmpFiles[0]
   params.value.files = file
+  if (props.fileType)
+    params.value.fileType = props.fileType
+
   filesData.value.name = file.name
   filesData.value.size = file.size
   filesData.value.icon = MethodsUtil.checkTypeFile(file.type)?.icon
@@ -146,6 +155,9 @@ async function upFileServer(file: any) {
   formData.append('IsSecure', params.value.isSecure)
   formData.append('files', params.value.files)
   formData.append('UserId', params.value.UserId)
+  if (params.value.fileType)
+    formData.append('FileType', params.value.fileType)
+
   formData.append('IsBackground', params.value.isBackground)
   const token = AuthUtil.getToken()
 
@@ -167,6 +179,7 @@ async function upFileServer(file: any) {
         fileNameInput.value = filesData.value.name
         filesData.value.processing = 100
         clearInterval(intervalProgress.value)
+
         isShowModalProcessing.value = false
         toast('SUCCESS', t('up-file'))
         haveFile.value = true
@@ -214,7 +227,7 @@ watch(() => props.modelValue, (val: any) => {
     dataFile.value = null
     filesData.value = {
       name: '',
-      icon: 'tabler:file',
+      icon: props.icon,
       size: 0,
       processing: 0,
       fileName: '',
@@ -279,11 +292,13 @@ watch(() => props.modelValue, (val: any) => {
       <CpMdProcessing
         v-model:is-show-modal="isShowModalProcessing"
         :files="[filesData]"
+        :icon="props.icon"
         @cancel="cancelProcessing"
       />
     </div>
     <CpMdRequestInstall
       v-model:isDialogVisible="isShowModalOptionInst"
+      :accept-download="acceptDownload"
       @updateOptionUpload="updateOptionUpload"
       @confirm="confirmContinue"
     />

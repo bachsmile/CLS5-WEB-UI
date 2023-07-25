@@ -31,7 +31,6 @@ const { t } = window.i18n()
 const schema = reactive({
   code: schemaOption.code,
   name: schemaOption.defaultString,
-  description: schemaOption.defaultString,
 })
 
 const { handleSubmit, validate, errors, submitForm, resetForm } = useForm({
@@ -56,26 +55,56 @@ const dataInput = ref<dataDetail>({
 })
 
 const router = useRouter()
+const myForm = ref()
 
 // thêm nhóm người dùng
-const handleEdit = (idx: number, isUpdate: boolean) => {
+function handleEdit(idx: number, isUpdate: boolean) {
+  myForm.value.validate().then((status: any) => {
+    if (status.valid) {
+      if (route.params.id)
+        editGroupUser(idx)
+      else
+        addGroupUser(idx, isUpdate)
+    }
+    else {
+      unLoadComponent(idx)
+    }
+  })
+}
+
+function addGroupUser(idx: number, isUpdate: boolean) {
   const payload = {
     ...dataInput.value,
-    id: route.params.id ? route.params.id : null,
   }
   MethodsUtil.requestApiCustom(ApiGroupUser.AddGroup, TYPE_REQUEST.POST, payload).then((res: any) => {
     toast('SUCCESS', t('common.add-success'))
     if (isUpdate)
-      router.push({ name: 'admin-organization-user-groups-edit', params: { id: res.data, tab: 'info' } })
+      router.push({ name: 'admin-organization-user-groups-edit', params: { id: res.data } })
+    else
+      cancel()
     unLoadComponent(idx)
   }).catch(() => {
-    toast('ERROR', t('error'))
     unLoadComponent(idx)
+    toast('ERROR', t('error'))
+  })
+}
+function editGroupUser(idx: number) {
+  const payload = {
+    ...dataInput.value,
+    id: route.params.id ? route.params.id : null,
+  }
+  MethodsUtil.requestApiCustom(ApiGroupUser.PostUpdateInforGroupUser, TYPE_REQUEST.POST, payload).then((res: any) => {
+    toast('SUCCESS', t('common.add-success'))
+    cancel()
+    unLoadComponent(idx)
+  }).catch(() => {
+    unLoadComponent(idx)
+    toast('ERROR', t('error'))
   })
 }
 
 // lấy dữ liệu
-const getDataDetail = () => {
+function getDataDetail() {
   MethodsUtil.requestApiCustom(ApiGroupUser.DetailGroup, TYPE_REQUEST.GET, { groupId: route.params.id }).then((res: any) => {
     dataInput.value = res.data
   })
@@ -84,13 +113,13 @@ const getDataDetail = () => {
 if (route.params.id)
   getDataDetail()
 
-const cancel = () => {
+function cancel() {
   router.push({ name: 'admin-organization-user-groups-list' })
 }
 </script>
 
 <template>
-  <VRow class="mb-6 mt-6">
+  <VRow class="mb-5 mt-4">
     <VCol>
       <h3>{{ TITLE.titlePageAdd }}</h3>
     </VCol>
@@ -112,7 +141,6 @@ const cancel = () => {
           v-model="dataInput.code"
           name="code"
           type="text"
-          :rules="schema.code"
         >
           <CmTextField
             :field="field"
@@ -132,7 +160,6 @@ const cancel = () => {
           v-model="dataInput.name"
           name="name"
           type="text"
-          :rules="schema.name"
         >
           <CmTextField
             :field="field"
@@ -156,7 +183,7 @@ const cancel = () => {
     </VRow>
   </Form>
   <VRow>
-    <VCol class="d-flex justify-end flex-wrap">
+    <VCol class="d-flex justify-end flex-wrap mt-4">
       <CmButton
         variant="outlined"
         color="secondary"

@@ -3,9 +3,12 @@ import ArraysUtil from '@/utils/ArrayUtil'
 import MethodsUtil from '@/utils/MethodsUtil'
 import SkTree from '@/components/page/gereral/skeleton/SkTree.vue'
 import toast from '@/plugins/toast'
+import type { Any } from '@/typescript/interface'
 
 const props = withDefaults(defineProps<Props>(), ({
-
+  apiAdd: () => ({
+    label: 'listModelNew',
+  }),
 }))
 
 const emit = defineEmits<Emit>()
@@ -15,10 +18,10 @@ const CpActionFooterEdit = defineAsyncComponent(() => import('@/components/page/
 const { t } = window.i18n()
 
 interface Api {
-  api: string
-  method: string
-  payload: any
-  fileName: string
+  api?: string
+  method?: string
+  payload?: any
+  fileName?: string
   [e: string]: any
 }
 interface Props {
@@ -72,7 +75,11 @@ async function getListOrgStruct() {
 }
 async function getListDetailOrgStruct() {
   await MethodsUtil.requestApiCustom(props.apiDetail.api, props.apiDetail.method, props.apiDetail.params).then((value: any) => {
-    valueNodeCurrent.value = value.data
+    if (props.apiDetail.label)
+      valueNodeCurrent.value = value.data.map((i: Any) => i[props.apiDetail.label || ''])
+    else
+      valueNodeCurrent.value = value.data
+
     listModelOld.value = window._.cloneDeep(value.data)
   })
 }
@@ -80,15 +87,17 @@ async function updateValueOrg(value: any) {
   emit('update:modelValue', value)
   listModelNew.value = value
 }
-async function handleSave() {
+async function handleSave(idx: number, unload: any) {
   const params = {
     ...props.apiAdd?.params,
-    listModelNew: listModelNew.value,
+    [props.apiAdd.label]: listModelNew.value,
     listModelOld: listModelOld.value,
   }
   await MethodsUtil.requestApiCustom(props.apiAdd.api, props.apiAdd.method, params).then((value: any) => {
+    unload()
     toast('SUCCESS', t(value.message))
   }).catch((error: any) => {
+    unload()
     toast('ERROR', t(error.response.data.message))
     return false
   })

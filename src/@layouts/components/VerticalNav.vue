@@ -30,7 +30,7 @@ const { isVerticalNavCollapsed: isCollapsed, isLessThanOverlayNavBreakpoint, isV
 
 const hideTitleAndIcon = isVerticalNavMini(windowWidth, isHovered)
 
-const resolveNavItemComponent = (item: NavLink | NavSectionTitle | NavGroup) => {
+function resolveNavItemComponent(item: NavLink | NavSectionTitle | NavGroup) {
   if ('heading' in item)
     return VerticalNavSectionTitle
   if ('children' in item)
@@ -52,7 +52,7 @@ watch(() => route.name, () => {
 const isVerticalNavScrolled = ref(false)
 const updateIsVerticalNavScrolled = (val: boolean) => isVerticalNavScrolled.value = val
 
-const handleNavScroll = (evt: Event) => {
+function handleNavScroll(evt: Event) {
   isVerticalNavScrolled.value = (evt.target as HTMLElement).scrollTop > 0
 }
 </script>
@@ -65,12 +65,12 @@ const handleNavScroll = (evt: Event) => {
     :class="[
       {
         'overlay-nav': isLessThanOverlayNavBreakpoint(windowWidth),
-        'hovered': isHovered,
         'visible': isOverlayNavActive,
         'scrolled': isVerticalNavScrolled,
       },
     ]"
   >
+    <!-- 'hovered': isHovered, -->
     <!-- 👉 Header -->
     <div class="nav-header">
       <slot name="nav-header">
@@ -91,30 +91,32 @@ const handleNavScroll = (evt: Event) => {
         </RouterLink>
         <!-- 👉 Vertical nav actions -->
         <!-- Show toggle collapsible in >md and close button in <md -->
-        <template v-if="!isLessThanOverlayNavBreakpoint(windowWidth)">
+        <!--
+          <template v-if="!isLessThanOverlayNavBreakpoint(windowWidth)">
           <Component
-            :is="config.app.iconRenderer || 'div'"
-            v-show="isCollapsed && !hideTitleAndIcon"
-            class="header-action"
-            v-bind="config.icons.verticalNavUnPinned"
-            @click="isCollapsed = !isCollapsed"
+          :is="config.app.iconRenderer || 'div'"
+          v-show="isCollapsed && !hideTitleAndIcon"
+          class="header-action"
+          v-bind="config.icons.verticalNavUnPinned"
+          @click="isCollapsed = !isCollapsed"
           />
           <Component
-            :is="config.app.iconRenderer || 'div'"
-            v-show="!isCollapsed && !hideTitleAndIcon"
-            class="header-action"
-            v-bind="config.icons.verticalNavPinned"
-            @click="isCollapsed = !isCollapsed"
+          :is="config.app.iconRenderer || 'div'"
+          v-show="!isCollapsed && !hideTitleAndIcon"
+          class="header-action"
+          v-bind="config.icons.verticalNavPinned"
+          @click="isCollapsed = !isCollapsed"
           />
-        </template>
-        <template v-else>
+          </template>
+          <template v-else>
           <Component
-            :is="config.app.iconRenderer || 'div'"
-            class="header-action"
-            v-bind="config.icons.close"
-            @click="toggleIsOverlayNavActive(false)"
+          :is="config.app.iconRenderer || 'div'"
+          class="header-action"
+          v-bind="config.icons.close"
+          @click="toggleIsOverlayNavActive(false)"
           />
-        </template>
+          </template>
+        -->
       </slot>
     </div>
     <slot name="before-nav-items">

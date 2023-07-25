@@ -4,7 +4,7 @@ import type { typeToast } from '@/typescript/interface'
 
 const toastUse = useToast()
 
-const toast = (status: typeToast, title?: string, message?: string) => {
+function toast(status: typeToast, title?: string, message?: string) {
   toastUse({
     component: CmToast,
     props: {

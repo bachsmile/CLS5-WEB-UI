@@ -3,6 +3,7 @@ import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getUserData, parseJwt } from './utils'
 import error from './errors/error.router'
+import learner from './learner/learner.router'
 import admin from '@/router/admin/admin.router'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { load } from '@/stores/loadComponent.js'
@@ -24,6 +25,7 @@ const generalRoutes = [
   },
   ...admin,
   ...error,
+  ...learner,
 ]
 
 const token = localStorage.getItem('accessToken')

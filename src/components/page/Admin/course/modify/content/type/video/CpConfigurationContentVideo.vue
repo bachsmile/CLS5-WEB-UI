@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { contentTypeManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
+import { contentTypeVideoManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
 import { validatorStore } from '@/stores/validatator'
 import { configStore } from '@/stores/index'
+import MethodsUtil from '@/utils/MethodsUtil'
 
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 const CmCheckBox = defineAsyncComponent(() => import('@/components/common/CmCheckBox.vue'))
 const CmRadio = defineAsyncComponent(() => import('@/components/common/CmRadio.vue'))
 
-const storeContentVideoTypeModifyManager = contentTypeManagerStore()
+const storeContentVideoTypeModifyManager = contentTypeVideoManagerStore()
 const {
   isViewDetail, testConfig,
   isNumberPerPage, isShowRandom, isTimeOfWork, isAutoLog, isAllowRetake, minuteWork, secondWork,
@@ -141,7 +142,7 @@ if (!route.params.contentId)
                       <span class="text-regular-md">%</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -212,7 +213,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('question') }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>
@@ -259,7 +260,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('over') }} {{ 2 }} {{ t('question').toLowerCase() }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>
@@ -308,7 +309,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>
@@ -337,7 +338,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>
@@ -384,7 +385,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>
@@ -432,7 +433,7 @@ if (!route.params.contentId)
                         <span class="text-regular-md">{{ t('turns').toLowerCase() }}</span>
                       </div>
                       <div class="styleError text-errors">
-                        {{ errors[0] }}
+                        {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
                   </Field>

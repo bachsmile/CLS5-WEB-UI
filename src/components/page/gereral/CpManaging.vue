@@ -214,7 +214,7 @@ function handlePageClick(pageNumber: number, pageSize: number) {
 }
 
 // Xác nhận thêm hoặc sửa
-function handlerAdd(data: any) {
+function handlerAdd(data: any, unload: any) {
   const payload = {
     ...data,
     ...props.apiAdd?.params,
@@ -225,11 +225,13 @@ function handlerAdd(data: any) {
     isShowModalEdit.value = false
     getDataTable()
     toast('SUCCESS', t('add-success'))
+    unload()
   }).catch((err: any) => {
     toast('ERROR', t(err.response.data.errors[0].message))
+    unload()
   })
 }
-function handlerEdit(data: any) {
+function handlerEdit(data: any, unload: any) {
   const payload = {
     ...data,
     ...props.apiEdit.params,
@@ -237,16 +239,20 @@ function handlerEdit(data: any) {
   MethodsUtil.requestApiCustom(props.apiEdit.api, props.apiEdit.method, payload).then(() => {
     isShowModalEdit.value = false
     getDataTable()
+    if (unload)
+      unload()
     toast('SUCCESS', t('USR_UpdateSuccess'))
   }).catch((err: any) => {
+    if (unload)
+      unload()
     toast('ERROR', t(err.response.data.errors[0].message))
   })
 }
 
-function confirmModal(val: any) {
+function confirmModal(val: any, unload: any) {
   if (isEdit.value)
-    handlerEdit(val)
-  else handlerAdd(val)
+    handlerEdit(val, unload)
+  else handlerAdd(val, unload)
 }
 
 function confirmDelete() {
@@ -286,6 +292,7 @@ function exportExcel() {
   />
   <CmTable
     v-model:selected="listId"
+    is-update-row-force
     :headers="header"
     :items="items"
     :total-record="totalRecord"

@@ -10,7 +10,6 @@ import CourseService from '@/api/course/index'
 import UserService from '@/api/user/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 
-// import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
 
 /** end call api */
@@ -39,7 +38,7 @@ export const courseListManagerStore = defineStore('courseListManager', () => {
     pageNumber: 1,
     pageSize: 10,
     topicIds: [],
-    formOfStudy: null,
+    formOfStudy: undefined,
     isDisplayHome: null,
     statusId: null,
     ownerId: null,
@@ -75,7 +74,6 @@ export const courseListManagerStore = defineStore('courseListManager', () => {
   function handlerActionHeader(type: any) {
     switch (type) {
       case 'handlerAddButton':
-
         router.push({ name: 'course-add', params: { tab: 'infor' } })
         break
       case 'handlerCustomButton':

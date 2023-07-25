@@ -5,19 +5,20 @@ export default [
     title: 'Quản lý tổ chức',
     icon: { icon: 'tabler-file' },
     children: [
-      { title: 'Phân quyền người dùng', to: { name: 'admin-organization-permission' } },
-      { title: 'Người dùng', to: { name: 'admin-organization-users' } },
-      { title: 'Nhóm người dùng', to: { name: 'admin-organization-user-groups' } },
-      { title: 'Cơ cấu tổ chức', to: { name: 'admin-organization-org-struct' } },
-      { title: 'Vị trí chức danh', to: { name: 'admin-organization-position-title' } },
+      { title: 'Phân quyền người dùng', to: { name: 'user-type-list' } },
+      { title: 'Người dùng', to: { name: 'user' } },
+      { title: 'Nhóm người dùng', to: { name: 'user-group-list' } },
+      { title: 'Cơ cấu tổ chức', to: { name: 'organizational-structure-list' } },
+      { title: 'Vị trí chức danh', to: { name: 'user-title' } },
 
       {
         title: 'Năng lực',
         to: {
-          name: 'admin-organization-capacity',
-          params: {
-            activeTab: 'group-capacity',
-          },
+          name: 'proficiency-management',
+
+          // params: {
+          //   activeTab: 'group-capacity',
+          // },
         },
       },
     ],

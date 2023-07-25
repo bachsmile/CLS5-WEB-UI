@@ -183,6 +183,10 @@ watch(() => propsValue.modelValue, (val: any) => {
     border: 1px solid rgba(var(--v-border-color)) !important;
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
+    background-color: rgb(var(--v-theme-surface));
+    max-height: 500px;
+    overflow: hidden;
+    overflow-y: auto;
   }
   .input-math:focus{
     outline: unset !important;

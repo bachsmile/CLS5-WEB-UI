@@ -13,13 +13,13 @@ interface Emit {
   (e: 'update:isShow', data: boolean): void
   (e: 'ok', data: any): void
 }
-const hidden = (val: any) => {
+function hidden(val: any) {
   emit('update:isShow', false)
 }
 
 const store = useStoreAddUser()
 const groupId = ref(null)
-const confirm = (val: any) => {
+function confirm(val: any) {
   emit('ok', groupId.value)
 }
 </script>
@@ -29,15 +29,20 @@ const confirm = (val: any) => {
     :is-dialog-visible="props.isShow"
     :title="title"
     size="sm"
+    persistent
     @cancel="hidden"
     @confirm="confirm"
+    @hide="() => {
+      groupId = null
+    }"
   >
     <span>Chọn nhóm người dùng</span>
-
     <CmSelect
       v-model:model-value="groupId"
       :items="store.dataHeader.listGroupUser"
+      append-to-body
       item-value="id"
+      class="mb-4"
       custom-key="name"
     />
   </CmDialogs>

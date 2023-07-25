@@ -89,7 +89,9 @@ function handlerCustomButton() {
       >
         <CmDropDown
           :title="t('Update')"
+          variant="outlined"
           color="secondary"
+          bg-color="bg-white"
           :list-item="actionUpdate"
           :type="2"
           icon="tabler:chevron-down"

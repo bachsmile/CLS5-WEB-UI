@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import Globals from '@/constant/Globals'
+import {
+  PAGINATION_CURRENT_PAGE,
+  PAGINATION_PAGE_SIZE_DEFAULT,
+  PAGINATION_PAGE_SIZE_DEFAULT_OPTION,
+  PAGINATION_PAGE_SIZE_LARGE_OPTION,
+  PAGINATION_TOTAL_VISIABLE,
+} from '@/constant/Globals'
 
 // Cấu trúc props
 interface Props {
@@ -17,9 +23,9 @@ const props = withDefaults(defineProps<Props>(), ({
   totalItems: 0,
   showPageSelect: true,
   isLargeSize: false,
-  pageSize: Globals.PAGINATION_PAGE_SIZE_DEFAULT,
+  pageSize: PAGINATION_PAGE_SIZE_DEFAULT,
   customSelect: undefined,
-  currentPage: Globals.PAGINATION_CURRENT_PAGE,
+  currentPage: PAGINATION_CURRENT_PAGE,
 }))
 
 // Khai báo biến Emit
@@ -80,7 +86,7 @@ watch([() => props.currentPage], ([newValue]) => {
         </span>
         <VSelect
           v-model="pageSizeCurrent"
-          :items="customSelect ? customSelect : isLargeSize ? Globals.PAGINATION_PAGE_SIZE_LARGE_OPTION : Globals.PAGINATION_PAGE_SIZE_DEFAULT_OPTION"
+          :items="customSelect ? customSelect : isLargeSize ? PAGINATION_PAGE_SIZE_LARGE_OPTION : PAGINATION_PAGE_SIZE_DEFAULT_OPTION"
           item-title="state"
           item-value="abbr"
           label="Select"
@@ -96,7 +102,7 @@ watch([() => props.currentPage], ([newValue]) => {
         <VPagination
           v-model="selectedPage"
           :length="totalItemsLength"
-          :total-visible="Globals.PAGINATION_TOTAL_VISIABLE"
+          :total-visible="PAGINATION_TOTAL_VISIABLE"
           rounded="circle"
           @update:modelValue="handlePageClick"
         >

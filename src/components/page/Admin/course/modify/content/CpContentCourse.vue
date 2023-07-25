@@ -31,7 +31,7 @@ const listTab = [
       <CmTab
         :is-render="true"
         :list-tab="listTab"
-        label="content"
+        label="contentTab"
         type="underline"
       />
     </div>

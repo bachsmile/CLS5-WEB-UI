@@ -12,6 +12,7 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import CmCollapse from '@/components/common/CmCollapse.vue'
 import toast from '@/plugins/toast'
 import { tableStore } from '@/stores/table'
+import { ContentType } from '@/constant/data/contentCourseType.json'
 
 window.showAllPageLoading('COMPONENT')
 
@@ -26,6 +27,7 @@ const CpMdApproveCourse = defineAsyncComponent(() => import('@/components/page/A
 const CpMdRatioPointContent = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdRatioPointContent.vue'))
 const CpMdCoppyCourse = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdCoppyCourse.vue'))
 const CpMdFeedBack = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdFeedBack.vue'))
+const CpMdDownloadMul = defineAsyncComponent(() => import('@/components/page/gereral/modal/CpMdDownloadMul.vue'))
 
 /** lib */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -76,19 +78,29 @@ const queryParamsInit = {
 const headers = reactive([
   { text: '', value: 'checkbox', width: 50 },
   { text: t('name-course'), value: 'name', type: 'custom' },
-  { text: t('topic'), value: 'topicCourseName' },
+  { text: t('topic'), value: 'topicCourse' },
   { text: t('author-name'), value: 'fullname', type: 'custom' },
   { text: t('form-study'), value: 'formStudy', type: 'custom' },
   { text: t('duration-time'), value: 'time', type: 'custom' },
-  { text: t('date-update'), value: 'modifiedDateString' },
+  { text: t('date-update'), value: 'modifiedDate', type: 'custom' },
   { text: '', value: 'actions', width: 150, type: 'custom' },
 ])
 const isShowModalFeedBack = ref(false)
+const isShowModalDownload = ref(false)
 const dataFeedBack = ref<any>()
+const paramsDowloadContent = ref({
+  courseId: '' as any,
+  keyword: '',
+  pageNumber: null,
+  pageSize: null,
+})
 
 // hàm trả về các loại action khi click
 function actionItem(type: any) {
   switch (type[0]?.name) {
+    case 'ActionViewDetail':
+      router.push({ name: 'course-view', params: { tab: 'infor', id: type[1].id } })
+      break
     case 'ActionDelete':
       deleteItem(type[1].id)
       break
@@ -102,12 +114,24 @@ function actionItem(type: any) {
       handleViewFeedBack(type[1].id)
       break
     case 'ActionEdit':
-      router.push({ name: 'course-edit', params: { tab: 'infor', id: type[1].id } })
+      router.push({ name: 'course-edit', params: { id: Number(type[1].id) } })
       break
     case 'CopyCourse':
       isShowModalCoppyCourse.value = true
       coppyData.value.id = type[1].id
       break
+    case 'ActionRollCallOffline':
+      router.push({ name: 'attendance-list', params: { id: Number(type[1].id) } })
+      break
+    case 'DownloadContentCourse':
+      paramsDowloadContent.value.courseId = Number(type[1].id)
+      getListFilesCourse()
+      nextTick(() => {
+        isShowModalDownload.value = true
+      })
+
+      break
+
     default:
       break
   }
@@ -163,6 +187,42 @@ async function handleCoppyCourse() {
     })
 }
 
+// tải khóa học
+
+const listFileDown = ref([])
+function searchFile(keyword: any) {
+  paramsDowloadContent.value.keyword = keyword
+  getListFilesCourse()
+}
+
+const isDowloading = ref(false)
+const itemDownloading = ref<any>({})
+function cancelModal() {
+  console.log(isDowloading.value)
+
+  if (isDowloading.value)
+    toast('WARNING', t('progress-file'))
+  else
+    isShowModalDownload.value = false
+}
+async function getListFilesCourse() {
+  await window.requestApiCustom(CourseService.GetListFilesCourse, TYPE_REQUEST.GET, paramsDowloadContent.value).then((value: any) => {
+    if (value.data?.pageLists) {
+      listFileDown.value = value.data?.pageLists
+        .map((item: any) => ({
+          name: item.name,
+          type: t(MethodsUtil.checkType(item?.contentArchiveTypeId, ContentType, 'id')?.name),
+          icon: MethodsUtil.checkType(item?.contentArchiveTypeId, ContentType, 'id')?.icon,
+          size: 0,
+          processing: 0,
+          folder: MethodsUtil.getFolder(item.urlFile, item.contentArchiveTypeId),
+          statusDownload: (isDowloading.value || (itemDownloading.value && item.id === itemDownloading.value?.id)) ? 2 : 1,
+          ...item,
+        }))
+    }
+  })
+}
+
 // Fetch data danh sách khóa học
 async function fetchListCourse() {
   if (!route?.query?.sort) {
@@ -184,6 +244,7 @@ async function fetchListCourse() {
     }
   })
 }
+
 watch(() => route.query, (val: any) => {
   if (Object.keys(val).length > 0) {
     queryParams.value.pageNumber = val.pageNumber ? Number(val.pageNumber) : 1
@@ -288,7 +349,7 @@ window.hideAllPageLoading()
           </div>
           <div v-if="col === 'formStudy'">
             <CmChip
-              class="ma-2"
+              v-if="context.formOfStudyName"
               :color="MethodsUtil.checkType(context.formOfStudyName, StatusTypeFormStudy, 'name')?.color"
             >
               <VIcon
@@ -301,6 +362,9 @@ window.hideAllPageLoading()
           </div>
           <div v-if="col === 'time'">
             {{ DateUtil.formatSecond(context.time) }}
+          </div>
+          <div v-if="col === 'modifiedDate'">
+            <span>{{ DateUtil.formatDateToDDMM(context[col]) }}</span>
           </div>
         </template>
       </CmTable>
@@ -329,6 +393,14 @@ window.hideAllPageLoading()
     <CpMdFeedBack
       v-model:is-show-modal-feed-back="isShowModalFeedBack"
       :data-feed-back="dataFeedBack"
+    />
+    <CpMdDownloadMul
+      v-model:is-show-modal="isShowModalDownload"
+      v-model:dowloading="isDowloading"
+      v-model:item-downloading="itemDownloading"
+      :list-item="listFileDown"
+      @search="searchFile"
+      @cancel="cancelModal"
     />
   </div>
 </template>

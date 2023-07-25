@@ -1,5 +1,9 @@
 export default [
   {
+    path: 'survey',
+    name: 'survey-list',
+  },
+  {
     path: 'training',
     name: 'admin-training',
     redirect: { name: 'topic-list' },

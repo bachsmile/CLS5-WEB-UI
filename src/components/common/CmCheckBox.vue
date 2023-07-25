@@ -32,6 +32,7 @@ interface Props {/** ** Interface */
   colorInterminate?: string
   field?: any
   value?: any
+  className?: any
 }
 interface Emit {
   (e: 'update:modelValue', value: any): void
@@ -42,7 +43,7 @@ interface Emit {
 const propsValue = withDefaults(defineProps<Props>(), ({
   modelValue: false,
   color: 'primary',
-  colorInterminate: 'primary',
+  colorInterminate: 'infor',
   disabled: false,
   indeterminate: false,
   error: false,
@@ -73,10 +74,15 @@ const checkbox = ref(propsValue.modelValue)
 function onChangeChecked(val: boolean) {
   emit('update:modelValue', val)
 }
+function change(val: any) {
+  emit('change', checkbox.value)
+}
 
 watch(() => propsValue.modelValue, value => {
   checkbox.value = window._.cloneDeep(propsValue.modelValue)
-  emit('change', value)
+  emit('update:modelValue', value)
+
+  // emit('change', value)
 })
 </script>
 
@@ -113,7 +119,9 @@ watch(() => propsValue.modelValue, value => {
       :true-icon="propsValue.trueIcon"
       :true-value="propsValue.trueValue"
       :value="value"
+      :class="className"
       @update:modelValue="onChangeChecked($event)"
+      @change="change"
     >
       <template
         v-if="!label"
@@ -140,6 +148,9 @@ watch(() => propsValue.modelValue, value => {
   }
   .v-selection-control__input > .v-icon {
     background-color: rgb(var(--v-theme-surface));
+  }
+  .v-selection-control--disabled.v-selection-control--dirty {
+    color: $color-primary-600
   }
 }
 </style>

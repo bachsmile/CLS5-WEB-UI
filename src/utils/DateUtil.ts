@@ -15,7 +15,7 @@ export default class DateUtil {
 
     // const date = new Date(Date.parse(serial))
     // const isoDateStr = date.toISOString()
-    // eslint-disable-next-line no-restricted-globals
+
     if (isNaN(serial)) {
       dateInfo = new Date(serial)
     }
@@ -26,7 +26,6 @@ export default class DateUtil {
       dateInfo = new Date(utcValue * 1000)
     }
     if (Object.prototype.toString.call(dateInfo) === '[object Date]') {
-      // eslint-disable-next-line no-restricted-globals
       if (isNaN(dateInfo.getTime()))
         return serial
 
@@ -41,6 +40,13 @@ export default class DateUtil {
     if (!value)
       return ''
     return moment(String(value)).format('DD/MM/YYYY')
+  }
+
+  static formatTimeToHHmm = (value: any) => {
+    if (value)
+      return moment(String(value)).format('HH:mm')
+
+    return '-'
   }
 
   static formatSecond = (seconds: any) => {
@@ -62,5 +68,24 @@ export default class DateUtil {
       return `${seconds}s`
 
     return 0
+  }
+
+  static formatTimeSecondToCustom = (seconds: any, type?: any) => {
+    let time
+    if (!seconds)
+      return '00:00'
+    switch (type) {
+      case 'mm:ss':
+        time = new Date(seconds * 1000).toISOString().substring(14, 19)
+        break
+      case 'hh:mm':
+        time = new Date(seconds * 1000).toISOString().substring(11, 16)
+        break
+
+      default:
+        time = new Date(seconds * 1000).toISOString().substring(seconds < 3600 ? 14 : 11, 19)
+        break
+    }
+    return time
   }
 }

@@ -30,6 +30,7 @@ const UserService = {
   GetMenu: '/menu/get-menu-by-role',
   GetListIdStructureUser: '/user/get-list-id-from-structure-by-user',
   GetOrganizationalStructure: '/organizationalstructure/get-all',
+  GetOrganizationalTreeStructure: '/organizationalstructure/get-tree',
   GetListCustomerRequest: '/Customer/get-list',
   GetRegisterConfig: '/RegistryConfiguration/get',
   GetOrgById: '/organizationalstructure/get-by-id',
@@ -54,10 +55,16 @@ const UserService = {
   GetEventOrganizationalStructure: '/event/get-all-organizational-structure-id-by-event-id',
   GetInfoUserAddEvent: '/event/get-info-user-add-event',
   GetPagingUserGroup: '/usergroup/get-paging-user-group-by-list', // GetPagingUserGroup
+  GetListIdUserGroupById: '/event/get-all-group-id-by-event-id',
   GetUserGroup: '/courseuser/get-list-user-group', // GetPagingUserGroup
+  GetEventGroup: 'event/get-paging-event-groups',
+
   PostGetAuthorContent: '/courseuser/', // GetPagingUserGroup
+  PostDeleteGroupFromEvent: '/event/remove-group-user-from-event',
+  PostUpdateOrgFromEvent: '/event/update-organizational-structure-from-event',
 
   /** POST */
+  PostAddGroupUserToEvent: '/event/add-group-user-to-event',
   PostApproveCustomer: 'Customer/approve',
   PostOrgCreate: 'organizationalstructure/create',
   PostOrgUpdate: 'organizationalstructure/update',
@@ -115,7 +122,10 @@ const UserService = {
   fetchWards: '/Address/get-wards', // get districts
   GetPagingByUser: '/usergroup/get-paging-by-user', // GetPagingByUser
   DeleteGroupWithUser: '/usergroup/delete-group-with-user', // GetPagingByUser
+
   /** POST */
+  PostExportExcelGroupUser: 'usergroup/export-excel-group-users',
+  PostUpdateInforGroupUser: '/usergroup/update',
   PostAddGroupUser: 'usergroup/add-group-with-user',
   PostCreateTitle: 'title/create',
   PostUpdateTitle: 'title/update',

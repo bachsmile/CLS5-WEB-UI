@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { validatorStore } from '@/stores/validatator'
-import Globals from '@/constant/Globals'
+import { typeDialog } from '@/constant/Globals'
 import { courseManagerStore } from '@/stores/admin/course/course'
 import CmCheckBox from '@/components/common/CmCheckBox.vue'
 
@@ -14,7 +14,6 @@ const emit = defineEmits<Emit>()
 const CmIconNoti = defineAsyncComponent(() => import('@/components/common/CmIconNoti.vue'))
 const CmDialogs = defineAsyncComponent(() => import('@/components/common/CmDialogs.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
-const CmtextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
 
 interface Props {
   isShowModal: boolean
@@ -82,7 +81,7 @@ watch(() => props.isShowModal, isShow => {
       @confirm="onConfirm"
     >
       <template #title>
-        <div>
+        <div class="pt-2">
           <div class="mb-3">
             <CmIconNoti
               :type="2"
@@ -91,7 +90,7 @@ watch(() => props.isShowModal, isShow => {
           </div>
           <div
             class="d-flex align-center"
-            :class="`justify-${Globals.typeDialog}`"
+            :class="`justify-${typeDialog}`"
           >
             {{ t(LABEL.TITLE) }}
           </div>

@@ -2,13 +2,13 @@
 import axios from 'axios'
 import moment from 'moment'
 import { validatorStore } from '@/stores/validatator'
-import { contentTypeManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
+import { contentTypeVideoManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import CourseService from '@/api/course/index'
 import UserService from '@/api/user/index'
 import toast from '@/plugins/toast'
-import Globals from '@/constant/Globals'
+import { videoExtention } from '@/constant/Globals'
 import ServerFileService from '@/api/server-file/index'
 import { load } from '@/stores/loadComponent.js'
 
@@ -32,7 +32,7 @@ const { schemaOption, Field, Form, useForm, yup } = storeValidate
 const { submitForm } = useForm()
 const route = useRoute()
 const router = useRouter()
-const storeContentVideoTypeModifyManager = contentTypeManagerStore()
+const storeContentVideoTypeModifyManager = contentTypeVideoManagerStore()
 const { videoData, timeComplete, contentId, isViewDetail } = storeToRefs(storeContentVideoTypeModifyManager)
 const {
   handleUpdateContent, fetchContent, resetDataVideo,
@@ -261,6 +261,7 @@ async function getVideoLocalInfo(folder: any, getFileSize?: any) {
 
 // cập nhật dữ liệu chỉnh sửa
 function getDetailVideoContent() {
+  acceptDownload.value = videoData.value?.acceptDownload
   if (videoData.value.url && videoData.value.url !== null) {
     if (videoData.value.urlCdn) {
       videoType.value = 'cdn'
@@ -290,7 +291,9 @@ function getDetailVideoContent() {
       time.value.contentSecond = Math.floor(videoData.value.time % 60)
     }
   }
-  else { videoData.value.timeTypeId = 1 }
+  else {
+    videoData.value.timeTypeId = 1
+  }
 }
 async function downloadFile(idx: any) {
   MethodsUtil.dowloadSampleFile(`${SERVERFILE}${localFile.value.localUrl}`,
@@ -434,7 +437,7 @@ function cancelProcessing(index: any) {
   }
 }
 function handleCancle() {
-  router.push({ name: 'course-edit', params: { tab: 'content', id: Number(route.params.id) } })
+  router.push({ name: 'course-edit', params: { id: Number(route.params.id) }, query: { tab: 'content' } })
 }
 
 // lưu
@@ -476,7 +479,12 @@ function saveAndUpdate(idx: any, isUpdate: boolean) {
         videoData.value.urlCdn = ''
       }
       else { videoData.value.url = cdn.cdnUrl }
-
+      if (!videoData.value.url) {
+        errorsInputFile.value = [t('please-choose-files')]
+        toast('ERROR', t('please-choose-files'))
+        unLoadComponent(idx)
+        return
+      }
       handleUpdateContent(idx, isUpdate)
     }
     else {
@@ -633,7 +641,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -658,7 +666,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -698,7 +706,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -720,7 +728,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -866,7 +874,7 @@ onUnmounted(() => {
                   class="w-100"
                   :disabled="isViewDetail"
                   :file-name="videoData.urlFileName"
-                  :accept="acceptDownload ? '.mp4' : Globals.videoExtention"
+                  :accept="acceptDownload ? '.mp4' : videoExtention"
                   :is-btn-download="false"
                   is-request-file-install
                   :is-background="true"
@@ -887,7 +895,7 @@ onUnmounted(() => {
             <CmChip
               :color="acceptDownload ? 'primary' : 'error'"
             >
-              <span>{{ acceptDownload ? t("Cho phép tải") : t("Không cho phép tải") }}</span>
+              <span class="text-medium-xs">{{ acceptDownload ? t("Cho phép tải") : t("Không cho phép tải") }}</span>
             </CmChip>
           </VCol>
         </VRow>

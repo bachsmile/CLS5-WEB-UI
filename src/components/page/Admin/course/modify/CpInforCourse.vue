@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { courseInforManagerStore } from '@/stores/admin/course/infor'
 import { validatorStore } from '@/stores/validatator'
-import Globals from '@/constant/Globals'
-import CmTag from '@/components/common/CmTag.vue'
+import { avatar } from '@/constant/Globals'
 import CmInputEditor from '@/components/common/CmInputEditor.vue'
 import { comboboxStore } from '@/stores/combobox'
 import constant from '@/constant/constant'
@@ -23,7 +22,7 @@ const router = useRouter()
  * Store
  */
 const storeCourseInforManager = courseInforManagerStore()
-const { courseData } = storeToRefs(storeCourseInforManager)
+const { courseData, isViewDetail } = storeToRefs(storeCourseInforManager)
 
 const { addInforCourse } = storeCourseInforManager
 const storeValidate = validatorStore()
@@ -39,32 +38,30 @@ const LABEL = Object.freeze({
   TITLE2: t('course-code'),
   TITLE3: `${t('topic')}*`,
   TITLE3_PHD: t('choose-topic'),
-  TITLE4: t('training-type'),
+  TITLE4: `${t('training-type')}*`,
   TITLE4_PHD: t('choose-formId'),
   TITLE5: t('number-credit'),
 })
 
-const sizeAvatar = Globals.avatar.size
+const sizeAvatar = avatar.size
 const isShowButton = ref(true)
 const isLoadingVideo = ref()
 const myFormAddCourse = ref()
 const schema = yup.object({
   name: schemaOption.defaultString,
   topicCourseId: schemaOption.defaultSelectSingle,
+  formOfStudy: schemaOption.defaultSelectSingle,
 })
 function onCancel() {
   router.push({ name: 'course-list' })
 }
-async function handleSave(isUpdate: boolean) {
+async function handleSave(idx: any, isUpdate: boolean) {
   myFormAddCourse.value.validate().then(async (success: any) => {
     if (success.valid)
-      await addInforCourse(isUpdate)
+      await addInforCourse(idx, isUpdate)
   })
 }
-function handleSaveUpdate(isUpdate: boolean) {
-  myFormAddCourse.value.validate().then(async (success: any) => {
-  })
-}
+
 if (topicCombobox.value)
   getComboboxTopic(2)
 if (formOfStudyCombobox.value)
@@ -95,10 +92,12 @@ if (formOfStudyCombobox.value)
               <div class="input-avatar">
                 <CmImgUpload
                   v-model:src="courseData.thumbnail"
+                  :disabled="isViewDetail"
+                  color="primary"
                   is-size-full
                   :is-rounded="true"
                   :is-icon-text="false"
-                  icon="tabler:camera"
+                  icon="tabler:square-rounded-plus-filled"
                   :tooltip="t('system-management.100x100')"
                 />
               </div>
@@ -115,7 +114,7 @@ if (formOfStudyCombobox.value)
               md="3"
               class="text-medium-sm color-dark"
             >
-              {{ t('image-course') }}
+              {{ t('video-course') }}
             </VCol>
             <VCol
               cols="12"
@@ -125,8 +124,9 @@ if (formOfStudyCombobox.value)
               <div class="input-avatar">
                 <CmVideoUpload
                   v-model="courseData.videoUrl"
+                  :disabled="isViewDetail"
                   is-size-full
-                  icon="tabler:video"
+                  icon="tabler:square-rounded-plus-filled"
                   :is-rounded="true"
                   @update:processing="isLoadingVideo"
                 />
@@ -191,7 +191,7 @@ if (formOfStudyCombobox.value)
                 :text="LABEL.TITLE3"
                 :options="topicCombobox"
                 :normalizer-custom-type="['id', 'name', 'children']"
-                :placeholder="LABEL.TITLE3"
+                :placeholder="LABEL.TITLE3_PHD"
               />
             </Field>
           </VCol>
@@ -202,7 +202,7 @@ if (formOfStudyCombobox.value)
             <Field
               v-slot="{ field, errors }"
               v-model="courseData.formOfStudy"
-              name="categoryTitleId"
+              name="formOfStudy"
             >
               <CmSelect
                 :model-value="courseData.formOfStudy"
@@ -238,11 +238,13 @@ if (formOfStudyCombobox.value)
           </VCol>
         </VRow>
       </Form>
-      <VRow>
+      <!--
+        <VRow>
         <VCol>
-          <CmTag />
+        <CmTag />
         </VCol>
-      </VRow>
+        </VRow>
+      -->
       <VRow>
         <VCol>
           <CmInputEditor
@@ -264,8 +266,8 @@ if (formOfStudyCombobox.value)
         :title-save="t('save')"
         :title-save-and-update="t('save-and-update')"
         @onCancel="onCancel"
-        @onSave="handleSave(false)"
-        @onSaveUpdate="handleSaveUpdate(true)"
+        @onSave="(idx: any) => handleSave(idx, false)"
+        @onSaveUpdate="(idx: any) => handleSave(idx, true)"
       />
     </div>
   </div>

@@ -2,7 +2,7 @@ import jwtDefaultConfig from '@/auth/jwtDefaultConfig'
 
 export default class StringJwt {
   static getRole = (roleString: any = null) => {
-    const roleName = roleString || localStorage.getItem(jwtDefaultConfig.role)
+    const roleName = roleString || sessionStorage.getItem(jwtDefaultConfig.role)
     let role = null
     if (roleName === 'Role.Administrator')
       role = 1

@@ -18,12 +18,13 @@ import 'vue3-easy-data-table/dist/style.css'
 import { configStore } from '@/stores/index'
 
 // Import the CSS or use your own!
+
+import 'vue3-perfect-scrollbar/dist/vue3-perfect-scrollbar.css'
 import '@/styles/styles.scss'
 import '@core/scss/template/index.scss'
 import '@vuepic/vue-datepicker/dist/main.css'
 
 // import { createPinia } from 'pinia'
-
 const pinia = createPinia()
 
 loadFonts()
@@ -68,8 +69,11 @@ const options = {
   //   return toast
   // },
 }
-console.warn = () => {}
+console.warn = () => {
+  //
+}
 app.use(pinia)
+
 app.provide('globals', globals)
 app.provide('globalsReadOnly', globalsReadOnly)
 app.component(VueFeather.name, VueFeather)

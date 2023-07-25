@@ -17,3 +17,7 @@ syncConfigThemeWithVuetifyTheme()
     </VApp>
   </VLocaleProvider>
 </template>
+
+<style lang="scss" scoped>
+@use "@/styles/style-global.scss" as *;
+</style>

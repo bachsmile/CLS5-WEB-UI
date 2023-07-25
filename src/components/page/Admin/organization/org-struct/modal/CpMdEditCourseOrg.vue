@@ -157,6 +157,7 @@ watch(() => props.isDialogVisible, async (isShow: any) => {
         v-model:pageNumber="queryParams.pageNumber"
         v-model:pageSize="queryParams.pageSize"
         v-model:selected="dataComponent.selectedRowsIds"
+        is-update-row-force
         :headers="headers"
         :items="items"
         :total-record="dataComponent.totalRecord"

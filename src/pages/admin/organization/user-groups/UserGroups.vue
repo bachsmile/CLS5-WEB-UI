@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import ApiGroupUser from '@/api/user'
+import UserService from '@/api/user'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Params } from '@/typescript/interface/params'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import CpContent from '@/components/page/Admin/organization/user-group/CpContent.vue'
 import toast from '@/plugins/toast'
 import router from '@/router'
+import CpHeaderACtion from '@/components/page/Admin/organization/user-group/CpHeaderAction.vue'
 
 const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/gereral/CpConfirmDialog.vue'))
-const CpHeaderACtion = defineAsyncComponent(() => import('@/components/page/Admin/organization/user-group/CpHeaderAction.vue'))
+
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
 /**
@@ -36,8 +37,8 @@ const params = reactive<Params>({
   pageNumber: 1,
   pageSize: 10,
 })
-const fetchData = async () => {
-  const { data } = await MethodsUtil.requestApiCustom(ApiGroupUser.ListGroup, TYPE_REQUEST.GET, params)
+async function fetchData() {
+  const { data } = await MethodsUtil.requestApiCustom(UserService.ListGroup, TYPE_REQUEST.GET, params)
   items.value = data.listData
   totalRecord.value = data.totalRecord
 }
@@ -51,27 +52,27 @@ watch(params, val => {
   fetchData()
 })
 
-const searchGroupUser = (val: any) => {
+function searchGroupUser(val: any) {
   params.search = val
   params.pageNumber = 1
   fetchData()
 }
 
 // Chỉnh sửa
-const editGroupUser = (id: number) => {
+function editGroupUser(id: number) {
   router.push({ name: 'admin-organization-user-groups-edit', params: { id, tab: 'info' } })
 }
 
 // Xóa từng item
 const listId = ref<number[]>([])
 const isShowModalConfirmDelete = ref(false)
-const showModalConfirmDelete = (val: number[]) => {
+function showModalConfirmDelete(val: number[]) {
   listId.value = val
   isShowModalConfirmDelete.value = true
 }
 
-const handleDeleteUserGroup = () => {
-  MethodsUtil.requestApiCustom(ApiGroupUser.DeleteGroup, TYPE_REQUEST.POST, { listModels: listId.value }).then((res: any) => {
+function handleDeleteUserGroup() {
+  MethodsUtil.requestApiCustom(UserService.DeleteGroup, TYPE_REQUEST.POST, { listModels: listId.value }).then((res: any) => {
     toast('SUCCESS', t('calendar.success-delete-group-user'))
     fetchData()
   }).catch(() => {
@@ -92,7 +93,7 @@ const HEADER = Object.freeze({
 const listItemButtonGroup = [
   {
     title: 'Thêm từ tập tin',
-    icon: 'file-plus',
+    icon: 'tabler:file-plus',
     key: 'importFile',
     action: () => {
       router.push({ name: 'admin-organization-user-groups-import' })
@@ -100,13 +101,22 @@ const listItemButtonGroup = [
   },
   {
     title: 'Thêm người dùng từ tập tin',
-    icon: 'file-plus',
+    icon: 'tabler:file-plus',
     key: 'importFileUser',
     action: () => {
       router.push({ name: 'admin-organization-user-groups-import-user' })
     },
   },
 ]
+
+function exportExcel() {
+  const payload = {
+    language: 'vi',
+  }
+  MethodsUtil.dowloadSampleFile(UserService.PostExportExcelGroupUser, TYPE_REQUEST.POST, 'DanhSachNhomNguoiDung.xlsx', payload).catch(() => {
+    toast('ERROR', t('error'))
+  })
+}
 </script>
 
 <template>
@@ -117,8 +127,9 @@ const listItemButtonGroup = [
       :title-page="HEADER.TITLE_PAGE"
       :button-add="HEADER.BUTTON_ADD"
       :button-prepend="HEADER.BUTTON_EXCEL"
+      @click-export="exportExcel"
       @update:key-search="searchGroupUser"
-      @click-add="router.push({ name: 'admin-organization-user-groups-add', params: { tab: 'info' } })"
+      @click-add="() => { router.push({ name: 'admin-organization-user-groups-add' }) }"
     />
   </div>
   <div class="w-100 mt-3">

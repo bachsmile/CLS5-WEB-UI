@@ -29,13 +29,6 @@ const { Field, Form } = storeValidate
  */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
-const dataInit = reactive<DataInit>({
-  countries: [],
-  districts: [],
-  provinces: [],
-  wards: [],
-})
-
 const myFormAddress = ref(null)
 
 const DATA_LABEL = Object.freeze({
@@ -61,12 +54,8 @@ const dataAddress = ref<DataEdit>({
   wardId: null,
   address: null,
 })
-watch(props.dataEdit, (val: DataEdit) => {
+watch(() => props.dataEdit, (val: any) => {
   dataAddress.value = val
-  dataInit.countries = country.value
-  dataInit.provinces = provinces.value
-  dataInit.districts = districts.value
-  dataInit.wards = wards.value
 })
 function addAddress() {
   emit('update:address', dataAddress.value)
@@ -106,10 +95,11 @@ interface DataEdit {
 }
 
 async function handleChangeCountry(countryId: any) {
-  await fetchProvinces(countryId)
-  dataInit.provinces = provinces.value
-  dataInit.districts = []
-  dataInit.wards = []
+  await fetchProvinces(dataAddress.value.countryId)
+
+  // provinces.value = provinces.value
+  districts.value = []
+  wards.value = []
   dataAddress.value.provinceId = null
   dataAddress.value.districtId = null
   dataAddress.value.wardId = null
@@ -118,9 +108,7 @@ async function handleChangeCountry(countryId: any) {
 
 async function handleChangeProvinces(provinceId: any) {
   await fetchDistricts(dataAddress.value.provinceId)
-
-  dataInit.districts = districts.value
-  dataInit.wards = []
+  wards.value = []
   dataAddress.value.districtId = null
   dataAddress.value.wardId = null
   dataAddress.value.address = null
@@ -128,7 +116,6 @@ async function handleChangeProvinces(provinceId: any) {
 
 async function handleChangeDistrict(districtId: any) {
   await fetchWards(districtId)
-  dataInit.wards = wards.value
   dataAddress.value.wardId = null
   dataAddress.value.address = null
 }
@@ -162,22 +149,15 @@ onMounted(async () => {
         >
           <!-- Quốc gia -->
           <div>
-            <Field
-              v-slot="{ field }"
+            <CmSelect
               v-model="dataAddress.countryId"
-              name="countryId"
-            >
-              <CmSelect
-                :field="field"
-                :model-value="dataAddress.countryId"
-                :text="DATA_LABEL.COUNTRY"
-                :placeholder="DATA_LABEL.COUNTRY"
-                :items="dataInit.countries"
-                item-value="key"
-                custom-key="value"
-                @update:modelValue="handleChangeCountry"
-              />
-            </Field>
+              :text="DATA_LABEL.COUNTRY"
+              :placeholder="DATA_LABEL.COUNTRY"
+              :items="country"
+              item-value="key"
+              custom-key="value"
+              @update:modelValue="handleChangeCountry"
+            />
           </div>
         </VCol>
         <VCol
@@ -186,22 +166,15 @@ onMounted(async () => {
         >
           <!-- Tỉnh thành phố -->
           <div>
-            <Field
-              v-slot="{ field }"
+            <CmSelect
               v-model="dataAddress.provinceId"
-              name="provinceId"
-            >
-              <CmSelect
-                :field="field"
-                :model-value="dataAddress.provinceId"
-                :text="DATA_LABEL.PROVINCEID"
-                :placeholder="DATA_LABEL.PROVINCEID"
-                :items="dataInit.provinces"
-                item-value="key"
-                custom-key="value"
-                @update:modelValue="handleChangeProvinces"
-              />
-            </Field>
+              :text="DATA_LABEL.PROVINCEID"
+              :placeholder="DATA_LABEL.PROVINCEID"
+              :items="provinces"
+              item-value="key"
+              custom-key="value"
+              @update:modelValue="handleChangeProvinces"
+            />
           </div>
         </VCol>
         <VCol
@@ -210,22 +183,15 @@ onMounted(async () => {
         >
           <!-- Quận huyện -->
           <div>
-            <Field
-              v-slot="{ field }"
+            <CmSelect
               v-model="dataAddress.districtId"
-              name="districtId"
-            >
-              <CmSelect
-                :field="field"
-                :model-value="dataAddress.districtId"
-                :text="DATA_LABEL.DISTRICT"
-                :placeholder="DATA_LABEL.DISTRICT"
-                :items="dataInit.districts"
-                item-value="key"
-                custom-key="value"
-                @update:modelValue="handleChangeDistrict"
-              />
-            </Field>
+              :text="DATA_LABEL.DISTRICT"
+              :placeholder="DATA_LABEL.DISTRICT"
+              :items="districts"
+              item-value="key"
+              custom-key="value"
+              @update:modelValue="handleChangeDistrict"
+            />
           </div>
         </VCol>
         <VCol
@@ -234,21 +200,14 @@ onMounted(async () => {
         >
           <!-- Phường/xã -->
           <div>
-            <Field
-              v-slot="{ field }"
+            <CmSelect
               v-model="dataAddress.wardId"
-              name="wardId"
-            >
-              <CmSelect
-                :field="field"
-                :model-value="dataAddress.wardId"
-                :text="DATA_LABEL.WARDS"
-                :placeholder="DATA_LABEL.WARDS"
-                :items="dataInit.wards"
-                item-value="key"
-                custom-key="value"
-              />
-            </Field>
+              :text="DATA_LABEL.WARDS"
+              :placeholder="DATA_LABEL.WARDS"
+              :items="wards"
+              item-value="key"
+              custom-key="value"
+            />
           </div>
         </VCol>
         <VCol
@@ -257,17 +216,11 @@ onMounted(async () => {
         >
           <!-- tên đường -->
           <div>
-            <Field
-              v-slot="{ field }"
+            <CmTextField
               v-model="dataAddress.address"
-              name="address"
-            >
-              <CmTextField
-                :field="field"
-                :text="DATA_LABEL.ADDRESS"
-                :placeholder="DATA_LABEL.ADDRESS"
-              />
-            </Field>
+              :text="DATA_LABEL.ADDRESS"
+              :placeholder="DATA_LABEL.ADDRESS"
+            />
           </div>
         </VCol>
       </VRow>

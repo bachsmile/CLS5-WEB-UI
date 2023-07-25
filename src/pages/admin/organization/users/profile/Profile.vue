@@ -87,7 +87,7 @@ window.hideAllPageLoading()
 
     <div
       width="100%"
-      class="user-infor no-background py-5"
+      class="user-infor no-background"
     >
       <CpActionFooterEdit
         is-cancel

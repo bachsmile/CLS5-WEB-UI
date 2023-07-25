@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<Props>(), ({
+  acceptDownload: false,
 }))
 
 const emit = defineEmits<Emit>()
@@ -9,6 +10,7 @@ const CmRadio = defineAsyncComponent(() => import('@/components/common/CmRadio.v
 
 interface Props {
   isDialogVisible: boolean
+  acceptDownload?: boolean
 }
 
 interface Emit {
@@ -17,8 +19,8 @@ interface Emit {
   (e: 'confirm'): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
-const acceptDownload = ref(false)
-const acceptCLone = ref(window._.cloneDeep(acceptDownload.value))
+const acceptDownloadValue = ref(props.acceptDownload)
+const acceptCLone = ref(window._.cloneDeep(acceptDownloadValue.value))
 const LABEL = Object.freeze({
   TITLE: t('api-info'),
   TITLE1: t('api-name'),
@@ -26,17 +28,17 @@ const LABEL = Object.freeze({
 })
 
 async function onCancel() {
-  acceptDownload.value = acceptCLone.value
+  acceptDownloadValue.value = acceptCLone.value
   emit('updateOptionUpload', acceptCLone.value)
   emit('update:isDialogVisible', false)
 }
 async function onConfirm() {
-  acceptCLone.value = acceptDownload.value
+  acceptCLone.value = acceptDownloadValue.value
   emit('confirm')
 }
 watch(() => props.isDialogVisible, isShow => {
   if (isShow)
-    acceptDownload.value = false
+    acceptDownloadValue.value = props.acceptDownload
 })
 </script>
 
@@ -57,7 +59,7 @@ watch(() => props.isDialogVisible, isShow => {
         <div class="d-flex align-center">
           <div class="d-flex align-center mr-4">
             <CmRadio
-              v-model="acceptDownload"
+              v-model="acceptDownloadValue"
               :type="1"
               name="acceptDownload"
               :value="false"
@@ -71,7 +73,7 @@ watch(() => props.isDialogVisible, isShow => {
         <div class="d-flex align-center">
           <div class="d-flex align-center mr-4">
             <CmRadio
-              v-model="acceptDownload"
+              v-model="acceptDownloadValue"
               :type="1"
               name="acceptDownload"
               :value="true"

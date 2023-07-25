@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import CmButton from '@/components/common/CmButton.vue'
 import CmTable from '@/components/common/CmTable.vue'
-import Globals from '@/constant/Globals'
+import { excelFileExtention } from '@/constant/Globals'
 import { useImportFileStore } from '@/stores/ImportFile'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Action, Config } from '@/typescript/interface/import'
@@ -266,7 +266,7 @@ onBeforeUnmount(() => {
   <input
     ref="inputFile"
     type="file"
-    :accept="Globals.excelFileExtention"
+    :accept="excelFileExtention"
     hidden
     @change="fileChange"
   >

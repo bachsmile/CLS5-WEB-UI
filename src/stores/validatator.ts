@@ -140,6 +140,9 @@ export const validatorStore = defineStore('validator', () => {
     defaultNumberRatio: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE)).min(CONFIG.DEFAULT_NUMBER_RATIO.MIN_VALUE, ruleMessage.minValue(CONFIG.DEFAULT_NUMBER_RATIO.MAX_VALUE)),
     defaultNumberYub: yup.number(),
     defaultNumberNoReqPosNoNull: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
+    defaultNumberNoReqPosNoNulls: (val: any) => {
+      return yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).max(val, ruleMessage.maxValue(val))
+    },
     defaultNumberNoReqPosNoNullNot0: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => value > 0).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
     defaultNumber100Yub: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
     defaultNumber100YubNoRequire: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),

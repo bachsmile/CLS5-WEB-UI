@@ -17,7 +17,7 @@ interface Props {
 }
 interface Emit {
   (e: 'update:isShow', status: boolean): void
-  (e: 'confirm', data: any): void
+  (e: 'confirm', data: any, fn: any): void
 }
 function cancelModal() {
   emit('update:isShow', false)
@@ -39,12 +39,12 @@ const { submitForm } = useForm()
 const schema = reactive({
   name: schemaOption.requiredString(),
 })
-const formEditTopic = ref()
+const formEdit = ref()
 
-function confirmModal() {
-  formEditTopic.value.validate().then((status: any) => {
+function confirmModal(idx: number, unload: any) {
+  formEdit.value.validate().then((status: any) => {
     if (status.valid)
-      emit('confirm', dataInput.value)
+      emit('confirm', dataInput.value, unload)
   })
 }
 
@@ -69,7 +69,7 @@ function resetData() {
     @hide="resetData"
   >
     <Form
-      ref="formEditTopic"
+      ref="formEdit"
       :validation-schema="schema"
       @submit.prevent="submitForm"
     >
@@ -83,7 +83,7 @@ function resetData() {
           :field="field"
           :errors="errors"
           :model-value="dataInput.name"
-          :text="t('type-name-cost')"
+          :text="`${t('type-name-cost')}*`"
           :placeholder="t('type-name-cost')"
         />
       </Field>

@@ -23,8 +23,7 @@ const { organizationsCombobox } = storeToRefs(storeCombobox)
 //   return { infor, kpiLearn, kpiTeach }
 // }
 // Cập nhật năng lực
-const dataColumnExcel = (rowData: Array<any>) => {
-  // eslint-disable-next-line prefer-const
+function dataColumnExcel(rowData: Array<any>) {
   let [name, groupProficiency, levelProficiencies, description] = rowData
 
   levelProficiencies = levelProficiencies?.split(',')
@@ -40,14 +39,14 @@ const combobox = reactive({
 
 // method
 
-const getComboboxGroupProficiency = async () => {
+async function getComboboxGroupProficiency() {
   const res = await MethodsUtil.requestApiCustom(ComboboxService.GroupProficiency, TYPE_REQUEST.GET).then((value: any) => value)
 
   if (!window._.isEmpty(res?.data))
     combobox.comboboxGroupProficiency = res.data
 }
 
-const getComboboxProficiencyLevel = async () => {
+async function getComboboxProficiencyLevel() {
   const params = {
     keyword: '',
     pageNumber: 1,
@@ -159,11 +158,10 @@ const config = reactive<Config>(
     },
   },
 )
-const getListTitle = (orgId: any) => {
+function getListTitle(orgId: any) {
   if (!orgId)
     return null
   const orgItem: any = organizationsCombobox.value.find((item: any) => item.id === orgId)
-  console.log(orgItem?.titleEachOrgs)
   return orgItem?.titleEachOrgs || []
 }
 const config2 = reactive<Config>( // tham khảo file UpdateUserTitle.vue
@@ -218,4 +216,3 @@ const config2 = reactive<Config>( // tham khảo file UpdateUserTitle.vue
     />
   </div>
 </template>
-

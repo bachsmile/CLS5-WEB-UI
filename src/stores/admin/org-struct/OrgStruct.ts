@@ -106,13 +106,11 @@ export const orgStructManagerStore = defineStore('orgStructManager', () => {
     const params = {
       role: StringJwt.getRole(),
     }
-    await MethodsUtil.requestApiCustom(ApiUser.GetOrganizationalStructure, TYPE_REQUEST.GET, params).then((value: any) => {
+    await MethodsUtil.requestApiCustom(ApiUser.GetOrganizationalTreeStructure, TYPE_REQUEST.GET, params).then((value: any) => {
       console.time('start')
       const result: any = {}
-      console.log('start')
-      console.log(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id'))
 
-      ArraysUtil.convertTreeView(ArraysUtil.formatSelectTree(value.data, 'parentId', 'id'), result, config.value.roots, t, 'children')
+      ArraysUtil.convertTreeView(value.data, result, config.value.roots, t, 'children')
 
       nodes.value = reactive(result)
 
@@ -187,7 +185,9 @@ export const orgStructManagerStore = defineStore('orgStructManager', () => {
     await MethodsUtil.requestApiCustom(ApiUser.PostOrgCreate, TYPE_REQUEST.POST, organization.value)
       .then(async (value: any) => {
         if (value.code === 200) {
-          if (isUpdate === false) { router.push({ name: 'admin-organization-org-struct-list', query: { navigateFrom: value.data } }) }
+          if (isUpdate === false) {
+            router.push({ name: 'admin-organization-org-struct-list', query: { navigateFrom: value.data } })
+          }
           else {
             window.showAllPageLoading('COMPONENT')
             router.push({ name: 'admin-organization-org-struct-edit', params: { tab: 'infor', id: value.data } })
@@ -299,7 +299,9 @@ export const orgStructManagerStore = defineStore('orgStructManager', () => {
   // lấy danh sách năng lực
   const getAllProficiency = async () => {
     await MethodsUtil.requestApiCustom(ApiUser.getProficiencyData, TYPE_REQUEST.POST, {}).then((value: any) => {
-      value?.data?.forEach((item: any) => { item.id = MethodsUtil.createRandomId(5) })
+      value?.data?.forEach((item: any) => {
+        item.id = MethodsUtil.createRandomId(5)
+      })
       proficiencies.value = value?.data
     })
   }

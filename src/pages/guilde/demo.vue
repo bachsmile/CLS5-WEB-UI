@@ -5,13 +5,7 @@ import Permission from '../admin/organization/permission/Permission.vue'
 import treeSelect from './tree-select.vue'
 import demotab from './demotab.vue'
 import { load } from '@/stores/loadComponent'
-import CmButton from '@/components/common/CmButton.vue'
-import CmDateStage from '@/components/common/CmDateStage.vue'
-import CmCheckBox from '@/components/common/CmCheckBox.vue'
 import CmCard from '@/components/common/CmCard.vue'
-import CmDropDown from '@/components/common/CmDropDown.vue'
-import CmButtonGroup from '@/components/common/CmButtonGroup.vue'
-import CmSwitch from '@/components/common/CmSwitch.vue'
 import CmTab from '@/components/common/CmTab.vue'
 import CmDateTimpicker from '@/components/common/CmDateTimepicker.vue'
 
@@ -50,21 +44,21 @@ function handleItem3(value: any) {
 const listTab = [
   {
     key: 'infor1',
-    title: 'win hello',
-    icon: 'mdi-check-circle',
-    component: demotab,
-    isRendered: false,
-  },
-  {
-    key: 'infor2',
-    title: 'win hello',
+    title: 'win hello 1',
     icon: 'mdi-check-circle',
     component: treeSelect,
     isRendered: false,
   },
   {
+    key: 'infor2',
+    title: 'win hello 2',
+    icon: 'mdi-check-circle',
+    component: demotab,
+    isRendered: false,
+  },
+  {
     key: 'infor3',
-    title: 'win hello',
+    title: 'win hello 3',
     icon: 'mdi-check-circle',
     component: Permission,
     isRendered: false,
@@ -128,9 +122,6 @@ const { loadMultiplecomponents, unLoadComponent } = store
 
 const router = useRouter()
 
-function handlerPreButton() {
-}
-
 const toast = useToast()
 
 const button123 = ref(null)
@@ -154,171 +145,6 @@ watch(toDate, val => {
 </script>
 
 <template>
-  <CmSwitch
-    :list-item="action"
-    color="dark"
-  />
-  <CmDropDown
-    :list-item="action"
-  />
-  <CmButtonGroup
-    :list-item="action"
-    title="hello"
-    @click-prepend="handlerPreButton"
-  >
-    hello win
-  </CmButtonGroup>
-
-  <VDivider />
-  <CmButton
-    variant="flat"
-    color="primary"
-  >
-    primary
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="primary"
-  >
-    primary
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="primary"
-  >
-    primary
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="warning"
-  >
-    warning
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="warning"
-  >
-    warning
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="warning"
-  >
-    warning
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="secondary"
-  >
-    secondary
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="secondary"
-  >
-    secondary
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="secondary"
-  >
-    secondary
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="error"
-  >
-    error
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="error"
-  >
-    error
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="error"
-  >
-    error
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="success"
-  >
-    success
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="success"
-  >
-    success
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="success"
-  >
-    success
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="purple"
-  >
-    purple
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="purple"
-  >
-    purple
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="purple"
-  >
-    purple
-  </CmButton>
-  <CmButton
-    variant="flat"
-    color="orange"
-  >
-    orange
-  </CmButton>
-  <CmButton
-    variant="outlined"
-    color="orange"
-  >
-    orange
-  </CmButton>
-  <CmButton
-    variant="tonal"
-    color="orange"
-  >
-    orange
-  </CmButton>
-
-  <VDivider />
-  <CmButton
-    text="button "
-    color="error"
-    @click="showToast"
-  >
-    hello
-  </CmButton>
-  <CmCheckBox
-    color="error"
-    @click="showToast"
-  />
-  <CmCheckBox color="primary" />
-  <CmCheckBox color="warning" />
-  <CmCheckBox color="success" />
-  <CmCheckBox
-    color="gray"
-    @click="showToast"
-  />
-
-  <CmDateStage />
-
   <CmCard backgroud="bg-primary-50">
     <template #title>
       <VImg
@@ -358,8 +184,9 @@ watch(toDate, val => {
   >
     <CmTab
       :list-tab="listTab"
-      type="underline"
+      type="button"
       abc="abc"
+      route-name="guilde-demo-tab"
       @hello="abcd"
     />
   </div>
@@ -369,8 +196,6 @@ watch(toDate, val => {
       v-model:from-date="fromDate"
       v-model:to-date="toDate"
       class="w-100"
-      range
-      multi-calendars
       @updated:model-value="abcd"
     />
   </div>

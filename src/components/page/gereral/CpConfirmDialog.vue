@@ -76,7 +76,7 @@ function onCancel() {
     <VCard class="text-center pa-6">
       <VCardText class="noti-content">
         <div class="d-flex justify-center mb-5">
-          <div class="icon-noti">
+          <div class="icon-noti-lg">
             <VIcon
               :icon="icon || checkTypeDialog(type).icon"
               :variant="variant"

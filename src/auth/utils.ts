@@ -6,7 +6,7 @@ import jwtDefaultConfig from './jwtDefaultConfig'
  * e.g. If you are using cookies to store the application please update this function
  */
 
-export const isUserLoggedIn = () => {
+export function isUserLoggedIn() {
   return localStorage.getItem('userData') && localStorage.getItem(jwtDefaultConfig.storageTokenKeyName)
 }
 
@@ -20,7 +20,7 @@ export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
  * NOTE: If you have different pages to navigate based on user ability then this function can be useful. However, you need to update it.
  * @param {String} userRole Role of user
  */
-export const getHomeRouteForLoggedInUser = (userRoles: Array<any>) => {
+export function getHomeRouteForLoggedInUser(userRoles: Array<any>) {
   if (userRoles.length > 0)
     return { name: userRoles[0].router }
 

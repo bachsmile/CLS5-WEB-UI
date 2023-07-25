@@ -23,6 +23,7 @@ interface item {
 interface Props {
   isShowModal: boolean
   files: item[]
+  icon?: string
 }
 interface Emit {
   (e: 'update:isShowModal', value: any): void
@@ -68,7 +69,7 @@ async function onConfirm() {
             >
               <div class="d-flex align-start">
                 <CmIconNoti
-                  :icon="item.icon"
+                  :icon="item.icon || props.icon"
                   :type="3"
                 />
               </div>

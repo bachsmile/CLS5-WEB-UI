@@ -66,11 +66,10 @@ const dataInput = ref<DataInput>({
   examId: null,
 })
 function confirmModal() {
-  // formEdit.value.validate().then((status: any) => {
-  //   if (status.valid)
-  emit('confirm', dataInput.value)
-
-  // })
+  formEdit.value.validate().then((status: any) => {
+    if (status.valid)
+      emit('confirm', dataInput.value)
+  })
 }
 function resetData() {
   dataInput.value = {
@@ -92,11 +91,16 @@ watch(() => props.dataDetail, (val: DataInput) => {
     :is-dialog-visible="isShow"
     :title="t('add-cost')"
     :sub-title="title"
+    size="sm"
     @cancel="cancelModal"
     @confirm="confirmModal"
     @hide="resetData"
   >
-    <Form>
+    <Form
+      ref="formEdit"
+      :validation-schema="schema"
+      @submit.prevent="submitForm"
+    >
       <Field
         v-slot="{ field, errors }"
         v-model="dataInput.name"
@@ -124,6 +128,7 @@ watch(() => props.dataDetail, (val: DataInput) => {
           :items="costTypeCombobox"
           item-value="key"
           custom-key="value"
+          append-to-body
           :model-value="dataInput.costTypeId"
           :text="t('cost-type')"
           :placeholder="t('type-name-cost')"
@@ -142,6 +147,7 @@ watch(() => props.dataDetail, (val: DataInput) => {
           :errors="errors"
           :items="examCombobox"
           item-value="key"
+          append-to-body
           custom-key="value"
           :model-value="dataInput.examId"
           :text="t('exam-management')"
@@ -166,9 +172,11 @@ watch(() => props.dataDetail, (val: DataInput) => {
         <CmTextField
           :field="field"
           :errors="errors"
+          is-currency
           :model-value="dataInput.unitPrice"
           :text="t('money')"
           :placeholder="t('money')"
+          @change="change"
         />
       </Field>
       <Field

@@ -1,0 +1,108 @@
+{
+    "ContentType": [
+        {
+            "id": 1,
+            "name": "text-content",
+            "icon": "tabler:file-text",
+            "color": "primary",
+            "value": 1,
+            "note": "Nội dung văn bản"
+        },
+        {
+            "id": 2,
+            "name": "web-content",
+            "icon": "mdi:web",
+            "color": "primary",
+            "value": 2,
+            "note": "Nội dung web"
+        },
+        {
+            "id": 3,
+            "name": "online-content",
+            "icon": "ant-design:video-camera-add-outlined",
+            "color": "primary",
+            "value": 3,
+            "note": "Học trực tuyến"
+        },
+        {
+            "id": 4,
+            "name": "video-content",
+            "icon": "solar:video-frame-play-vertical-linear",
+            "color": "primary",
+            "value": 4,
+            "note": "Video"
+        },
+        {
+            "id": 5,
+            "name": "audio-content",
+            "icon": "tabler:volume",
+            "color": "primary",
+            "value": 5,
+            "note": "Âm thanh"
+        },
+        {
+            "id": 6,
+            "name": "document-content",
+            "icon": "tabler:file-description",
+            "color": "primary",
+            "value": 6,
+            "note": "Tài liệu"
+        },
+        {
+            "id": 7,
+            "name": "scorm-content",
+            "icon": "tabler:cloud",
+            "color": "primary",
+            "value": 7,
+            "note": "scorm"
+        },
+        {
+            "id": 8,
+            "name": "flash-content",
+            "icon": "material-symbols:flash-on-outline",
+            "color": "primary",
+            "value": 8,
+            "note": "flash"
+        },
+        {
+            "id": 9,
+            "name": "iframe-content",
+            "icon": "material-symbols:iframe",
+            "color": "primary",
+            "value": 9,
+            "note": "iframe"
+        },
+        {
+            "id": 10,
+            "name": "test-content",
+            "icon": "vscode-icons:file-type-testcafe",
+            "color": "primary",
+            "value": 10,
+            "note": "Bài kiểm tra"
+        },
+        {
+            "id": 11,
+            "name": "survey-content",
+            "icon": "ri:survey-line",
+            "color": "primary",
+            "value": 11,
+            "note": "Bài khảo sát"
+        },
+        {
+            "id": 12,
+            "name": "essay-content",
+            "icon": "carbon:document-multiple-01",
+            "color": "primary",
+            "value": 12,
+            "note": "Bài tiểu luận"
+        },
+        {
+            "id": 16,
+            "name": "offline-content",
+            "icon": "guidance:study-room",
+            "color": "primary",
+            "value": 16,
+            "note": "Nội dung offline"
+        }
+    ]
+}

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { contentTypeManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
-import { validatorStore } from '@/stores/validatator'
+import { contentTypeVideoManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
 import toast from '@/plugins/toast'
 import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
-import { StatusTypeCourse } from '@/constant/data/status.json'
-import StringUtil from '@/utils/StringUtil'
 import StringJwt from '@/utils/Jwt'
 import ArraysUtil from '@/utils/ArrayUtil'
 import { load } from '@/stores/loadComponent.js'
+import CpCondition from '@/components/page/gereral/CpCondition.vue'
+import type { Any } from '@/typescript/interface'
 
 const CmCheckBox = defineAsyncComponent(() => import('@/components/common/CmCheckBox.vue'))
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
@@ -25,21 +24,20 @@ const route = useRoute()
 /** store */
 const store = load()
 const { unLoadComponent } = store
-const storeValidate = validatorStore()
-const { schemaOption, Field, Form, useForm, yup } = storeValidate
-const { submitForm } = useForm()
-const storeContentVideoTypeModifyManager = contentTypeManagerStore()
-const { videoData, conditionAttend, courseData } = storeToRefs(storeContentVideoTypeModifyManager)
+
+const storeContentVideoTypeModifyManager = contentTypeVideoManagerStore()
+const { conditionAttend, courseData } = storeToRefs(storeContentVideoTypeModifyManager)
+const { fetchConditionAttend } = storeContentVideoTypeModifyManager
+
+onMounted(() => {
+  if (!window._.isEmpty(conditionAttend))
+    fetchConditionAttend(Number(route.params.contentId) || null)
+})
 
 /** state */
 const isStartTime = ref(false)
 const isEndTime = ref(false)
 const myFormAddConditionVideo = ref()
-
-const schema = reactive({
-  ...(isStartTime.value ? { isStartTime: schemaOption.defaultString } : {}),
-  ...(isEndTime.value ? { isStartTime: schemaOption.defaultString } : {}),
-})
 
 const LABEL = Object.freeze({
   TITLE1: t('setting-time'),
@@ -49,7 +47,7 @@ const LABEL = Object.freeze({
 
 /** method */
 function handleCancle() {
-  router.push({ name: 'course-edit', params: { tab: 'content', id: Number(route.params.id) } })
+  router.push({ name: 'course-edit', params: { id: Number(route.params.id) }, query: { tab: 'content' } })
 }
 function getErrorsMessage(errorsMess: Array<any>) {
   let str = ''
@@ -79,9 +77,6 @@ const paramsContent = ref({
 })
 
 const items = ref<any>()
-function selectedRows(e: any) {
-  dataTable.selectedRowsIds = e
-}
 
 /** *****Lấy danh sách nội dung */
 async function getListContentCourse() {
@@ -102,20 +97,22 @@ async function getListContentCourse() {
 
         continue
       }
-      if (conditionAttend.value.lesionRequire && conditionAttend.value.lesionRequire.find((item: any) => item === element.courseContentId))
+      if (conditionAttend.value.lesionRequire && conditionAttend.value.lesionRequire.includes(element.courseContentId))
         element.isSelected = true
       element.html = true
     }
   }
+
   items.value = dataRow
 }
 
 // lưu  dữ liệu
 async function saveDataCondition(idx: any) {
-  myFormAddConditionVideo.value.validate().then(async (success: any) => {
+  myFormAddConditionVideo.value.FormCondition.validate().then(async (success: any) => {
     if (success.valid) {
       if (!isStartTime.value)
         conditionAttend.value.dateTimeStart = null
+
       if (!isEndTime.value)
         conditionAttend.value.dateTimeEnd = null
       if (isStartTime.value && isEndTime.value) {
@@ -123,160 +120,63 @@ async function saveDataCondition(idx: any) {
         const end = new Date(conditionAttend.value.dateTimeEnd || '')
         if (end < start) {
           toast('WARNING', t('time-end-invalid'))
+          unLoadComponent(idx)
           return
         }
       }
-      conditionAttend.value.lesionRequire = []
 
       // dánh sách khóa học yêu cầu
-      if (courseData.value.studyMode === 3)
-        conditionAttend.value.lesionRequire = dataTable.selectedRowsIds
-
-      const response = await MethodsUtil.requestApiCustom(CourseService.PostSaveRequireParticipate, TYPE_REQUEST.POST, conditionAttend.value).catch(() => {
+      if (courseData.value?.studyMode !== 3)
+        conditionAttend.value.lesionRequire = []
+      MethodsUtil.requestApiCustom(CourseService.PostSaveRequireParticipate, TYPE_REQUEST.POST, conditionAttend.value).then((res: any) => {
+        toast('SUCCESS', t(res.message))
         unLoadComponent(idx)
       })
-      if (response.code === 200) {
-        toast('SUCCESS', t(response.message))
-        unLoadComponent(idx)
-      }
+        .catch((error: Any) => {
+          toast('ERROR', t(getErrorsMessage(error?.response?.data?.errors)))
+          unLoadComponent(idx)
+        })
+    }
+    else {
+      if (!myFormAddConditionVideo.value.isIntersecting)
+        toast('ERROR', t('check-info'))
 
-      else {
-        toast('ERROR', t(getErrorsMessage(response.errors)))
-        unLoadComponent(idx)
-      }
+      unLoadComponent(idx)
     }
   })
 }
-watch(conditionAttend, () => {
+
+watch(conditionAttend, val => {
   getListContentCourse()
-})
+  if (val) {
+    if (conditionAttend.value.dateTimeStart)
+      isStartTime.value = true
+    if (conditionAttend.value.dateTimeEnd)
+      isEndTime.value = true
+  }
+}, { deep: true, immediate: true })
 </script>
 
 <template>
   <div class="mt-6">
-    <Form
+    <CpCondition
       ref="myFormAddConditionVideo"
-      :validation-schema="schema"
-      @submit.prevent="submitForm"
-    >
-      <VRow>
-        <VCol
-          cols="12"
-        >
-          <div class="text-semibold-md color-text-900 mb-4 ">
-            {{ t('duration-time') }}
-          </div>
-          <div class="mb-6">
-            <div class="d-flex align-center mr-4 mb-4">
-              <CmCheckBox
-                v-model:model-value="isStartTime"
-                :label="LABEL.LABEL1"
-              />
-            </div>
-            <div v-if="videoData.timeTypeId === 1">
-              <div>
-                <Field
-                  v-slot="{ field, errors }"
-                  v-model="conditionAttend.dateTimeStart"
-                  name="isStartTime"
-                >
-                  <div class="mr-3">
-                    <div class="mr-3 conditon-input">
-                      <CmDateTimePicker
-                        class="w-100"
-                        :field="field"
-                        :errors="errors"
-                        :text="`${t(LABEL.LABEL1)}*`"
-                        :placeholder="t(LABEL.LABEL1)"
-                      />
-                    </div>
-                    <div class="styleError text-errors">
-                      {{ errors[0] }}
-                    </div>
-                  </div>
-                </Field>
-              </div>
-            </div>
-          </div>
-          <div class="mb-6">
-            <div class="d-flex align-center mr-4 mb-4">
-              <CmCheckBox
-                v-model:model-value="isEndTime"
-                :label="LABEL.LABEL2"
-              />
-            </div>
-            <div v-if="videoData.timeTypeId === 1">
-              <div>
-                <Field
-                  v-slot="{ field, errors }"
-                  v-model="conditionAttend.dateTimeEnd"
-                  name="isEndTime"
-                >
-                  <div class="mr-3">
-                    <div class="mr-3 conditon-input">
-                      <CmDateTimePicker
-                        class="w-100"
-                        :field="field"
-                        :errors="errors"
-                        :text="`${t(LABEL.LABEL2)}*`"
-                        :placeholder="t(LABEL.LABEL2)"
-                      />
-                    </div>
-                    <div
-                      v-if="errors.length"
-                      class="styleError text-errors"
-                    >
-                      {{ errors[0] }}
-                    </div>
-                  </div>
-                </Field>
-              </div>
-            </div>
-          </div>
-        </VCol>
-      </VRow>
-      <div class="mb-6">
-        <div class="text-medium-lg mb-6">
-          {{ t('list-content-req') }}
-        </div>
-        <CmTable
-          :selected="dataTable?.selectedRowsIds"
-          :headers="headers"
-          :items="items"
-          disiable-pagination
-          custom-id="courseContentId"
-          @update:selected="selectedRows"
-        >
-          <template #rowItem="{ col, context }">
-            <div v-if="col === 'statusName'">
-              <CmChip
-                class="ma-2"
-                :color="MethodsUtil.checkStatus(context.statusId, StatusTypeCourse)?.color"
-              >
-                <VIcon
-                  start
-                  icon="carbon:dot-mark"
-                  size="12"
-                />
-                <span>{{ t(context.statusName) }}</span>
-              </CmChip>
-            </div>
-            <div v-if="col === 'author'">
-              {{ StringUtil.formatFullName(context.firstName, context.lastName) }}
-            </div>
-          </template>
-        </CmTable>
-      </div>
-      <div>
-        <CpActionFooterEdit
-          is-cancel
-          is-save
-          :title-cancel="t('cancel-title')"
-          :title-save="t('save')"
-          @on-save="saveDataCondition"
-          @on-cancel="handleCancle"
-        />
-      </div>
-    </Form>
+      v-model:is-start-time="isStartTime"
+      v-model:is-end-time="isEndTime"
+      v-model:date-time-start="conditionAttend.dateTimeStart"
+      v-model:date-time-end="conditionAttend.dateTimeEnd"
+      v-model:selected="conditionAttend.lesionRequire"
+      :items="items"
+      :is-show-content-req="courseData?.studyMode === 3"
+      :headers="headers"
+    />
+    <CpActionFooterEdit
+      is-cancel
+      is-save
+      :title-cancel="t('cancel-title')"
+      :title-save="t('save')"
+      @on-save="saveDataCondition"
+      @on-cancel="handleCancle"
+    />
   </div>
 </template>

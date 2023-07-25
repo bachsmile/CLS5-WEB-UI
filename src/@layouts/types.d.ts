@@ -124,6 +124,7 @@ export interface NavLink extends NavLinkProps, Partial<AclProperties> {
 export interface NavGroup extends Partial<AclProperties> {
   title: string
   icon?: unknown
+  src?: string
   badgeContent?: string
   badgeClass?: string
   children: (NavLink | NavGroup)[]

@@ -112,6 +112,7 @@ async function confirm() {
     <CmTable
       v-model:page-number="queryParams.pageNumber"
       v-model:selected="listItem"
+      is-update-row-force
       :headers="headers"
       :items="listUser"
       :return-object="true"

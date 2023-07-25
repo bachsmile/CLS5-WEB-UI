@@ -7,6 +7,7 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { configStore } from '@/stores/index'
 import { tableStore } from '@/stores/table'
+import { load } from '@/stores/loadComponent.js'
 
 export const courseInforManagerStore = defineStore('courseInforManager', () => {
   /** store */
@@ -14,6 +15,8 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
   const { settingDefaults } = storeToRefs(configControl)
   const storeTable = tableStore()
   const { callBackAction } = storeToRefs(storeTable)
+  const store = load()
+  const { unLoadComponent } = store
 
   /** variable ********************************************************************************/
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -39,7 +42,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
       about: '',
       topicCourseId: null,
       code: null,
-      formOfStudy: null,
+      formOfStudy: 1,
       credit: null,
       authorList: [],
       ownerId: null,
@@ -63,11 +66,11 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
   const tableAddTeacher = ref()
 
   /** variable ********************************************************************************/
+  const isShowDialogNotiDelete = ref(false)
   const disabledDelete = computed(() => !data.selectedRowsIds.length)
   function selectedRows(e: any) {
     data.selectedRowsIds = e
   }
-  const isShowDialogNotiDelete = ref(false)
 
   // search ở fillter header
   async function handleSearchTeacher(value: any) {
@@ -158,6 +161,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
     const params = {
       userId: userData.id,
     }
+    courseData.value.authorList = []
     await MethodsUtil.requestApiCustom(UserService.fetchDetailUpdate, TYPE_REQUEST.GET, params).then((value: any) => {
       if (value.data) {
         isOwner.value = value.data.id
@@ -210,7 +214,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
 
     return str
   }
-  async function addInforCourse(isUpdate: boolean) {
+  async function addInforCourse(idx: any, isUpdate: boolean) {
     if (courseData.value.authorList.length === 0) {
       toast('WARNING', t('author-invalid'))
       return
@@ -260,9 +264,11 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
       else
         router.push({ name: 'course-list' })
       toast('SUCCESS', t(response.message))
+      unLoadComponent(idx)
     }
     else {
       toast('ERROR', t(getErrorsMessage(response.errors)))
+      unLoadComponent(idx)
     }
   }
   function handleSaveUpdate(params: any) {
@@ -282,6 +288,24 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
     })
   }
 
+  // đăng ký state
+  const stateInit = ref<any>({})
+  const $reset = (listState: any) => MethodsUtil.$reset(stateInit)(listState)
+  onMounted(() => {
+    MethodsUtil.registerState([
+      { courseData },
+      { isViewDetail },
+      { idCourse },
+      { data },
+      { queryParams },
+      { isViewDetail },
+      { totalRecord },
+      { isOwner },
+      { isSaving },
+      { tableAddTeacher },
+      { isShowDialogNotiDelete },
+    ], stateInit)
+  })
   onMounted(() => {
     //
   })
@@ -300,6 +324,7 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
     data,
     isOwner,
     idCourse,
+    isViewDetail,
 
     // method
     addOrginAuthor,
@@ -313,5 +338,6 @@ export const courseInforManagerStore = defineStore('courseInforManager', () => {
     handleSaveUpdate,
     getDetailCourse,
     fetchAuthor,
+    $reset,
   }
 })

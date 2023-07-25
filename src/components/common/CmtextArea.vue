@@ -128,7 +128,7 @@ const messageError = computed(() => {
   // border: none !important;
 }
 .v-textarea .v-field__field{
-  background: $color-input-default;
+  background: rgb(var(--v-theme-surface));
   border-radius: $border-radius-xs;
 }
 </style>

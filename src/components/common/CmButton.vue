@@ -21,6 +21,7 @@ interface Props {
   color?: string
   bgColor?: string
   rounded?: string | number | boolean
+  isRounded?: boolean
   icon?: string
   variant?: typeof typeVariant[number]
   size?: string
@@ -30,12 +31,14 @@ interface Props {
   positionIcon?: string
   colorIcon?: string
   sizeIcon?: number
+  propsBlind?: any
 }
 
 const props = withDefaults(defineProps<Props>(), ({
   isLoad: false,
   block: false,
   disabled: false,
+  isRounded: false,
   color: 'primary',
   textColor: '',
   bgColor: '',
@@ -49,8 +52,9 @@ const props = withDefaults(defineProps<Props>(), ({
 
 const emit = defineEmits<Emit>()
 interface Emit {
-  (e: 'click', idxBtn: number): void
+  (e: 'click', idxBtn: number, fn: any): void
 }
+
 const store = load()
 const indexLoad = ref(0)
 const { addComponent, loadComponent, unLoadComponent } = store
@@ -77,7 +81,7 @@ function handleClick() {
   if (props.isLoad)
     loadComponent(indexLoad.value)
 
-  emit('click', indexLoad.value)
+  emit('click', indexLoad.value, unLoadButton)
 }
 
 const isDisabled = computed(() => {
@@ -103,9 +107,10 @@ defineExpose({
     :size="size"
     :variant="variant"
     :color="color"
-    :rounded="rounded"
-    class="text-style-btn"
-    :class="[color, outlined, className, color === 'white' ? 'border-button' : '']"
+    :rounded="!isRounded ? rounded : ''"
+    :icon="isRounded ? icon : null"
+    v-bind="propsBlind"
+    :class="[color, outlined, className, !isRounded ? 'text-style-btn' : '', color === 'white' ? 'border-button' : '']"
     @click="handleClick"
   >
     <!-- :class="[`${prefixColor}-${color}`, bgColor, className]" -->
@@ -148,7 +153,7 @@ defineExpose({
 </template>
 
 <style lang="scss">
-@use "/src/styles/style-global" as *;
+@use "@/styles/style-global" as *;
 
 .text-style-btn {
   border-radius: 8px;
@@ -159,6 +164,7 @@ defineExpose({
   padding: 10px 16px;
   text-transform: inherit;
   font-family: inherit;
+  letter-spacing: normal;
 }
 // .text-button {
 //   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);

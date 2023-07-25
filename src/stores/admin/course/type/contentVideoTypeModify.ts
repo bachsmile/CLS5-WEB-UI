@@ -5,7 +5,7 @@ import CourseService from '@/api/course/index'
 import { load } from '@/stores/loadComponent.js'
 import toast from '@/plugins/toast'
 
-export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
+export const contentTypeVideoManagerStore = defineStore('contentVideoTypeManager', () => {
   /** lib ****************************************************************/
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
   const router = useRouter()
@@ -168,10 +168,12 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
           name: 'content-edit',
           params: {
             id: Number(route.params.id),
-            tab: route.params.tab,
-            type: 'video-content',
-            contentTab: 'infor',
+            type: route.params.type,
             contentId: contentId.value,
+          },
+          query: {
+            contentTab: 'infor',
+            tab: route.params.tab,
           },
         })
       }
@@ -291,5 +293,6 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
     fetchConditionAttend,
     changeType,
     getQuestionsData,
+    fetchConditionComplete,
   }
 })

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import CmTab from '@/components/common/CmTab.vue'
+import CpAdd from '@/components/page/Admin/organization/user-group/CpAdd.vue'
+import CpUserTab from '@/components/page/Admin/organization/user-group/CpUserTab.vue'
+import CpCourseTab from '@/components/page/Admin/organization/user-group/CpCourseTab.vue'
 
-const CpAdd = defineAsyncComponent(() => import('@/components/page/Admin/organization/user-group/CpAdd.vue'))
-const CpUserTab = defineAsyncComponent(() => import('@/components/page/Admin/organization/user-group/CpUserTab.vue'))
-const CpCourseTab = defineAsyncComponent(() => import('@/components/page/Admin/organization/user-group/CpCourseTab.vue'))
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
 const route = useRoute()
@@ -51,4 +51,3 @@ const listtab = ref([
     :is-use-component="true"
   />
 </template>
-

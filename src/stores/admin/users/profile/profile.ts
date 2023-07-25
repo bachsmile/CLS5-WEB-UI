@@ -283,10 +283,10 @@ export const profileUserManagerStore = defineStore('profileUserManager', () => {
   }
 
   onMounted(() => {
-    console.log('onMounted')
+    // console.log('onMounted')
   })
   onBeforeUnmount(() => {
-    console.log('onBeforeUnmount')
+    // console.log('onBeforeUnmount')
   })
 
   return {

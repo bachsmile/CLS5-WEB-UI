@@ -5,7 +5,6 @@ import toast from '@/plugins/toast'
 import MethodsUtil from '@/utils/MethodsUtil'
 import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import CmTextField from '@/components/common/CmTextField.vue'
 import { tableStore } from '@/stores/table'
 
 const CpApproveFilter = defineAsyncComponent(() => import('@/components/page/Admin/course/approve/CpApproveFilter.vue'))
@@ -226,21 +225,23 @@ getListAprove()
         @handlePageClick="handlePageClick"
         @update:selected="selectedRows"
       >
-        <template #rowItem="{ col, context }">
+        <!--
+          <template #rowItem="{ col, context }">
           <div v-if="col === 'name'">
-            <CpCustomInforCourse
-              label-title="name"
-              label-sub-title="statusId"
-              :context="context"
-            />
+          <CpCustomInforCourse
+          label-title="name"
+          label-sub-title="statusId"
+          :context="context"
+          />
           </div>
           <div v-if="col === 'description'">
-            <CmTextField
-              v-model="context.description"
-              @update:model-value="valueChange($event, context)"
-            />
+          <CmTextField
+          v-model="context.description"
+          @update:model-value="valueChange($event, context)"
+          />
           </div>
-        </template>
+          </template>
+        -->
       </CmTable>
     </div>
   </div>

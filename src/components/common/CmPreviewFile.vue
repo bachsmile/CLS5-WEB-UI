@@ -29,7 +29,6 @@ const rotation = ref(0)
 const pdfSource = computed(() => `${SERVERFILE}${props.src}`)
 const showAllPages = ref(false)
 const pdfRef = ref()
-console.log(pdfRef)
 const numberInput = ref<any>(1)
 
 function handlePasswordRequest(callback: any) {
@@ -38,7 +37,6 @@ function handlePasswordRequest(callback: any) {
 function handleDocumentRender() {
   isLoading.value = false
   pageCount.value = pdfRef.value.pageCount
-  console.log(pdfRef.value)
 }
 function rotationPage() {
   if (rotation.value === 270)
@@ -49,11 +47,9 @@ function rotationPage() {
 }
 function changePage(val: any) {
   if (Number(val.target.value) > 0) {
-    console.log(val.target.value)
     page.value = Number(val.target.value)
   }
   else {
-    console.log(Number(val.target.value))
     numberInput.value = 1
     page.value = 1
   }
@@ -63,8 +59,8 @@ watch(showAllPages, val => {
   page.value = showAllPages.value ? null : 1
 })
 watch(() => props.password, val => {
-  console.log(pdfRef.value)
-})
+  // console.log(pdfRef.value)
+}, { deep: true, immediate: true })
 </script>
 
 <template>

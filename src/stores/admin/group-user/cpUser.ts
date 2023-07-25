@@ -42,10 +42,10 @@ export const useUserGroupStore = defineStore('useUserGroupStore', () => {
   const moveUser = (data: DataMove) => {
     let status = false
     MethodsUtil.requestApiCustom(ApiGroupUser.MoveUser, TYPE_REQUEST.PUT, data).then((res: any) => {
-      toast('SUCCESS', t('Chuyển nhóm người dùng thành công'))
+      toast('SUCCESS', t('move-user-success'))
       getListUser()
     }).catch((e: any) => {
-      toast('ERROR', t('Chuyển nhóm người dùng thất bại'))
+      toast('ERROR', t('error'))
       status = true
     })
     return status
@@ -58,10 +58,12 @@ export const useUserGroupStore = defineStore('useUserGroupStore', () => {
     }
     let status = false
     MethodsUtil.requestApiCustom(ApiGroupUser.DeleteUser, TYPE_REQUEST.POST, payload).then((res: any) => {
-      toast('SUCCESS', t('Xóa nhóm người dùng thành công'))
+      console.log(res)
+
+      toast('SUCCESS', t(res?.message))
       getListUser()
     }).catch((e: any) => {
-      toast('ERROR', t('Xóa nhóm người dùng thất bại'))
+      toast('ERROR', t('LOG_DeleteUserFailedAction'))
       status = true
     })
     return status

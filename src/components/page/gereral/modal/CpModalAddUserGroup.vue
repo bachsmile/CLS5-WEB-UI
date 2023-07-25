@@ -71,7 +71,6 @@ const disableSave = ref(false)
 // get danh sách nhóm người dùng
 async function getListGroupModal(queryGetList: any) {
   queryGetList.listId = props.listId
-  window.showAllPageLoading('FULL')
   if (queryGetList === null)
     return []
   let strParam = ''
@@ -87,8 +86,6 @@ async function getListGroupModal(queryGetList: any) {
     dataTableGroup.value = value?.data?.pageLists
     dataComponent.totalRecord = value?.data?.totalRecord
   })
-
-  window.hideAllPageLoading()
 }
 
 function onCancel() {

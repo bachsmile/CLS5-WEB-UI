@@ -60,4 +60,3 @@ const listtab = ref([
     label="tab"
   />
 </template>
-

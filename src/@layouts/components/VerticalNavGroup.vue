@@ -49,7 +49,7 @@ const isGroupOpen = ref(false)
 * @param {NavGroup['children']} children  - Nav group children
 * @return {boolean} returns if any of children is open or not.
 */
-const isAnyChildOpen = (children: NavGroup['children']): boolean => {
+function isAnyChildOpen(children: NavGroup['children']): boolean {
   return children.some(child => {
     let result = openGroups.value.includes(child.title)
 
@@ -60,7 +60,7 @@ const isAnyChildOpen = (children: NavGroup['children']): boolean => {
   })
 }
 
-const collapseChildren = (children: NavGroup['children']) => {
+function collapseChildren(children: NavGroup['children']) {
   children.forEach(child => {
     if ('children' in child)
       collapseChildren(child.children)
@@ -182,13 +182,22 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
   >
     <div
       class="nav-group-label"
+      style="border-radius: 24px;"
       @click="isGroupOpen = !isGroupOpen"
     >
-      <Component
-        :is="config.app.iconRenderer || 'div'"
-        v-bind="item.icon || config.verticalNav.defaultNavItemIconProps"
+      <img
+        v-if="item.src"
+        :src="item.src"
+        width="32"
+        height="32"
+        class="nav-item-icon"
+      >
+      <div
+        v-else
+        style="width: 32px; height: 32px;"
         class="nav-item-icon"
       />
+      <!-- v-bind="item.icon || config.verticalNav.defaultNavItemIconProps" -->
       <TransitionGroup name="transition-slide-x">
         <!-- 👉 Title -->
         <Component
@@ -196,13 +205,14 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
           v-bind="dynamicI18nProps(item.title, 'span')"
           v-show="!hideTitleAndBadge"
           key="title"
-          class="nav-item-title"
+          class="nav-item-title nav-item-group"
         >
           {{ item.title }}
         </Component>
 
         <!-- 👉 Badge -->
-        <Component
+        <!--
+          <Component
           :is="config.app.enableI18n ? 'i18n-t' : 'span'"
           v-bind="dynamicI18nProps(item.badgeContent, 'span')"
           v-show="!hideTitleAndBadge"
@@ -210,9 +220,10 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
           key="badge"
           class="nav-item-badge"
           :class="item.badgeClass"
-        >
+          >
           {{ item.badgeContent }}
-        </Component>
+          </Component>
+        -->
         <Component
           :is="config.app.iconRenderer || 'div'"
           v-show="!hideTitleAndBadge"
@@ -239,12 +250,17 @@ watch(isVerticalNavMini(windowWidth, isVerticalNavHovered), val => {
 </template>
 
 <style lang="scss">
+@use "@/styles/style-global" as *;
 .layout-vertical-nav {
   .nav-group {
     &-label {
       display: flex;
       align-items: center;
       cursor: pointer;
+    }
+    .nav-item-group {
+      @extend .text-semibold-md;
+      color: $color-gray-700 !important;
     }
   }
 }

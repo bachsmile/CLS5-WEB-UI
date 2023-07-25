@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import CpSearch from '@/components/page/gereral/CpSearch.vue'
+import CmButton from '@/components/common/CmButton.vue'
+import CmButtonGroup from '@/components/common/CmButtonGroup.vue'
 
 const emit = defineEmits<Emit>()
 const { t } = window.i18n()
@@ -18,9 +20,6 @@ const props = withDefaults(defineProps<Props>(), ({
   buttonPrepend: 'export-excel',
   isShowFilter: true,
 }))
-const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
-const CmButtonGroup = defineAsyncComponent(() => import('@/components/common/CmButtonGroup.vue'))
-const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 
 interface Props {
   listItemButtonGroup?: Item[]
@@ -74,9 +73,11 @@ function handleFilter() {
 
 <template>
   <div class="mb-6">
-    <VRow>
+    <VRow class="align-center">
       <VCol>
-        <h3>{{ props.titlePage }}</h3>
+        <h3 class="text-medium-lg">
+          {{ props.titlePage }}
+        </h3>
       </VCol>
       <VCol class="d-flex justify-end">
         <CmButton
@@ -107,7 +108,7 @@ function handleFilter() {
       </VCol>
     </VRow>
 
-    <VRow class="mr-1">
+    <VRow>
       <VCol class="d-flex">
         <CmButton
           v-if="props.isShowDelete"
@@ -135,11 +136,10 @@ function handleFilter() {
       </VCol>
       <VCol class="d-flex justify-end pr-0">
         <CpSearch
-          label="Tìm kiếm"
           class="header-action-field"
           placeholder="Tìm kiếm"
           prepend-inner-icon="tabler-search"
-          @update:model-value="handleSearch"
+          @update:key-search="handleSearch"
         />
         <CmButton
           v-if="isFillter"

@@ -6,7 +6,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import CourseService from '@/api/course/index'
 import UserService from '@/api/user/index'
 import toast from '@/plugins/toast'
-import Globals from '@/constant/Globals'
+import { documentExtention } from '@/constant/Globals'
 import ServerFileService from '@/api/server-file/index'
 import { load } from '@/stores/loadComponent.js'
 
@@ -15,13 +15,11 @@ const SkUser = defineAsyncComponent(() => import('@/components/page/gereral/skel
 const CmCheckBox = defineAsyncComponent(() => import('@/components/common/CmCheckBox.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
-const CmRadio = defineAsyncComponent(() => import('@/components/common/CmRadio.vue'))
 const CmButton = defineAsyncComponent(() => import('@/components/common/CmButton.vue'))
 const CmItemFileUpload = defineAsyncComponent(() => import('@/components/common/CmItemFileUpload.vue'))
 const CmPreviewFile = defineAsyncComponent(() => import('@/components/common/CmPreviewFile.vue'))
 const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue'))
 const CpActionFooterEdit = defineAsyncComponent(() => import('@/components/page/gereral/CpActionFooterEdit.vue'))
-const CpMdProcessing = defineAsyncComponent(() => import('@/components/page/gereral/modal/CpMdProcessing.vue'))
 
 /** store */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -76,6 +74,7 @@ const vSelectOwner = ref<any>({
 const time = ref({ selfMinute: 0, selfSecond: 0, contentMinute: 0, contentSecond: 0 })
 const acceptDownload = ref<any>(false)
 const documentFile = ref({
+  acceptDownload: false,
   alterPath: '',
   name: '',
   size: 0,
@@ -163,8 +162,7 @@ async function getDocLocalInfo(folder: any, getFileSize?: any) {
       ...documentFile.value,
       ...data,
     }
-    console.log(data)
-
+    documentFile.value.haveDocument = true
     if (data.isProcessing)
       isLoadingFile.value = false
   })
@@ -177,9 +175,8 @@ async function getDocLocalInfoFileDown(folder: any, getFileSize?: any) {
 function getDetailDocContent() {
   if (documentData.value.url && documentData.value.url !== null) {
     documentFile.value.localUrl = documentData.value.url
-    documentFile.value.haveDocument = true
     documentFile.value.fileFolder = documentData.value.url
-
+    acceptDownload.value = documentData.value?.acceptDownload
     getDocLocalInfo(documentData.value.url)
     if (documentData.value.timeTypeId === 2) {
       time.value.selfMinute = Math.floor(documentData.value.time / 60)
@@ -225,11 +222,13 @@ function handleDeleteDoc(type: any, idx: any) {
         fileOrigin: '',
         fileFolder: '',
         haveDocument: false,
+        acceptDownload: false,
         file: [] as any[],
         localDocFileName: null,
         localUrl: '',
       }
       documentData.value.urlFileName = ''
+      documentData.value.url = ''
       break
 
     default:
@@ -243,6 +242,7 @@ async function upFileServerAcceptDownload(file: any) {
     files: file,
     isSecure: true,
   }
+
   const data = await MethodsUtil.uploadFile(model)
   documentFile.value.fileFolder = data.fileFolder
   getDocLocalInfo(data.filePath, true)
@@ -254,13 +254,12 @@ function uploadDocLocal(data: any, file: any) {
   documentFile.value.fileFolder = data.fileFolder
   documentFile.value.urlDownload = data.filePath
   documentData.value.urlFileName = data.fileFolder
+  if (data.filePath)
+    errorsInputFile.value = []
 
   if (documentData.value.name === null || documentData.value.name.length === 0)
     documentData.value.name = data.name
   documentData.value.acceptDownload = acceptDownload.value
-  documentFile.value.haveDocument = true
-
-  isLoadingFile.value = true
 
   if (acceptDownload.value) {
     uploadFile.value.timer = setTimeout(() => {
@@ -272,36 +271,12 @@ function uploadDocLocal(data: any, file: any) {
   else {
     isLoadingFile.value = false
     getDocLocalInfo(data.filePath, true)
+    documentFile.value.haveDocument = true
   }
 }
 
-// cnd
-const isShowModalProcessing = ref(false)
-const uploadRequestsCdn = ref<any>([])
-const filesDataCdn = ref(
-  {
-    name: '',
-    icon: 'tabler:file',
-    size: 0,
-    processing: 50,
-    fileName: '',
-    fileType: null,
-    fileExtension: '',
-    filePath: '',
-    fileOrigin: '',
-    fileFolder: '',
-  },
-)
-
-function cancelProcessing(index: any) {
-  if (!window._.isEmpty(uploadRequestsCdn.value[index])) {
-    uploadRequestsCdn.value[index].cancelTokenSource.cancel('Hủy cuộc gọi')
-    uploadRequestsCdn.value[index].request.cancel() // Hủy cuộc gọi Axios
-    uploadRequestsCdn.value.splice(index, 1)
-  }
-}
 function handleCancle() {
-  router.push({ name: 'course-edit', params: { tab: 'content', id: Number(route.params.id) } })
+  router.push({ name: 'course-edit', params: { id: Number(route.params.id) }, query: { tab: 'content' } })
 }
 
 // lưu
@@ -322,6 +297,7 @@ function saveAndUpdate(idx: any, isUpdate: boolean) {
     unLoadComponent(idx)
     return
   }
+
   myFormAddContentDoc.value.validate().then(async (success: any) => {
     if (success.valid) {
       documentData.value.courseId = Number(route.params.id)
@@ -331,11 +307,20 @@ function saveAndUpdate(idx: any, isUpdate: boolean) {
       handleUpdateContent(idx, isUpdate)
     }
     else {
+      if (!documentData.value.url) {
+        errorsInputFile.value = [t('please-choose-files')]
+        toast('ERROR', t('please-choose-files'))
+        unLoadComponent(idx)
+        return
+      }
       unLoadComponent(idx)
     }
   })
 }
-
+function onChangeFile() {
+  isLoadingFile.value = true
+  documentFile.value.haveDocument = true
+}
 getListThematicContent()
 if (route.params && route.params.contentId) {
   const id = Number(route.params.contentId)
@@ -474,7 +459,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -496,7 +481,7 @@ onUnmounted(() => {
                       <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                     </div>
                     <div class="styleError text-errors">
-                      {{ errors[0] }}
+                      {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
                 </Field>
@@ -537,12 +522,13 @@ onUnmounted(() => {
                   class="w-100"
                   :disabled="isViewDetail"
                   :file-name="documentFile.localDocFileName"
-                  :accept="Globals.documentExtention"
+                  :accept="documentExtention"
                   :is-btn-download="false"
                   is-request-file-install
                   :errors="errorsInputFile"
                   :is-secure="!acceptDownload"
                   @change="uploadDocLocal"
+                  @onChangeFile="onChangeFile"
                 />
               </Field>
             </div>
@@ -556,7 +542,7 @@ onUnmounted(() => {
             <CmChip
               :color="acceptDownload ? 'primary' : 'error'"
             >
-              <span>{{ acceptDownload ? t("Cho phép tải") : t("Không cho phép tải") }}</span>
+              <span class="text-medium-xs">{{ acceptDownload ? t("Cho phép tải") : t("Không cho phép tải") }}</span>
             </CmChip>
           </VCol>
         </VRow>
@@ -574,7 +560,7 @@ onUnmounted(() => {
             </div>
           </VCol>
         </VRow>
-        <VRow v-if="documentFile.haveDocument">
+        <VRow v-if="!isLoadingFile && documentFile.haveDocument">
           <VCol
             id="video-preview"
             cols="12"
@@ -606,7 +592,7 @@ onUnmounted(() => {
                 @click="downloadFile"
               />
               <CmButton
-                v-if="!isViewDetail && documentFile.urlDownload"
+                v-if="!isViewDetail"
                 is-load
                 icon="tabler:trash"
                 variant="outlined"
@@ -632,11 +618,6 @@ onUnmounted(() => {
         />
       </div>
     </Form>
-    <CpMdProcessing
-      v-model:is-show-modal="isShowModalProcessing"
-      :files="[filesDataCdn]"
-      @cancel="cancelProcessing"
-    />
   </div>
 </template>
 

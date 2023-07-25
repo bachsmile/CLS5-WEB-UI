@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
 import CmPagination from './CmPagination.vue'
-import Globals from '@/constant/Globals'
+import { MAX_ITEM_ACTION, PAGINATION_CURRENT_PAGE, PAGINATION_PAGE_SIZE_DEFAULT, PAGINATION_SIZE_UNLIMIT_DEFAULT } from '@/constant/Globals'
 import SkTable from '@/components/page/gereral/skeleton/SkTable.vue'
 import { tableStore } from '@/stores/table'
 import MethodsUtil from '@/utils/MethodsUtil'
@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), ({
   isEditing: false,
   isExpand: false,
   rowClassName: '',
-  pageSize: Globals.PAGINATION_PAGE_SIZE_DEFAULT,
+  pageSize: PAGINATION_PAGE_SIZE_DEFAULT,
   customId: 'id',
   totalRecord: 0,
   typePagination: 1,
@@ -80,7 +80,7 @@ const dataTable = ref()
 const itemsData = ref<any>([])
 
 const pageSize = ref(props.pageSize) // số lượng item trên 1 page
-const currentPage = ref<number>(Globals.PAGINATION_CURRENT_PAGE) // item hiện tại
+const currentPage = ref<number>(PAGINATION_CURRENT_PAGE) // item hiện tại
 const selectedRows = ref<any>([])// Những row được checked
 
 const serverfile = window.SERVER_FILE || ''
@@ -239,7 +239,7 @@ console.time('update')
       ref="dataTable"
       :headers="headers"
       :items="items"
-      :rows-per-page="!disiablePagination ? pageSize : 100000"
+      :rows-per-page="!disiablePagination ? pageSize : PAGINATION_SIZE_UNLIMIT_DEFAULT"
       :table-min-height="minHeight"
       :item-key="props.customId"
       alternating
@@ -331,7 +331,7 @@ console.time('update')
             <!--
               <div
               v-if="checkActionShow(context?.actions) && actionItem.isShow
-              || !checkActionShow(context?.actions) && (context?.actions.length <= 3 || idKey < (Globals.MAX_ITEM_ACTION - 1))"
+              || !checkActionShow(context?.actions) && (context?.actions.length <= 3 || idKey < (MAX_ITEM_ACTION - 1))"
               :key="idKey"
               class="px-2 "
               >
@@ -339,7 +339,7 @@ console.time('update')
             -->
 
             <div
-              v-if="(context?.actions.length <= 3 || idKey < (Globals.MAX_ITEM_ACTION - 1))"
+              v-if="(context?.actions.length <= 3 || idKey < (MAX_ITEM_ACTION - 1))"
               :key="idKey"
               class="px-2 "
               @mouseover="iconEvents(actionItem, true)"
@@ -363,12 +363,12 @@ console.time('update')
             </div>
           </template>
           <div
-            v-if="context?.actions?.length > Globals.MAX_ITEM_ACTION"
+            v-if="context?.actions?.length > MAX_ITEM_ACTION"
           >
             <div class="action-more px-2">
               <CmDropDown
                 is-action
-                :list-item="ArrayUtil.sliceArray(context?.actions, Globals.MAX_ITEM_ACTION - 1)"
+                :list-item="ArrayUtil.sliceArray(context?.actions, MAX_ITEM_ACTION - 1)"
                 :data="context"
                 custom-key="name"
                 :type="1"

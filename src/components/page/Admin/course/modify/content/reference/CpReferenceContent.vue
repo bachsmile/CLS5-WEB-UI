@@ -18,8 +18,16 @@ const CpActionFooterEdit = defineAsyncComponent(() => import('@/components/page/
  * Store
  */
 const storeContentManager = contentManagerStore()
-const { viewModeRefer, contentRefer, callBackAction, itemsRefer, isShowDialogNotiDeleteRefer, disabledDeleteRefer, isShowModalAddRefStock, dataSelectRef } = storeToRefs(storeContentManager)
-const { getListReferContentCourse, actionItemRefer, confirmDialogDeleteRefer, handleSearchRefer, selectedRowsRefer, deleteItemsRefer, handleAddRefContentStock } = storeContentManager
+const {
+  viewModeRefer, contentRefer, callBackAction,
+  itemsRefer, isShowDialogNotiDeleteRefer, disabledDeleteRefer,
+  isShowModalAddRefStock, dataSelectRef,
+} = storeToRefs(storeContentManager)
+const {
+  getListReferContentCourse, actionItemRefer,
+  confirmDialogDeleteRefer, handleSearchRefer, selectedRowsRefer,
+  deleteItemsRefer, handleAddRefContentStock,
+} = storeContentManager
 const groupOptions = {
   allowEmptySelect: false,
   collapsable: false,
@@ -63,7 +71,7 @@ function handleClickRow(e: any) {
 }
 
 function onCancel() {
-  router.replace({ name: 'admin-course' })
+  router.replace({ name: 'course' })
 }
 function addSuccessFile() {
   getListReferContentCourse(courseId)

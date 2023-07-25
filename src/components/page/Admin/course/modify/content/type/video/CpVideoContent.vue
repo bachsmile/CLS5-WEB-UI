@@ -10,7 +10,8 @@ const route = useRoute()
  *
  * tab
  */
-const listTab = [
+
+const listTab = ref([
   {
     key: 'infor',
     title: 'content',
@@ -22,16 +23,20 @@ const listTab = [
     title: 'condition-content',
     component: CpConditionVideo,
     isRendered: true,
-    isDisabled: computed(() => !route.params.contentId).value,
+    isDisabled: true,
   },
   {
     key: 'condition-complete',
     title: 'condition-completed-content',
     component: CpConditionCompletedVideo,
     isRendered: true,
-    isDisabled: computed(() => !route.params.contentId).value,
+    isDisabled: true,
   },
-]
+])
+watch(() => route.params.contentId, (val: any) => {
+  if (val)
+    listTab.value.map((item: any) => item.isDisabled = false)
+}, { deep: true, immediate: true })
 </script>
 
 <template>

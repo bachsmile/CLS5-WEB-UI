@@ -91,6 +91,7 @@ watch(() => courseData.value?.id, (Val: any) => {
         :items="getAuthor"
         :selected="data?.selectedRowsIds"
         is-update-row-force
+        :min-height="50"
         :total-record="totalRecord"
         :page-number="queryParams.pageNumber"
         @handlePageClick="handlePageClick"

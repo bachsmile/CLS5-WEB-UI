@@ -5,7 +5,7 @@
  */
 export const isUserLoggedIn = () => !!(localStorage.getItem('userData') && localStorage.getItem('accessToken'))
 
-export const getUserData = () => {
+export function getUserData() {
   const stringifiedUserData = localStorage.getItem('userData')
 
   return stringifiedUserData ? JSON.parse(stringifiedUserData) : null
@@ -28,7 +28,7 @@ export const getUserData = () => {
 //   return { name: 'login' }
 // }
 
-export const getHomeRouteForLoggedInUser = (userRoles: any) => {
+export function getHomeRouteForLoggedInUser(userRoles: any) {
   if (userRoles.length > 0)
     return { name: userRoles[0].router }
 
@@ -37,11 +37,10 @@ export const getHomeRouteForLoggedInUser = (userRoles: any) => {
   return { name: 'auth-login' }
 }
 
-export const parseJwt = (token: any) => {
+export function parseJwt(token: any) {
   const base64Url = token?.split('.')[1]
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
   const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`).join(''))
 
   return JSON.parse(jsonPayload)
 }
-

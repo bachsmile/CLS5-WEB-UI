@@ -19,7 +19,7 @@
       "name": "ErrorDialog",
       "icon": "tabler:alert-circle",
       "color": "error",
-      "size": 16
+      "size": 32
     },
     {
       "id": 3,

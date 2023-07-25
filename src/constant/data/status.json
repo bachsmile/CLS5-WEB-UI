@@ -162,5 +162,21 @@
             "color": "error",
             "note": "Học offline"
         }
+    ],
+    "StatusAttendance": [
+        {
+            "id": 1,
+            "name": "pending-approved",
+            "color": "warning",
+            "icon": "tabler:loader",
+            "note": "Đã điểm danh"
+        },
+        {
+            "id": 2,
+            "name": "approved",
+            "color": "success",
+            "icon": "prime-check-circle",
+            "note": "Chưa điểm danh"
+        }
     ]
 }

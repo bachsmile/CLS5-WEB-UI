@@ -29,6 +29,15 @@ const CourseService = {
   GetConfiguration: '/coursecontenttest/get-configuration', // Lấy thông tin tùy chỉnh bài kiểm tra
   GetListQuestionContentSurvey: '/surveytestcode/get-list-question', // Lấy danh sách câu hỏi khảo sát
   GetListQuestionContentTest: '/course/get-course-content-test-list-question', // Lấy danh sách câu hỏi
+  GetListQuestionDetailContentTest: '/course/get-detail-course-content-test-question', // Lấy danh sách câu hỏi
+  GetSettingCourse: '/course/get-setting', // Lấy thông tin setting khóa học
+  GetListCheckinCourse: (id: number | string) => `/course/${id}/checkin`, // Lấy danh sách điểm danh khóa học
+  GetListPointStudent: (id: number | string) => `/course/${id}/mark/learners`, // Lấy danh sách cập nhật điểm nội dung khóa học
+  GetListCheckinStudentCourse: (id: number | string) => `/course/${id}/checkin/learners`, // Lấy danh sách học viên điểm danh khóa học
+  GetInforOfAttendance: (id: number | string, idAttendance: number | string) => `/course/${id}/checkin/${idAttendance}`, // Lấy danh sách thông tin điểm danh khóa học
+  GetQrCode: 'qrcode/get-qrcode', // Lấy thông tin QR khóa học
+  GetSampleFileUpdatePoint: 'Course/template-excel-update-point', // Lấy thông tin file mẫu cập nhật điểm
+  GetListFilesCourse: 'contentarchive/get-files-in-course', // Lấy danh sách file tải của khóa học
 
   /** Post */
   PostAddCourseOrg: '/course/add-course-to-organizational-structures',
@@ -80,14 +89,22 @@ const CourseService = {
   PostSaveRequireParticipate: '/coursecontent/save-require-participate', // điều kiện tham gia khóa học
   PostSaveRequireFinish: '/coursecontent/save-require-finish',
   PostuUpdateTestConfig: '/coursecontenttest/update',
+  PostCreateTestConfig: '/coursecontenttest/create',
+  PostCreateQr: '/qrcode/create',
+  PostUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostuCreateTestConfig: '/coursecontenttest/create',
+  PostUpdatePointOff: '/Course/import-excel-update-mark-offline',
   PostuUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
+  PostDelCheckinCourse: (id: number | string) => `/course/${id}/checkin/delete`, // Lấy danh sách điểm danh khóa học
+  PostAddCheckinCourse: (id: number | string) => `/course/${id}/checkin`, // Thêm điểm danh khóa học
 
   /** Delete */
   DeleteUserReg: 'courseuser/delete-register',
 
   /** Put */
   PutAddToContentBank: '/CourseContent/covert-to-content-archive',
+  PutCheckinCourse: (id: number | string) => `/course/${id}/checkin`,
+  PutUpdatePointContent: (id: number | string) => `/Course/${id}/mark`,
 
   /** Update */
   /** patch */

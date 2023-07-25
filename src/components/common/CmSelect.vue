@@ -2,13 +2,13 @@
 import ISelect from 'vue-select'
 import Fuse from 'fuse.js'
 import { createPopper } from '@popperjs/core'
-import Globals from '@/constant/Globals'
+import { MAX_ITEM_SELECT_MULT } from '@/constant/Globals'
 import StringUtil from '@/utils/StringUtil'
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
   items: () => ([]),
-  maxItem: Globals.MAX_ITEM_SELECT_MULT,
+  maxItem: MAX_ITEM_SELECT_MULT,
   multiple: false,
   returnObject: false,
   appendToBody: false,
@@ -102,7 +102,7 @@ const optionsModel = computed(() => {
 const hasNextPage = computed(() => {
   return optionsModel.value.length < props.totalRecord
 })
-function open(e: any) {
+function open() {
   if (!props.multiple) {
     stackValue.value = window._.clone(valueCurrent.value)
     valueCurrent.value = null
@@ -312,16 +312,17 @@ function withPopper(dropdownList: any, component: any, { width }: any) {
   border-radius: $border-radius-xs;
   background: $color-input-default;
 }
+.cm-select .vs--disabled .vs__dropdown-toggle, .vs--disabled .vs__clear, .vs--disabled .vs__search, .vs--disabled .vs__selected, .vs--disabled .vs__open-indicator {
+  background-color: $color-gray-100;
+}
 .vs__dropdown-menu{
   z-index: 9999 !important;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
 .vs__selected-options{
-  width: 90% !important;
 }
 .vs__selected{
-  max-width: 94%;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;

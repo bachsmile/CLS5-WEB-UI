@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { contentTypeManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
+import { contentTypeVideoManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
 
 const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue'))
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
@@ -12,7 +12,7 @@ const headers = reactive([
   { text: t('point'), value: 'unitPoint', type: 'custom' },
   { text: '', value: 'actions', width: 150 },
 ])
-const storeContentVideoTypeModifyManager = contentTypeManagerStore()
+const storeContentVideoTypeModifyManager = contentTypeVideoManagerStore()
 const { conditionComplete, conditionAttend, timeComplete, isViewDetail } = storeToRefs(storeContentVideoTypeModifyManager)
 const dataTable = reactive({
   deleteIds: [], // list id các row table muốn xóa
@@ -64,6 +64,7 @@ getListQuestionContentCourse()
   <div class="mt-6">
     <CmTable
       :selected="dataTable?.selectedRowsIds"
+      is-update-row-force
       :headers="headers"
       :items="items"
       disiable-pagination

@@ -54,8 +54,8 @@ function handleFormValue(value: any) {
  * Lấy dữ liệu compobox
  */
 const optionGender = reactive([
-  { label: 'nam', value: false },
-  { label: 'nữ', value: true },
+  { label: 'Nam', value: false },
+  { label: 'Nữ', value: true },
 ])
 
 if (window._.isEmpty(statusesCombobox.value))

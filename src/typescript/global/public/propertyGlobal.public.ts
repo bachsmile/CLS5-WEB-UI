@@ -4,6 +4,9 @@ import _ from 'lodash';
 import { Ref } from "vue";
 import { useI18n } from 'vue-i18n';
 import type { typeLoading } from '@/typescript/enums/enums'
+import MethodsUtil from '@/utils/MethodsUtil'
+import { TYPE_REQUEST } from '@/typescript/enums/enums'
+
 //Cài đặt cố định
 declare global {
   interface Window extends propertyGlobal {
@@ -21,9 +24,14 @@ interface propertyGlobal {
   _?: _.LoDashStatic,
   i18n?: any,
   axios?: any,
+  requestApiCustom?: any,
+  getErrorsMessage?: any,
   showAllPageLoading?: any,
   hideAllPageLoading?: any,
+  TYPE_REQUEST?: any,
+  formatFullName?: any,
   SERVER_FILE?: string,
+  userData?: any,
 }
 
 
@@ -67,6 +75,11 @@ const windowDefineReactiveProperty = (app: any)=> {
     reactive1: 555, // biến không phản ứng
     reactive2: ref('react'), // khai báo ref để biến có thể phản ứng
     token: ref(''), 
+    TYPE_REQUEST: TYPE_REQUEST,
+
+    // method global
+    requestApiCustom: MethodsUtil.requestApiCustom,
+    getErrorsMessage: MethodsUtil.getErrorsMessage,
   }
   defineProperty(global, 'react')
 }

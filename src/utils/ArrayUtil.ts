@@ -185,7 +185,7 @@ export default class ArraysUtil {
   }
 
   // Hàm lấy độ sâu của 1 node (root có depth = 0)
-  static getDepthNode = (originalArray, node, map, count = 0) => {
+  static getDepthNode: any = (originalArray: Array<any>, node: any, map: any, count = 0) => {
     if (
       node.parentId === null
     || node.parentId === undefined
@@ -207,7 +207,7 @@ export default class ArraysUtil {
   //    - Id: tên thuộc tính định danh của mỗi node, mặc định là id
   //    - ParentId: tên thuộc tính của id parent của mỗi phần tử, mặc định là parentId, phần tử gốc thì thuộc tính parentId có giá trị bằng 0
   //    - Children: tên thuộc tính chứa các node con của node hiện tại, mặc định là children
-  static fromListToTree = (originalArray, id = 'id', parentId = 'parentId', children = 'children', depth = null, rootParentId = 0) => {
+  static fromListToTree = (originalArray: Array<any>, id = 'id', parentId = 'parentId', children = 'children', depth = null, rootParentId = 0) => {
   // Clone mảng ban đầu để tránh mutate dữ liệu (immutable function)
     const array = JSON.parse(JSON.stringify(originalArray))
     const map: any = {}
@@ -308,8 +308,6 @@ export default class ArraysUtil {
    * @return {object}
    */
   static formatSelectTree = (items: Array<any>, keyParent = 'parentId', customId = 'id') => {
-    console.log('formatSelectTree')
-
     const orderedNodes = window._.orderBy(items, ['left'], ['desc'])
     const groupedNodes = window._.groupBy(orderedNodes, keyParent)
     return window._.map(groupedNodes['0'], parent => {

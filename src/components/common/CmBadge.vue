@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Anchor } from '@/typescript/enums/enums'
-import Globals from '@/constant/Globals'
+import { SIZE_ICON_DEFAULT } from '@/constant/Globals'
 
 interface Props {
   color?: string
@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<Props>(), ({
   color: '',
   variant: '',
   location: 'bottom right',
-  sizeIcon: Globals.SIZE_ICON_DEFAULT,
+  sizeIcon: SIZE_ICON_DEFAULT,
 }))
 </script>
 

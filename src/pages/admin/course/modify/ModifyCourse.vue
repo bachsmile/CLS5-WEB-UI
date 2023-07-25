@@ -13,6 +13,7 @@ import CpMdAddSemester from '@/components/page/Admin/course/modal/CpMdAddSemeste
 import { StatusTypeCourse } from '@/constant/data/status.json'
 import CpAsginUser from '@/components/page/Admin/course/modify/asign-user/CpAsginUser.vue'
 import CpContentCourse from '@/components/page/Admin/course/modify/content/CpContentCourse.vue'
+import CpSettingCourse from '@/components/page/Admin/course/modify/CpSettingCourse.vue'
 
 /** lib */
 const route = useRoute()
@@ -22,12 +23,13 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
  * Store
  */
 const storeCourseInforManager = courseInforManagerStore()
-const { idCourse } = storeToRefs(storeCourseInforManager)
-const { getDetailCourse } = storeCourseInforManager
+const { idCourse, isViewDetail } = storeToRefs(storeCourseInforManager)
+const { getDetailCourse, $reset } = storeCourseInforManager
 
 if (route?.params?.id) {
   idCourse.value = Number(route?.params.id)
   getDetailCourse()
+  isViewDetail.value = route?.name === 'course-view'
 }
 const semesterCb = [
   { name: t('middle-perior'), id: 1 },
@@ -37,6 +39,7 @@ const semesterCb = [
 const isDisabledAdd = ref(false)
 const excludeIds = ref<any>([])
 const listTypePeriorCurrent = ref<any>([])
+const viewAdd = ref(route.name === 'course-add')
 const listtab = ref([
   {
     key: 'infor',
@@ -47,39 +50,50 @@ const listtab = ref([
     key: 'content',
     title: 'content-course',
     component: CpContentCourse,
+    isDisabled: viewAdd.value,
+
   },
   {
     key: 'user',
     title: 'asign-user',
     component: CpAsginUser,
+    isDisabled: viewAdd.value,
+
   },
   {
     key: 'participation',
     title: 'course-attend-dk',
     component: CpCondParticipation,
+    isDisabled: viewAdd.value,
+
   },
 
   {
     key: 'completion',
     title: 'conditions-completion',
     component: CpConditionsCompletion,
+    isDisabled: viewAdd.value,
+
   },
 
   {
     key: 'cost',
     title: 'cost-management',
     component: CpCostCourse,
+    isDisabled: viewAdd.value,
   },
 
   {
     key: 'survey-course',
     title: 'survey-course',
     component: CpCourseSurveyEvaluation,
+    isDisabled: viewAdd.value,
   },
   {
     key: 'semester',
     title: 'semester',
     component: CpManaging,
+    isDisabled: viewAdd.value,
     dataTab: {
       titlePage: t('semester'),
       header: [
@@ -133,7 +147,12 @@ const listtab = ref([
       isShowExportExcel: false,
     },
   },
-
+  {
+    key: 'setting-option',
+    title: 'setting-option',
+    component: CpSettingCourse,
+    isDisabled: viewAdd.value,
+  },
 ])
 function updateFetchData(data: any) {
   isDisabledAdd.value = data.length >= 2
@@ -144,6 +163,15 @@ function updateFetchData(data: any) {
     listTypePeriorCurrent.value.push(item.typeId)
   })
 }
+
+onBeforeUnmount(() => {
+  $reset(storeCourseInforManager.$state)
+  storeCourseInforManager.$dispose()
+})
+
+onDeactivated(() => {
+  storeCourseInforManager.$dispose()
+})
 </script>
 
 <template>

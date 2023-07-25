@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Header, Item } from 'vue3-easy-data-table'
+import CmTable from '@/components/common/CmTable.vue'
+import CpCustomInfo from '@/components/page/gereral/CpCustomInfo.vue'
 
 const props = withDefaults(defineProps<Props>(), ({
   headers: _ => [],
@@ -14,7 +16,7 @@ const props = withDefaults(defineProps<Props>(), ({
 }))
 
 const emit = defineEmits<Emit>()
-const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
+
 interface Props {
   headers: Header[]
   items: Item[]
@@ -71,11 +73,13 @@ function handlePageClick(e: any) {
   >
     <template #rowItem="{ col, context }">
       <span v-if="col === 'name'">
-        <span
-          v-if="context?.code"
-          class="text-primary mr-1"
-        >{{ context?.code }}</span>
-        <span>{{ context?.name }}</span>
+        <CpCustomInfo
+          :context="context"
+          label-code="code"
+          :is-full-name="false"
+          :is-show-email="false"
+          :is-show-avatar="false"
+        />
       </span>
     </template>
     <template
@@ -104,7 +108,7 @@ function handlePageClick(e: any) {
         class="px-2 "
       >
         <VIcon
-          icon="mdi-pencil"
+          icon="fe:edit"
           :size="18"
           class="align-middle color-primary"
           @click="getDetail(data)"

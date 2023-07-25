@@ -1,4 +1,3 @@
-import { _ } from './LodashUtil'
 import RegExps from '@/constant/RegExps'
 
 export default class StringUtil {
@@ -7,7 +6,7 @@ export default class StringUtil {
    * @param str
    * @return {string}
    */
-  static removeAccents = (str: string) => {
+  static removeAccents = (str: string): string => {
     const AccentsMap = RegExps['lang-vi']
 
     for (let i = 0; i < AccentsMap.length; i += 1) {
@@ -49,5 +48,10 @@ export default class StringUtil {
 
   static generateRandomKey = () => {
     return Date.now().toString(36) + Math.random().toString(36).substr(2)
+  }
+
+  // in hoa chữ cái đầu tiên
+  static jsUcfirst = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1)
   }
 }

@@ -2,6 +2,7 @@
 import { courseApproveManagerStore } from '@/stores/admin/course/approve'
 import { validatorStore } from '@/stores/validatator'
 import constant from '@/constant/constant'
+import MethodsUtil from '@/utils/MethodsUtil'
 
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
@@ -77,7 +78,7 @@ const headersScore = reactive([
               v-if="errors?.length > 0"
               class="styleError text-errors"
             >
-              {{ errors[0] }}
+              {{ t(MethodsUtil.showErrorsYub(errors)) }}
             </div>
           </div>
         </Field>

@@ -1,6 +1,20 @@
 <script lang="ts" setup>
-import Globals from '@/constant/Globals'
+import { SIZE_AVATAR_DEFAULT, VARIANT_DEFAULT } from '@/constant/Globals'
 import type { typeVariant } from '@/typescript/enums/enums'
+
+/** ** Khởi tạo prop emit */
+const props = withDefaults(defineProps<Props>(), ({
+  color: 'primary',
+  variant: VARIANT_DEFAULT,
+  size: SIZE_AVATAR_DEFAULT,
+  isClassicBorder: false,
+  isAvatar: false,
+  isText: false,
+  isLoading: false,
+  text: '',
+  icon: 'tabler:camera',
+}))
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
 interface Props {
   color?: string
@@ -15,19 +29,9 @@ interface Props {
   text?: string
   isAvatar?: boolean
   isText?: boolean
+  isLoading?: boolean
 }
-
-/** ** Khởi tạo prop emit */
-const props = withDefaults(defineProps<Props>(), ({
-  color: 'primary',
-  variant: Globals.VARIANT_DEFAULT,
-  size: Globals.SIZE_AVATAR_DEFAULT,
-  isClassicBorder: false,
-  isAvatar: false,
-  isText: false,
-  text: '',
-  icon: 'tabler:camera',
-}))
+const fileUpload = ref([{ name: 'Real-Time', icon: 'tabler:file', size: 0, processing: 95 }])
 
 const prefixColor = computed(() => {
   if (['outlined', 'tonal'].includes(props.variant))
@@ -75,11 +79,28 @@ function getAvatarName(data: any) {
 <template>
   <VAvatar
     class="cursor-pointer"
+    :color="color"
     :class="[className, isClassicBorder ? 'border-avatar' : '', prefixColor]"
     :variant="variant"
     :rounded="rounded"
     :size="size"
   >
+    <span
+      v-if="isLoading"
+      class="w-75 "
+    >
+      <div
+        class="mb-5 text-uploading text-medium-sm "
+      >
+        {{ t('uploading') }}
+      </div>
+      <VProgressLinear
+        :model-value="fileUpload[0].processing"
+        color="primary"
+        rounded
+        height="8"
+      />
+    </span>
     <VImg
       v-if="src"
       :src="src"
@@ -92,8 +113,10 @@ function getAvatarName(data: any) {
       v-else-if="isText"
     >
       {{ text }}
+
     </span>
-    <slot v-else>
+
+    <slot v-else-if="!isLoading">
       <VIcon
         v-if="icon"
         :icon="icon"
@@ -109,9 +132,8 @@ function getAvatarName(data: any) {
 .border-avatar {
   border: 4px solid $color-white;
   box-shadow: $box-shadow-lg;
-  border-radius: 8px;
 }
-.v-avatar--rounded{
-  border-radius: 8px !important;
+.text-uploading{
+  color:  rgb(var(--v-primary-700)) !important;
 }
 </style>

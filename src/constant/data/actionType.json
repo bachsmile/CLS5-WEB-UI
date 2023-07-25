@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "ActionEdit",
-      "icon": "mdi-pencil",
+      "icon": "fe:edit",
       "color": "color-primary",
       "note": "Chỉnh sửa"
     },
@@ -73,7 +73,7 @@
     {
       "id": 11,
       "name": "ActionRollCallOffline",
-      "icon": "mdi:checkbox-marked-outline",
+      "icon": "tabler:checkbox",
       "color": "color-success",
       "note": "Điểm danh"
     },
@@ -150,6 +150,13 @@
       "icon": "tabler:corner-right-down",
       "color": "color-purple",
       "note": "Di chuyển lên trên"
+    },
+    {
+      "id": 22,
+      "name": "AddOrStructure",
+      "icon": "tabler:circle-plus",
+      "color": "color-orange",
+      "note": "Thêm cơ cấu tổ chức"
     },
     {
       "id": 23,

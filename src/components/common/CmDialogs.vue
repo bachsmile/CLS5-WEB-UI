@@ -26,11 +26,13 @@ interface Props {
   appendToBody?: boolean
   isDivSpace?: boolean
   isOk?: boolean
+  isCancle?: boolean
+  isThemeCustom?: boolean
 }
 
 interface Emit {
   (e: 'cancel', type?: string): void
-  (e: 'confirm', type?: string): void
+  (e: 'confirm', idx?: any, data?: any): void
   (e: 'show'): void
   (e: 'hide'): void
 }
@@ -46,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), ({
   appendToBody: false,
   isDivSpace: true,
   isOk: true,
+  isCancle: true,
 }))
 
 const emit = defineEmits<Emit>()
@@ -57,9 +60,9 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 function onCancel() {
   emit('cancel')
 }
-
-function onConfirmation() {
-  emit('confirm')
+const buttonOk = ref()
+function onConfirmation(idx: any) {
+  emit('confirm', idx, buttonOk.value.unLoadButton)
 }
 
 function onDialogShown(e: any) {
@@ -78,11 +81,11 @@ watch(() => props.isDialogVisible, val => {
 const sizeModal = computed(() => {
   switch (props.size) {
     case 'sm':
-      return '300'
+      return '500'
     case 'lg':
       return '800'
     case 'xl':
-      return '1200'
+      return '1162px'
     default:
       break
   }
@@ -105,7 +108,17 @@ const sizeModal = computed(() => {
       @update:model-value="onCancel"
       @before-enter="onDialogShown"
     >
+      <div v-if="isThemeCustom">
+        <slot name="isTheme" />
+        <VIcon
+          class="btn-close-x"
+          @click="onCancel"
+        >
+          mdi-close
+        </VIcon>
+      </div>
       <CmCard
+        v-else
         :class="{ 'modal-custom-divspace': isDivSpace }"
         backgroud="bg-white"
       >
@@ -139,9 +152,10 @@ const sizeModal = computed(() => {
           v-if="!isHideFooter"
           #actions
         >
-          <div class="d-flex justify-end my-3 w-100">
+          <div class="d-flex justify-end w-100">
             <slot name="actions" />
             <CmButton
+              v-if="isCancle"
               variant="outlined"
               color="secondary"
               :disabled="disabledCancel"
@@ -152,10 +166,12 @@ const sizeModal = computed(() => {
 
             <CmButton
               v-if="isOk"
+              ref="buttonOk"
               variant="elevated"
               :disabled="disabledOk"
               :color="color"
-              @click="onConfirmation"
+              is-load
+              @click="(idx: any) => onConfirmation(idx)"
             >
               {{ t(buttonOkName) }}
             </CmButton>
@@ -170,8 +186,9 @@ const sizeModal = computed(() => {
 @use "@/styles/style-global.scss" as *;
 
 .v-card-actions {
-  padding-block: 12px;
-  padding-inline: 24px;
+  padding-top: 12px;
+  padding-bottom: 24px;
+  padding-inline: 24px !important;
 }
 
 .modal-custom-divspace .v-card-item {

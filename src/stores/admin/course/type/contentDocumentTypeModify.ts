@@ -17,7 +17,7 @@ export const contentDocTypeManagerStore = defineStore('contentDocTypeManager', (
   const store = load()
   const { unLoadComponent } = store
 
-  /** ********************************Nội dung video******************************************** */
+  /** ********************************Nội dung ******************************************** */
   /** state */
   const isNumberPerPage = ref(false)
   const isShowRandom = ref(false)
@@ -145,7 +145,6 @@ export const contentDocTypeManagerStore = defineStore('contentDocTypeManager', (
 
     if (documentData.value.acceptDownload === null)
       documentData.value.acceptDownload = false
-    console.log(documentData)
 
     if (isUpdates) {
       response = await MethodsUtil.requestApiCustom(CourseService.PostUpdateContent, TYPE_REQUEST.POST, documentData.value)
@@ -169,10 +168,12 @@ export const contentDocTypeManagerStore = defineStore('contentDocTypeManager', (
           name: 'content-edit',
           params: {
             id: Number(route.params.id),
-            tab: route.params.tab,
-            type: 'video-content',
-            contentTab: 'infor',
+            type: route.params.type,
             contentId: contentId.value,
+          },
+          query: {
+            contentTab: 'infor',
+            tab: route.params.tab,
           },
         })
       }

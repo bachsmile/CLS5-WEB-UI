@@ -1,5 +1,25 @@
 export default [
   {
+    path: 'question-list',
+    name: 'question-list',
+  },
+  {
+    path: 'question-survey',
+    name: 'question-survey',
+  },
+  {
+    path: 'exam-question-stock-list',
+    name: 'exam-question-stock-list',
+  },
+  {
+    path: 'content-repository',
+    name: 'content-repository',
+  },
+  {
+    path: 'library-management',
+    name: 'library-management',
+  },
+  {
     path: 'exam',
     name: 'list-exam',
     redirect: { name: 'exam-list' },

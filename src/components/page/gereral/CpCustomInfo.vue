@@ -55,12 +55,18 @@ const linkAvatar = computed(() => {
     <div class="d-flex flex-column ml-2">
       <div>
         <span
-          v-if="isShowCode"
+          v-if="isShowCode && context[labelCode]"
           class="text-primary mr-2"
           :title="context[labelCode]"
         >{{ t('code-log') }}</span>
-        <span v-if="isFullName">{{ StringUtil.formatFullName(context[labelFirst], context[labelLast]) }}</span>
-        <span v-else>{{ context.name }}</span>
+        <span
+          v-if="isFullName"
+          class="text-medium-sm"
+        >{{ StringUtil.formatFullName(context[labelFirst], context[labelLast]) }}</span>
+        <span
+          v-else
+          class="text-medium-sm"
+        >{{ context.name }}</span>
       </div>
       <small
         v-if="isShowEmail"

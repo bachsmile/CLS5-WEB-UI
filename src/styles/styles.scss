@@ -1,9 +1,11 @@
 @use "./variables/global" as *;
-html, body{
+html,
+body {
   font-family: $font-family-custom !important;
+  letter-spacing: normal !important;
 }
 .text-primary {
-  color: $color-primary-600 !important
+  color: $color-primary-600 !important;
 }
 .color-purple {
   color: $color-purple-600 !important;
@@ -20,8 +22,6 @@ html, body{
 .color-warning {
   color: $color-warning-600 !important;
 }
-
-
 
 .color-dark {
   color: $color-gray-600 !important;
@@ -72,7 +72,6 @@ html, body{
 .color-primary-300 {
   color: $color-primary-300 !important;
 }
-
 
 .color-warning-300 {
   color: $color-warning-300 !important;
@@ -278,8 +277,6 @@ html, body{
   border-inline-start: 1px solid $color-gray-700;
 }
 
-
-
 .cursor-pointer {
   cursor: pointer;
 }
@@ -318,19 +315,18 @@ span {
   background: #888;
 }
 
-
 // INPUT//
-.border-input-default{
+.border-input-default {
   border: $border-input;
 }
 
-.page-containter{
+.page-containter {
   padding: $xl-5;
 }
-.page-containter-box{
-  margin: $xl-4 0;
+.page-containter-box {
+  margin-top: $xl-4;
   border-radius: $sm;
-  border: 1px solid #EAECF0;
+  border: 1px solid #eaecf0;
   box-shadow: $box-shadow-md;
   padding: $xl-5;
 }
@@ -347,7 +343,12 @@ span {
   padding: 6px 16px 0;
   font-weight: 400px;
 }
-
+.text-ellipsis {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
 //icon notifi
 .icon-noti {
   display: flex;
@@ -468,7 +469,6 @@ span {
   }
 }
 
-
 .w-max-content {
   width: max-content;
 }
@@ -498,7 +498,63 @@ span {
   box-shadow: 0 1px 2px #1018280d, 0 0 0 4px rgb(var(--v-error-100)) !important;
 }
 
-
 [class*="v-col"] {
   padding: 8px 12px !important;
+}
+.embed-responsive {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+.embed-responsive embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.message-progess {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+/***margin âm***/
+// margin top
+@for $i from 0 through 10 {
+  .mtn-#{$i} {
+    margin-top: (-4 * $i) + px;
+  }
+}
+// margin right
+@for $i from 0 through 10 {
+  .mrn-#{$i} {
+    margin-right: (-4 * $i) + px;
+  }
+}
+// margin bottom
+@for $i from 0 through 10 {
+  .mbn-#{$i} {
+    margin-bottom: (-4 * $i) + px;
+  }
+}
+// margin left
+@for $i from 0 through 10 {
+  .mln-#{$i} {
+    margin-left: (-4 * $i) + px;
+  }
+}
+// margin inline
+@for $i from 0 through 10 {
+  .mxn-#{$i} {
+    margin-inline: (-4 * $i) + px;
+  }
+}
+// margin block
+@for $i from 0 through 10 {
+  .myn-#{$i} {
+    margin-block: (-4 * $i) + px;
+  }
 }

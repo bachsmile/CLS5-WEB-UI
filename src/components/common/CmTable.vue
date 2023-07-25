@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { ClickRowArgument, Header, Item } from 'vue3-easy-data-table'
 import CmPagination from './CmPagination.vue'
-import Globals from '@/constant/Globals'
+import {
+  MAX_ITEM_ACTION,
+  MAX_ITEM_SELECT_MULT,
+  PAGINATION_PAGE_SIZE_DEFAULT,
+  PAGINATION_SIZE_UNLIMIT_DEFAULT,
+} from '@/constant/Globals'
 import ArrayUtil from '@/utils/ArrayUtil'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { tableStore } from '@/stores/table'
@@ -25,7 +30,7 @@ const props = withDefaults(defineProps<Props>(), ({
   returnObject: false,
   isImportFile: false,
   rowClassName: '',
-  pageSize: Globals.PAGINATION_PAGE_SIZE_DEFAULT,
+  pageSize: PAGINATION_PAGE_SIZE_DEFAULT,
   customId: 'id',
   totalRecord: 0,
   minHeight: 300,
@@ -33,10 +38,12 @@ const props = withDefaults(defineProps<Props>(), ({
   typePagination: 1,
   disiablePagination: false,
   isUpdateRowForce: false,
+  isLocalTable: false,
+  isView: false,
 }))
 const emit = defineEmits<Emit>()
 
-const isLoading = ref<boolean>(true)
+const isLoading = ref<boolean>(false)
 
 interface HeaderCustom extends Header {
   type?: string
@@ -72,6 +79,10 @@ interface Props {
   typePagination?: number
   disiablePagination?: boolean
   isUpdateRowForce?: boolean
+  isLocalTable?: boolean
+  searchField?: any
+  searchValue?: any
+  isView?: boolean
 }
 interface Emit {
   (e: 'handleClickRow', dataRow: object, index: number): void
@@ -83,6 +94,7 @@ interface Emit {
   (e: 'update:pageNumber', page: number): void
   (e: 'update:pageSize', size: number): void
   (e: 'update:selected', data: Item): void
+  (e: 'update:totalItems', value: any): void
 }
 
 const storeTable = tableStore()
@@ -103,6 +115,7 @@ const indeterminate = computed(() => {
         && selectedRows.value.length < props.items.length
   )
 })
+const totalPaginationLocal = computed(() => dataTable.value?.clientItemsLength)
 const keyid = computed(() => {
   return props?.isImportFile ? 'key' : props.customId
 })
@@ -180,6 +193,8 @@ function pageSizeChange(page: number, size: number) {
   emit('update:pageNumber', page)
   emit('update:pageSize', size)
   emit('handlePageClick', page, size)
+  if (props?.isLocalTable)
+    updatePage(page)
 
   updateRowsPerPageSelect(size)
 
@@ -216,8 +231,14 @@ onMounted(() => {
     console.timeEnd('mout')
   })
 })
-console.time('mout')
-console.time('update')
+const headerValue = computed(() => {
+  if (props.headers[0].value === 'checkbox' && props.headers.length && props.isView) {
+    const headerClone: any = window._.cloneDeep(props.headers)
+    headerClone.shift()
+    return headerClone
+  }
+  return props.headers
+})
 
 // watch
 if (props.isUpdateRowForce) {
@@ -226,11 +247,7 @@ if (props.isUpdateRowForce) {
   }, { deep: true, immediate: true })
 }
 watch(() => props.items, (val: Item[]) => {
-  isLoading.value = true
   selectedRows.value = []
-  console.time('mout')
-  console.time('update')
-
   props.items?.forEach((element, index) => {
     element.originIndex = index
     element.isSelected = !!element.isSelected
@@ -239,6 +256,11 @@ watch(() => props.items, (val: Item[]) => {
       selectedRows.value.push(element[keyid.value])
   })
 }, { immediate: true })
+
+watch(totalPaginationLocal, val => {
+  if (props?.isLocalTable)
+    emit('update:totalItems', val)
+})
 </script>
 
 <template>
@@ -251,35 +273,19 @@ watch(() => props.items, (val: Item[]) => {
       ref="dataTable"
       alternating
       :table-class-name="`customize-table ${isExpand ? 'table-expand' : ''}`"
-      :headers="headers"
+      :headers="headerValue"
       :items="items"
-      :rows-per-page="pageSize"
+      :rows-per-page="!disiablePagination ? pageSize : PAGINATION_SIZE_UNLIMIT_DEFAULT"
       theme-color="#1849a9"
       :table-min-height="minHeight"
       :item-key="keyid"
       :click-row-to-expand="isExpand"
       hide-footer
       :body-row-class-name="rowClassName"
+      :search-field="searchField"
+      :search-value="searchValue"
       @click-row="showRow"
     >
-      <template
-        #header-checkbox="header"
-      >
-        <div
-          class="customize-header"
-        >
-          <VCheckbox
-            v-model="selectedAll"
-            color="primary"
-            :indeterminate="indeterminate"
-            :label="header.text"
-            ripple
-            :class="{ indeterminate }"
-            @change="checkedAll(selectedAll)"
-          />
-        </div>
-      </template>
-
       <template #header-select />
       <template
         v-if="isExpand"
@@ -301,6 +307,41 @@ watch(() => props.items, (val: Item[]) => {
           </div>
         </div>
       </template>
+
+      <template
+        v-for="(itemsHeader, id) in headers"
+        #[`header-${itemsHeader.value}`]="context"
+        :key="`header${id}`"
+      >
+        <div
+          v-if="itemsHeader.value === 'checkbox'"
+          class="customize-header"
+        >
+          <VCheckbox
+            v-model="selectedAll"
+            color="primary"
+            :indeterminate="indeterminate"
+            :label="context.text"
+            ripple
+            :class="{ indeterminate }"
+            @change="checkedAll(selectedAll)"
+          />
+        </div>
+        <div v-else-if="itemsHeader?.header === 'custom'" />
+        <span
+          v-else
+          class="text-header"
+        >
+          {{ context.text }}
+        </span>
+        <slot
+          name="headerItem"
+          :col="itemsHeader.value"
+          :context="context"
+          :data-col="itemsHeader"
+        />
+      </template>
+
       <!--
         header => nội dung cột
         context  => nội dung hàng
@@ -353,12 +394,12 @@ watch(() => props.items, (val: Item[]) => {
           >
             <div
               v-if="checkActionShow(context?.actions) && actionItem.isShow
-                || !checkActionShow(context?.actions) && (context?.actions.length <= 3 || idKey < (Globals.MAX_ITEM_ACTION - 1))"
+                || !checkActionShow(context?.actions) && (context?.actions.length <= 3 || idKey < (MAX_ITEM_ACTION - 1))"
               :key="idKey"
               class="px-2 "
             >
               <VIcon
-                v-if="MethodsUtil.checkActionType(actionItem).icon"
+                v-if="MethodsUtil.checkActionType(actionItem)?.icon"
                 :icon="MethodsUtil.checkActionType(actionItem).icon"
                 :size="18"
                 class="align-middle"
@@ -370,16 +411,16 @@ watch(() => props.items, (val: Item[]) => {
                 activator="parent"
                 location="top"
               >
-                {{ t(actionItem?.name) }}
+                {{ t(MethodsUtil.checkActionType(actionItem)?.name) }}
               </VTooltip>
             </div>
           </template>
           <div
-            v-if="context?.actions?.length > Globals.MAX_ITEM_ACTION"
+            v-if="context?.actions?.length > MAX_ITEM_ACTION"
           >
             <div class="action-more px-2">
               <CmDropDown
-                :list-item="ArrayUtil.sliceArray(context?.actions, Globals.MAX_ITEM_ACTION - 1)"
+                :list-item="ArrayUtil.sliceArray(context?.actions, MAX_ITEM_ACTION - 1)"
                 :data="context"
                 is-action
                 custom-key="name"
@@ -398,7 +439,7 @@ watch(() => props.items, (val: Item[]) => {
         <div v-else-if="isErrorcell(itemsHeader.value, context) && isEditing && itemsHeader?.type === 'combobox'">
           <CmSelect
             v-model="context[itemsHeader.value]"
-            :max-item="Globals.MAX_ITEM_SELECT_MULT"
+            :max-item="MAX_ITEM_SELECT_MULT"
             :items="itemsHeader?.combobox.type === 'function'
               ? itemsHeader?.combobox?.data(context[itemsHeader?.combobox.params])
               : itemsHeader?.combobox?.data"
@@ -456,7 +497,7 @@ watch(() => props.items, (val: Item[]) => {
     >
       <CmPagination
         :type="typePagination"
-        :total-items="totalRecord || items.length"
+        :total-items="isLocalTable ? totalPaginationLocal : totalRecord || items.length"
         :current-page="props.pageNumber"
         @pageClick="pageSizeChange"
       />
@@ -467,7 +508,6 @@ watch(() => props.items, (val: Item[]) => {
 <style lang="scss" scoped>
 @use "@/styles/variables/common/table.cm" as *;
 @use "@/styles/style-global.scss" as *;
-
 // *****************************emplement**********************************************************//
 .customize-table {
   /** css custom */
@@ -475,6 +515,7 @@ watch(() => props.items, (val: Item[]) => {
   --easy-table-border: #{$table-border};   // màu viền table
   // phần header
   --easy-table-header-font-size: #{$table-header-font-size};  // kích thước chữ header
+  --easy-table-header-font-weight: #{$table-header-font-weight};  // Độ đậm chữ header
   --easy-table-header-height: #{$table-header-height};     // chiều cao header
   --easy-table-header-font-color: #{$table-header-font-color};  // màu chữ header
   --easy-table-header-background-color: #{$table-header-background-color};  // màu nền header
@@ -563,6 +604,8 @@ watch(() => props.items, (val: Item[]) => {
 </style>
 
 <style lang="scss">
+@use "@/styles/style-global.scss" as *;
+
 .vue3-easy-data-table{
 
   .can-expand{
@@ -581,7 +624,14 @@ watch(() => props.items, (val: Item[]) => {
   td.can-expand.shadow::after{
     width: 0px !important;
   }
-
+  th .header-text{
+    font-family: Inter;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+    color: #{$color-gray-700} !important;
+  }
   .vue3-easy-data-table__body tr{
     cursor: pointer;
   }
@@ -602,5 +652,8 @@ watch(() => props.items, (val: Item[]) => {
     position: sticky;
     right: 0;
   }
+}
+.text-header{
+  text-transform: capitalize;
 }
 </style>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MethodsUtil from '@/utils/MethodsUtil'
+// eslint-disable-next-line import/no-unresolved
 import { orgStructManagerStore } from '@/stores/admin/org-struct/orgStruct'
 
 import SkTree from '@/components/page/gereral/skeleton/SkTree.vue'

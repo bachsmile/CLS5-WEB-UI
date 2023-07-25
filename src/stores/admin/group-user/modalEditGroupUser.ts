@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { useRoute } from 'vue-router'
 import { useUserGroupStore } from './cpUser'
+import { useCourseGroupStore } from './cpCourse'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import ApiGroupUser from '@/api/user'
@@ -109,9 +110,7 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
   })
 
   const handleAddUser = (list: number[]) => {
-    list.forEach((element: number) => {
-      dataUser.value.listUser.push({ userId: element })
-    })
+    dataUser.value.listUser = list
     let status = false
     MethodsUtil.requestApiCustom(ApiGroupUser.AddUserGroup, TYPE_REQUEST.POST, dataUser.value).then((res: any) => {
       toast('SUCCESS', t('calendar.add-user-success'))
@@ -151,6 +150,7 @@ export const useStoreAddUser = defineStore('useStoreAddUser', () => {
 export const useStoreAddCourse = defineStore('useStoreAddCourse', () => {
   const route = useRoute()
   const { t } = window.i18n()
+  const storeCourse = useCourseGroupStore()
   interface QueryParamsModal extends Params {
     keyword: string
     excludeListId: number[] | null
@@ -194,6 +194,7 @@ export const useStoreAddCourse = defineStore('useStoreAddCourse', () => {
   const handleAddCourse = () => {
     let status = false
     MethodsUtil.requestApiCustom(ApiGroupUser.AddCourse, TYPE_REQUEST.POST, dataCourse).then((res: any) => {
+      storeCourse.getListCourse()
       toast('SUCCESS', t('calendar.add-course-success'))
     }).catch((e: any) => {
       toast('ERROR', t('calendar.add-course-failed'))

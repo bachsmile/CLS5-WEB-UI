@@ -117,6 +117,7 @@ function addExam() {
     v-model:pageNumber="queryParams.pageNumber"
     v-model:pageSize="queryParams.pageSize"
     v-model:selected="selected"
+    is-update-row-force
     :headers="headers"
     :items="items"
     :total-record="totalRecord"

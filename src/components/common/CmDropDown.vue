@@ -13,7 +13,9 @@ const propsValue = withDefaults(defineProps<Props>(), ({
   customKey: 'title',
   dataResend: null,
   type: undefined,
+  disabled: false,
   data: undefined,
+  color: 'primary',
   index: 0,
   variant: 'outlined',
   isAction: false,
@@ -41,6 +43,7 @@ interface Props {
   icon?: string
   data?: any
   multiple?: boolean
+  disabled?: boolean
   isAction?: boolean
   customKey: string
   dataResend?: any
@@ -59,6 +62,7 @@ interface item {
   action?: any
   appendItem?: appendItem
   prependItem?: prependItem
+  disabled?: boolean
   [key: string]: any
 }
 interface appendItem {
@@ -113,15 +117,18 @@ function handleClickItemList(item: any) {
   <div class="text-center cm-drop-down">
     <VMenu
       class="cursor-pointer"
+      :disabled="disabled"
       @update:model-value="handleChange"
     >
       <template #activator="{ props }">
-        <div v-bind="props">
+        <div>
           <CmButton
             v-if="type === 2"
+            :disabled="disabled"
             :class="[`${prefixColor}-${color}`, bgColor, className, textButton]"
+            :color="color"
             :variant="variant"
-            v-bind="props"
+            :props-blind="props"
           >
             <div class="d-flex">
               <div class="text-button-dropdown">
@@ -148,7 +155,7 @@ function handleClickItemList(item: any) {
         <VListItem
           v-for="(item, i) in propsValue.listItem"
           :key="i"
-          class="cursor-pointer"
+          class="cursor-pointer mx-0"
           :class="{ 'border-bottom-item': item.underline }"
           :value="item"
           :disabled="item?.disabled"
@@ -171,6 +178,7 @@ function handleClickItemList(item: any) {
             <VIcon
               v-if="item?.icon || MethodsUtil.checlActionKey(item)[0]?.icon"
               :icon="item?.icon || MethodsUtil.checlActionKey(item)[0]?.icon"
+              :color="item?.color"
               :size="18"
               class="mr-2"
               :class="[item.colorClass, MethodsUtil.checlActionKey(item)[0]?.color]"
@@ -210,6 +218,5 @@ function handleClickItemList(item: any) {
 .border-bottom-item {
     border-radius: 0 !important;
     border-block-end: 1px solid $color-gray-100;
-    margin-inline: 0 !important;
   }
 </style>

@@ -9,6 +9,7 @@ import StringUtil from '@/utils/StringUtil'
 import toast from '@/plugins/toast'
 import { courseApproveManagerStore } from '@/stores/admin/course/approve'
 import { tableStore } from '@/stores/table'
+import type { Any } from '@/typescript/interface'
 
 export const contentManagerStore = defineStore('contentManager', () => {
   /** lib ****************************************************************/
@@ -44,6 +45,7 @@ export const contentManagerStore = defineStore('contentManager', () => {
   const courseContentId = ref<number | null>(null)
   const disabledDelete = computed(() => !data.selectedRowsIds.length)
   const disabledEdit = computed(() => !data.selectedRowsIds.length)
+  const isShowModalMeeting = ref(false)
   const contentDataEdit = ref<any>({
     name: null,
     themeticId: null,
@@ -84,6 +86,15 @@ export const contentManagerStore = defineStore('contentManager', () => {
       contentDataEdit.value = value?.data
     })
   }
+  const dataDetailMeeting = ref<Any>({})
+  function showModalEditMeeting(id: number) {
+    MethodsUtil.requestApiCustom(CourseService.GetInforContentById, TYPE_REQUEST.GET, { id, isView: false }).then((result: Any) => {
+      dataDetailMeeting.value = result?.data
+      isShowModalMeeting.value = true
+    }).catch(() => {
+      //
+    })
+  }
   async function actionItemUserReg(type: any) {
     switch (type[0]?.name) {
       case 'ActionEdit':
@@ -94,17 +105,19 @@ export const contentManagerStore = defineStore('contentManager', () => {
             isShowModalUpdateThematic.value = true
           })
         }
+        else if (type[1]?.contentArchiveTypeId === 3) {
+          showModalEditMeeting(type[1]?.courseContentId)
+        }
         else {
-          console.log(type[1].contentArchiveTypeId)
-
           router.push({
             name: 'content-edit',
             params: {
               id: Number(route.params.id),
-              tab: 'content',
               type: MethodsUtil.getTypeContent(type[1].contentArchiveTypeId),
-              contentTab: 'infor',
               contentId: type[1]?.courseContentId,
+            },
+            query: {
+              contentTab: 'infor',
             },
           })
         }
@@ -137,6 +150,38 @@ export const contentManagerStore = defineStore('contentManager', () => {
         await approveContent([{ id: type[1]?.courseContentId }]).then(() => {
           getListContentCourse()
         })
+        break
+      case 'ActionUpdatePointOffline':
+        router.push({
+          name: 'update-point-offline',
+          params: {
+            id: Number(route.params.id),
+            contentId: type[1]?.courseContentId,
+          },
+        })
+        break
+      case 'ActionViewDetail':
+        if (type[1]?.contentArchiveTypeId === 13) {
+          getInforContent(type[1]?.courseContentId)
+          courseContentId.value = type[1]?.courseContentId
+          nextTick(() => {
+            isShowModalUpdateThematic.value = true
+          })
+        }
+        else {
+          router.push({
+            name: 'content-view',
+            params: {
+              id: Number(route.params.id),
+              type: 'video-content',
+              contentId: type[1]?.courseContentId,
+            },
+            query: {
+              contentTab: 'infor',
+            },
+          })
+        }
+        break
         break
       default:
         break
@@ -184,19 +229,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
     paramsContent.value.search = val
     const result: any[] = []
     convertNoneLv(updateStatusListCourse(cloneData.value, val), result, 0)
-
-    // result.forEach((element: any) => {
-    //   element.actions = [
-    //     MethodsUtil.checkActionType({ id: 1 }),
-    //     MethodsUtil.checkActionType({ id: 2 }),
-    //     MethodsUtil.checkActionType({ id: 3 }),
-    //     MethodsUtil.checkActionType({ id: 5 }),
-    //     MethodsUtil.checkActionType({ id: 6 }),
-    //     MethodsUtil.checkActionType({ id: 7 }),
-    //     MethodsUtil.checkActionType({ id: 9 }),
-    //     MethodsUtil.checkActionType({ id: 19 }),
-    //   ]
-    // })
     items.value = result
   }
   function handlerActionHeader(type: any) {
@@ -308,19 +340,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
   function formatDataTableTree(dataFormat: any) {
     const result: any[] = []
     convertNoneLv(dataFormat, result, 0)
-
-    // result.forEach((element: any) => {
-    //   element.actions = [
-    //     MethodsUtil.checkActionType({ id: 1 }),
-    //     MethodsUtil.checkActionType({ id: 2 }),
-    //     MethodsUtil.checkActionType({ id: 3 }),
-    //     MethodsUtil.checkActionType({ id: 5 }),
-    //     MethodsUtil.checkActionType({ id: 6 }),
-    //     MethodsUtil.checkActionType({ id: 7 }),
-    //     MethodsUtil.checkActionType({ id: 9 }),
-    //     MethodsUtil.checkActionType({ id: 19 }),
-    //   ]
-    // })
     return result
   }
 
@@ -489,19 +508,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
 
       cloneData.value = window._.cloneDeep(value.data)
       convertNoneLv(value.data, result, 0)
-
-      // result.forEach((element: any) => {
-      //   element.actions = [
-      //     MethodsUtil.checkActionType({ id: 1 }),
-      //     MethodsUtil.checkActionType({ id: 2 }),
-      //     MethodsUtil.checkActionType({ id: 3 }),
-      //     MethodsUtil.checkActionType({ id: 5 }),
-      //     MethodsUtil.checkActionType({ id: 6 }),
-      //     MethodsUtil.checkActionType({ id: 7 }),
-      //     MethodsUtil.checkActionType({ id: 9 }),
-      //     MethodsUtil.checkActionType({ id: 19 }),
-      //   ]
-      // })
       items.value = result
 
       // updatePosition()
@@ -595,8 +601,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
         deleteItemRefer(type[1].courseContentId)
         break
       case 'ActionEdit':
-        console.log(type)
-
         dataSelectRef.value = type[1]
         getDataContentRefer(type[1].courseContentId)
 
@@ -628,7 +632,6 @@ export const contentManagerStore = defineStore('contentManager', () => {
         let dataRow = ArraysUtil.unFlatMapTree(value.data)
         dataRow = ArraysUtil.formatTreeTable(dataRow, customIdRefer.value)
         dataRow.forEach((element: any) => {
-          console.log(element.parent?.id)
           if (element?.parent?.id === 0) {
             element.actions = [
               MethodsUtil.checkActionType({ id: 1 }),
@@ -727,6 +730,8 @@ export const contentManagerStore = defineStore('contentManager', () => {
     isShowDialogNotiDelete,
     isShowModalUpdateThematic,
     isShowModalMoveThematic,
+    isShowModalMeeting,
+    dataDetailMeeting,
     viewMode,
     contentDataEdit,
     courseContentId,

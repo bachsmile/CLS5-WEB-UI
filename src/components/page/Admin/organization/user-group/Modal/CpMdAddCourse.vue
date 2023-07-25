@@ -23,7 +23,7 @@ interface Props {
 }
 
 // Ẩn modal cập nhật lên v-model
-const hidden = (val: any) => {
+function hidden(val: any) {
   emit('update:isShow', false)
 }
 
@@ -44,7 +44,7 @@ watch(queryParams.value, () => {
 })
 
 // filter Dữ liệu
-const filter = () => {
+function filter() {
   store.queryParams.pageNumber = 1
 }
 
@@ -54,7 +54,7 @@ const { listTopicCourseCombobox } = storeToRefs(combobox)
 const { getlistTopicCourseCombobox } = combobox
 getlistTopicCourseCombobox()
 
-const confirm = async () => {
+async function confirm() {
   const status = await handleAddCourse()
   emit('update:isShow', status)
 }
@@ -88,6 +88,7 @@ const confirm = async () => {
     <CmTable
       v-model:page-number="store.queryParams.pageNumber"
       v-model:selected="store.dataCourse.courseModel"
+      is-update-row-force
       :headers="headers"
       :total-record="totalRecord"
       :items="listCourse"
@@ -105,4 +106,3 @@ const confirm = async () => {
     </CmTable>
   </CmDialogs>
 </template>
-

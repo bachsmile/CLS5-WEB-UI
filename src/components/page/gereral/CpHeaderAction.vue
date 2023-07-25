@@ -19,6 +19,7 @@ interface Emit {
   (e: 'addHandler'): void
   (e: 'back'): void
   (e: 'update:keyword', type: any): void
+  (e: 'update:showFilter', type: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const CmButton = defineAsyncComponent(
@@ -41,17 +42,20 @@ interface Props {
   disabledApprove?: boolean
   isFillter?: boolean
   isAdd?: boolean
+  disabledAdd?: boolean
   addButtonName?: string
   disabledFillter?: boolean
   keyword?: string
+  showFilter?: boolean
 }
 
-const isShowFilter = ref(props.isFillter)
+const isShowFilter = ref(props.showFilter)
 
 function handleClickBtn(type: string) {
   switch (type) {
     case 'fillter':
       isShowFilter.value = !isShowFilter.value
+      emit('update:showFilter', isShowFilter.value)
       break
     case 'delete':
       emit('deleteMultiple')
@@ -68,8 +72,9 @@ function handleClickBtn(type: string) {
   }
   emit('click', type)
 }
-
+const keySearch = ref(props.keyword)
 const handleSearch = window._.debounce((value: any) => {
+  keySearch.value = value
   emit('update:keyword', value)
 }, 500)
 </script>
@@ -124,13 +129,14 @@ const handleSearch = window._.debounce((value: any) => {
         <CmButton
           v-if="isAdd"
           class="ml-3"
+          :disabled="disabledAdd"
           color="primary"
           @click="handleClickBtn('addHandler')"
         >
           {{ addButtonName }}
         </CmButton>
         <CmTextField
-          :model-value="keyword"
+          v-model="keySearch"
           class="header-action-field ml-3"
           placeholder="Tìm kiếm"
           prepend-inner-icon="tabler-search"
@@ -140,8 +146,9 @@ const handleSearch = window._.debounce((value: any) => {
           v-if="isFillter"
           class="ml-3"
           :disabled="disabledFillter"
-          variant="outlined"
-          color="secondary"
+          bg-color="bg-white"
+          color="white"
+          text-color="color-dark"
           :size-icon="20"
           icon="ic:round-filter-list"
           :title="isShowFilter ? t('hide-filter') : t('show-filter')"

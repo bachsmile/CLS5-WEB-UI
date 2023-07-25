@@ -40,8 +40,6 @@ const formFilter = reactive({
 // method
 
 function change(val: any) {
-  console.log(formFilter)
-
   emit('update', formFilter)
 }
 
@@ -55,8 +53,6 @@ if (window._.isEmpty(organizationsCombobox.value))
   fetchTOrgStructCombobox()
 if (window._.isEmpty(groupUserCombobox.value))
   fetchGroupUserCombobox()
-
-console.log(formFilter)
 </script>
 
 <template>
