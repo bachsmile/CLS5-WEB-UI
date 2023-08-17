@@ -1,12 +1,15 @@
 <script setup lang="ts">
 interface radio {
-  label: string
+  label?: string
   value: any
 }
 interface Props {
   option?: radio[]
   color?: string
   label?: string
+  text?: string
+  modelValue?: any
+  disabled?: boolean
 }
 
 interface Emit {
@@ -19,17 +22,24 @@ const props = withDefaults(defineProps<Props>(), ({
 }))
 
 const emit = defineEmits<Emit>()
-const valueCurrent = ref()
+const valueCurrent = ref(props.modelValue)
 
-const updateValue = (value: any) => {
+function updateValue(value: any) {
   emit('update:model-value', value)
 }
 </script>
 
 <template>
+  <div
+    v-if="text"
+    class="mb-1"
+  >
+    <label
+      class="text-medium-sm color-dark"
+    >{{ text }}</label>
+  </div>
   <VRadioGroup
     v-model="valueCurrent"
-    :label="label"
     inline
     @update:model-value="updateValue"
   >
@@ -38,9 +48,18 @@ const updateValue = (value: any) => {
       :key="index"
       :label="item.label"
       :value="item.value"
-      :color="color"
+      color="primary"
+      :disabled="disabled"
       true-icon="mdi-radiobox-marked"
       false-icon="mdi-radiobox-blank"
     />
   </VRadioGroup>
 </template>
+
+<style lang="scss">
+[role="radiogroup"] .v-selection-control--disabled {
+  svg{
+    color:  rgb(var(--v-primary-600));
+  }
+}
+</style>

@@ -285,7 +285,6 @@ export default [
             path: '',
             name: 'admin-organization-user-groups-list',
             component: () => import('@/pages/admin/organization/user-groups/UserGroups.vue'),
-
           },
           {
             path: 'add',

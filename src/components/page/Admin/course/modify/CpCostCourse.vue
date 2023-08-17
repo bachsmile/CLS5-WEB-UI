@@ -2,6 +2,7 @@
 import { courseManagerStore } from '@/stores/admin/course/course'
 import { comboboxStore } from '@/stores/combobox'
 
+const props = withDefaults(defineProps<Props>(), {})
 const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CmMdAddCost = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdAddCost.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
@@ -11,6 +12,10 @@ const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/ger
 /** lib */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const route = useRoute()
+
+interface Props {
+  isView: boolean
+}
 
 /**
  * Store
@@ -28,14 +33,22 @@ const excludeIds = computed(() => {
   const listExclude = itemsCost.value?.map((item: any) => item.courseId)
   return [...listExclude, Number(route.params.id)]
 })
-const headers = reactive([
-  { text: '', value: 'checkbox', width: 50 },
-  { text: t('cost-name'), value: 'costName' },
-  { text: t('cost-type'), value: 'costTypeName' },
-  { text: t('money'), value: 'unitPrice' },
-  { text: t('description'), value: 'description' },
-  { text: '', value: 'actions', width: 150 },
-])
+const headers = computed(() => {
+  if (props.isView) {
+    return [{ text: t('cost-name'), value: 'costName' },
+      { text: t('cost-type'), value: 'costTypeName' },
+      { text: t('money'), value: 'unitPrice' },
+      { text: t('description'), value: 'description' }]
+  }
+  return [
+    { text: '', value: 'checkbox', width: 50 },
+    { text: t('cost-name'), value: 'costName' },
+    { text: t('cost-type'), value: 'costTypeName' },
+    { text: t('money'), value: 'unitPrice' },
+    { text: t('description'), value: 'description' },
+    { text: '', value: 'actions', width: 150 },
+  ]
+})
 
 /** method */
 /* ==> thực hiện các action được chọn ở header page CP */
@@ -70,13 +83,13 @@ onMounted(async () => {
       <CpActionHeaderPage
         :title="t('list-cost')"
         :title-custom-add="t('add-cost')"
-        is-custom-add-btn
+        :is-custom-add-btn="!isView"
         @click="handlerActionHeader"
       />
     </div>
     <div>
       <CpHeaderAction
-        is-delete
+        :is-delete="!isView"
         :is-fillter="false"
         :disabled-delete="disabledDeleteCost"
         @click="handleClickBtn"

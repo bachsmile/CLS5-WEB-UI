@@ -32,7 +32,9 @@ interface Props {
 }
 const CmIconNoti = defineAsyncComponent(() => import('@/components/common/CmIconNoti.vue'))
 const listFile = ref(props.files)
-
+const config = ref({
+  suppressScrollX: true,
+})
 async function cancel(index: any) {
   emit('cancel', index)
 }
@@ -42,13 +44,12 @@ async function dowloadItems(item: any) {
 
 watch(() => props.files, val => {
   listFile.value = val
-  console.log(val)
 }, { deep: true })
 </script>
 
 <template>
-  <div>
-    <PerfectScrollbar>
+  <div class="upload-file">
+    <PerfectScrollbar :options="config">
       <VList class="box-items">
         <VListItem
           v-for="(item, i) in listFile"
@@ -158,7 +159,7 @@ watch(() => props.files, val => {
   // overflow: auto;
   padding: 8px 12px;
 }
-.ps {
+.upload-file .ps {
   max-height: 400px;
 }
 </style>

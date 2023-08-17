@@ -196,6 +196,7 @@ export const contentTypeVideoManagerStore = defineStore('contentVideoTypeManager
     const params = {
       id,
     }
+
     await MethodsUtil.requestApiCustom(CourseService.GetRequireParticipate, TYPE_REQUEST.GET, params).then((value: any) => {
       conditionAttend.value = value.data
       if (value.data.dateTimeStart && value.data.dateTimeStart !== null) {
@@ -236,10 +237,10 @@ export const contentTypeVideoManagerStore = defineStore('contentVideoTypeManager
         videoData.value = value?.data
       }
 
-      if (videoData.value.archiveTypeId !== 12)
-        await fetchConditionAttend(videoData.value.courseContentId)
-      if (videoData.value.archiveTypeId !== 10 && videoData.value.archiveTypeId !== 11 && videoData.value.archiveTypeId !== 12)
-        await fetchConditionComplete(videoData.value.courseContentId)
+      // if (videoData.value.archiveTypeId !== 12)
+      //   await fetchConditionAttend(videoData.value.courseContentId)
+      // if (videoData.value.archiveTypeId !== 10 && videoData.value.archiveTypeId !== 11 && videoData.value.archiveTypeId !== 12)
+      //   await fetchConditionComplete(videoData.value.courseContentId)
       isUpdate.value = true
       typeContent.value = MethodsUtil.getTypeContent(videoData.value.archiveTypeId)
     })

@@ -3,6 +3,9 @@ const CmTab = defineAsyncComponent(() => import('@/components/common/CmTab.vue')
 const CpCapacityCondition = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/CpCapacityCondition.vue'))
 const CpCourseCondition = defineAsyncComponent(() => import('@/components/page/Admin/course/modify/CpCourseCondition.vue'))
 
+const route = useRoute()
+const isViewDetail = computed(() => route.name === 'course-view')
+
 /**
  *
  * tab
@@ -13,12 +16,18 @@ const listTab = [
     title: 'capacity-required',
     component: CpCapacityCondition,
     isRendered: true,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
   {
     key: 'course',
     title: 'course-required',
     component: CpCourseCondition,
     isRendered: false,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
 ]
 </script>

@@ -51,7 +51,6 @@ function actionItem([{ id, name }, content]: [Any, Any]) {
     case 2:
       deleteItem(content)
       break
-
     default:
       break
   }

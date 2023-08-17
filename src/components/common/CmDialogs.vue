@@ -82,6 +82,8 @@ const sizeModal = computed(() => {
   switch (props.size) {
     case 'sm':
       return '500'
+    case 'md':
+      return '700'
     case 'lg':
       return '800'
     case 'xl':

@@ -1,11 +1,13 @@
 import { isEmpty } from './../../../@core/utils/index';
 import axios from '@axios';
+import axiosV5 from '@axiosV5';
 import _ from 'lodash';
 import { Ref } from "vue";
 import { useI18n } from 'vue-i18n';
 import type { typeLoading } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
+import type { Any, typeToast } from '@/typescript/interface'
 
 //Cài đặt cố định
 declare global {
@@ -24,6 +26,7 @@ interface propertyGlobal {
   _?: _.LoDashStatic,
   i18n?: any,
   axios?: any,
+  axiosV5?: any,
   requestApiCustom?: any,
   getErrorsMessage?: any,
   showAllPageLoading?: any,
@@ -32,8 +35,8 @@ interface propertyGlobal {
   formatFullName?: any,
   SERVER_FILE?: string,
   userData?: any,
+  notificationApiStatus?: any
 }
-
 
 const showAllPageLoading = (type:  typeof typeLoading[number] =null)=> {
   const htmlLoading =  document.getElementById('loading-bg')
@@ -76,7 +79,6 @@ const windowDefineReactiveProperty = (app: any)=> {
     reactive2: ref('react'), // khai báo ref để biến có thể phản ứng
     token: ref(''), 
     TYPE_REQUEST: TYPE_REQUEST,
-
     // method global
     requestApiCustom: MethodsUtil.requestApiCustom,
     getErrorsMessage: MethodsUtil.getErrorsMessage,
@@ -89,8 +91,10 @@ const windowDefineConstProperty = ()=> {
     _: _,
     i18n: useI18n,
     axios: axios,
+    axiosV5: axiosV5,
     showAllPageLoading,
     hideAllPageLoading,
+    notificationApiStatus: MethodsUtil.notificationApiStatus,
     SERVER_FILE: process.env.VUE_APP_BASE_SERVER_FILE,
   }
   defineProperty(global, 'const')

@@ -38,6 +38,7 @@ const CourseService = {
   GetQrCode: 'qrcode/get-qrcode', // Lấy thông tin QR khóa học
   GetSampleFileUpdatePoint: 'Course/template-excel-update-point', // Lấy thông tin file mẫu cập nhật điểm
   GetListFilesCourse: 'contentarchive/get-files-in-course', // Lấy danh sách file tải của khóa học
+  GetListSurvey: '/surveyexam/get-paging',
 
   /** Post */
   PostAddCourseOrg: '/course/add-course-to-organizational-structures',
@@ -93,7 +94,7 @@ const CourseService = {
   PostCreateQr: '/qrcode/create',
   PostUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostuCreateTestConfig: '/coursecontenttest/create',
-  PostUpdatePointOff: '/Course/import-excel-update-mark-offline',
+  PostUpdatePointOff: '/Course/import-excel-update-mark-content-offline',
   PostuUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostDelCheckinCourse: (id: number | string) => `/course/${id}/checkin/delete`, // Lấy danh sách điểm danh khóa học
   PostAddCheckinCourse: (id: number | string) => `/course/${id}/checkin`, // Thêm điểm danh khóa học

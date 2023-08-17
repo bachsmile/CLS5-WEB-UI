@@ -4,6 +4,7 @@ const props = withDefaults(defineProps<Props>(), {
   isBack: false,
   disabledBack: false,
   isApprove: false,
+  isSendApprove: false,
   isFillter: true,
   isAdd: false,
   disabledDelete: false,
@@ -19,6 +20,8 @@ interface Emit {
   (e: 'addHandler'): void
   (e: 'back'): void
   (e: 'update:keyword', type: any): void
+  (e: 'update:pageNumber', type: any): void
+  (e: 'update:pageSize', type: any): void
   (e: 'update:showFilter', type: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -34,17 +37,19 @@ const CmTextField = defineAsyncComponent(
   disabledDelete:  Disable button delete
 */
 interface Props {
+  addButtonName?: string
   isDelete?: boolean
-  disabledDelete?: boolean
   isBack?: boolean
-  disabledBack?: boolean
   isApprove?: boolean
-  disabledApprove?: boolean
+  isSendApprove?: boolean
   isFillter?: boolean
   isAdd?: boolean
+  disabledDelete?: boolean
+  disabledApprove?: boolean
   disabledAdd?: boolean
-  addButtonName?: string
+  disabledBack?: boolean
   disabledFillter?: boolean
+  disabledSendApprove?: boolean
   keyword?: string
   showFilter?: boolean
 }
@@ -76,6 +81,8 @@ const keySearch = ref(props.keyword)
 const handleSearch = window._.debounce((value: any) => {
   keySearch.value = value
   emit('update:keyword', value)
+  emit('update:pageNumber', 1)
+  emit('update:pageSize', 10)
 }, 500)
 </script>
 
@@ -86,7 +93,7 @@ const handleSearch = window._.debounce((value: any) => {
       md="3"
       sm="4"
     >
-      <div>
+      <div class="d-flex flex-wrap">
         <CmButton
           v-if="isDelete"
           size="40"
@@ -106,6 +113,15 @@ const handleSearch = window._.debounce((value: any) => {
           @click="handleClickBtn('back')"
         >
           <VIcon icon="tabler:corner-down-left" />
+        </CmButton>
+        <CmButton
+          v-if="isSendApprove"
+          :disabled="disabledSendApprove"
+          size="40"
+          color="primary"
+          @click="handleClickBtn('send-approve')"
+        >
+          <VIcon icon="tabler:send" />
         </CmButton>
         <CmButton
           v-if="isApprove"
@@ -142,6 +158,7 @@ const handleSearch = window._.debounce((value: any) => {
           prepend-inner-icon="tabler-search"
           @update:model-value="handleSearch"
         />
+        <slot name="actionRight" />
         <CmButton
           v-if="isFillter"
           class="ml-3"

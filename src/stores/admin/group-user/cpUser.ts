@@ -58,8 +58,6 @@ export const useUserGroupStore = defineStore('useUserGroupStore', () => {
     }
     let status = false
     MethodsUtil.requestApiCustom(ApiGroupUser.DeleteUser, TYPE_REQUEST.POST, payload).then((res: any) => {
-      console.log(res)
-
       toast('SUCCESS', t(res?.message))
       getListUser()
     }).catch((e: any) => {

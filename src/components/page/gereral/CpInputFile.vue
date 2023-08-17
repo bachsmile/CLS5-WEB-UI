@@ -6,6 +6,7 @@ import toast from '@/plugins/toast'
 import AuthUtil from '@/auth'
 import { load } from '@/stores/loadComponent.js'
 import CmTextField from '@/components/common/CmTextField.vue'
+import constant from '@/constant/constant'
 
 const props = withDefaults(defineProps<Props>(), ({
   accept: '',
@@ -167,8 +168,10 @@ async function upFileServer(file: any) {
       // const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total)
     },
     headers: {
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
+      Authorization: constant.TOKEN_FAKE_SV_FILE,
     },
+
   })
     .then((value: any) => {
       if (value.data?.fileFolder) {
@@ -238,6 +241,9 @@ watch(() => props.modelValue, (val: any) => {
       fileFolder: '',
     }
   }
+})
+defineExpose({
+  openChooseFile,
 })
 </script>
 

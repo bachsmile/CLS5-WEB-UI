@@ -1,8 +1,5 @@
 export default [
-  {
-    path: 'question-list',
-    name: 'question-list',
-  },
+
   {
     path: 'question-survey',
     name: 'question-survey',

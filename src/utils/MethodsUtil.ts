@@ -1,5 +1,6 @@
 import jwt_decode from 'jwt-decode'
 import JSZip from 'jszip'
+import type { Any } from '@/typescript/interface'
 import { ActionType } from '@/constant/data/actionType.json'
 import { typeFile } from '@/constant/data/typeFile.json'
 import { StatusTypeUser } from '@/constant/data/status.json'
@@ -8,7 +9,11 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import UserService from '@/api/user/index'
 import ServerFileService from '@/api/server-file/index'
 import axios from '@axios'
-import type { Any } from '@/typescript/interface'
+import toast from '@/plugins/toast'
+
+import {
+  MediaType, audioExtention, audioTypes, imageFileExtention, imageTypes, otherFileExtention, videoExtention, videoTypes,
+} from '@/constant/Globals'
 
 const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
 type CallbackFunction = (key: string) => any
@@ -94,12 +99,33 @@ export default class MethodsUtil {
    * @param {any} payload =>  Dữ liệu đính kèm api
    * @return {object}
    */
-  static requestApiCustom = (url = '', method = 'GET', payload?: any) => {
+  static requestApiCustom = (url = '', method = 'GET', payload?: any, headers?: any) => {
     if (url === undefined)
       return
     const data = (method === 'GET') ? null : (payload || null)
     const params = (method === 'GET') ? payload : null
     return window.axios({
+      url,
+      method,
+      data,
+      params,
+      headers,
+    })
+  }
+
+  /**
+   * @name: Request API
+   * @param {string} url => Đường dẫn api
+   * @param {string} method => Phương thức 'POST', 'GET'
+   * @param {any} payload =>  Dữ liệu đính kèm api
+   * @return {object}
+   */
+  static requestApiCustomV5 = (url = '', method = 'GET', payload?: any) => {
+    if (url === undefined)
+      return
+    const data = (method === 'GET') ? null : (payload || null)
+    const params = (method === 'GET') ? payload : null
+    return window.axiosV5({
       url,
       method,
       data,
@@ -276,10 +302,12 @@ export default class MethodsUtil {
   }
 
   static formatCurrency(value: number, toFixed = 3) {
-    const currency = Math.floor (value * 10 ** toFixed) / 10 ** toFixed
+    const currency = Math.floor(value * 10 ** toFixed) / 10 ** toFixed
+
     const formatter = new Intl.NumberFormat('en-US', {
       useGrouping: true,
     })
+
     return formatter.format(currency)
   }
 
@@ -301,7 +329,9 @@ export default class MethodsUtil {
   }
 
   static showErrorsYub(errors: any) {
-    return errors[0] === 'this cannot be null' ? 'not-empty' : errors[0]
+    if (errors.length)
+      return errors[0] === 'this cannot be null' ? 'not-empty' : errors[0]
+    return ''
   }
 
   static getFolder(str: string, type: number) {
@@ -396,11 +426,9 @@ export default class MethodsUtil {
     try {
       const zip = new JSZip()
       const folder = zip
-      console.log(folder, model)
       model.blobs?.forEach((item: any, index: any) => {
         folder.file(`${index + 1} ${model.fileNames[index]}`, item)
       })
-      console.log(model)
 
       // document.getElementById('main-loading').style.display = 'block'
 
@@ -424,6 +452,72 @@ export default class MethodsUtil {
     }
     catch (error) {
       return error
+    }
+  }
+
+  // chuyển html thành text
+  static converContentHtmlToText(html: string) {
+    const content = document.createElement('div')
+    content.innerHTML = html
+    return content.textContent || content.innerText
+  }
+
+  // lấy ký tự
+  static getIndex(index: number) {
+    return `${String.fromCharCode(65 + index)}.`
+  }
+
+  // loại media
+  static getMediaType = (fileExtention: any) => {
+    if (videoTypes.includes(fileExtention))
+      return MediaType.VIDEO
+    if (audioTypes.includes(fileExtention))
+      return MediaType.AUDIO
+    if (imageTypes.includes(fileExtention))
+      return MediaType.IMAGE
+    if (otherFileExtention.includes(fileExtention))
+      return MediaType.OTHER_FILE
+    return MediaType.NONE
+  }
+
+  // loại media
+  static getMediaTypeExtention = (typeMedia: any) => {
+    switch (typeMedia) {
+      case 1:
+        return imageFileExtention
+      case 2:
+        return audioExtention
+      case 3:
+        return videoExtention
+
+      default:
+        return otherFileExtention
+    }
+  }
+
+  // lấy id youtube
+  static getYoutubeId(url: string) {
+    let videoId = url.split('v=')[1]
+    const ampersandPosition = videoId.indexOf('&')
+    if (ampersandPosition !== -1)
+      videoId = videoId.substring(0, ampersandPosition)
+
+    return videoId
+  }
+
+  // thông báo theo status response api
+  static notificationApiStatus(status: any, t: any, error?: any) {
+    switch (status) {
+      case 201:
+        toast('SUCCESS', t('USR_AddSuccess'))
+        break
+      case 204:
+
+        toast('SUCCESS', t('USR_UpdateSuccess'))
+        break
+
+      default:
+        break
     }
   }
 }

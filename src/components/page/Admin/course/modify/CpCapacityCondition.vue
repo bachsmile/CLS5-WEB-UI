@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { conditionManagerStore } from '@/stores/admin/course/condition'
 
+const props = withDefaults(defineProps<Props>(), {})
+interface Props {
+  isView: boolean
+}
 const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CpMdAddCapacity = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdAddCapacity.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
@@ -14,6 +18,7 @@ const isShowModalAddCapacity = ref(false)
 const excludeIds = computed(() => {
   // return courseData.value.authorList?.map((item: any) => item.id)
 })
+
 const headers = reactive([
   { text: '', value: 'checkbox', width: 50 },
   { text: t('capacity-name'), value: 'proficiencyName' },
@@ -59,13 +64,13 @@ onMounted(async () => {
       <CpActionHeaderPage
         :title-custom-add="t('add-capacity')"
         :title="t('capacity-list')"
-        is-custom-add-btn
+        :is-custom-add-btn="!isView"
         @click="handlerActionHeader"
       />
     </div>
     <div>
       <CpHeaderAction
-        is-delete
+        :is-delete="!isView"
         :is-fillter="false"
         :disabled-delete="disabledDeleteCapacity"
         @click="handleClickBtn"

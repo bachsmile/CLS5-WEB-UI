@@ -1,0 +1,15 @@
+{
+    "QuestionType": {
+        "0": "QuestionService.QuestionCluster",
+        "1": "QuestionService.QuestionSingleChoice",
+        "2": "QuestionService.QuestionMultipleChoice",
+        "3": "QuestionService.QuestionUnderlined",
+        "4": "QuestionService.QuestionChooseTrueFalse",
+        "5": "QuestionService.QuestionClauseTrueFalse",
+        "6": "QuestionService.QuestionFillInTheGap",
+        "7": "QuestionService.QuestionClauseTrueFalse",
+        "8": "QuestionService.QuestionPairing",
+        "9": "QuestionService.QuestionEssay",
+        "10": "QuestionService.QuestionDiversity"
+    }
+}

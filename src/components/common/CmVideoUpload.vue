@@ -27,6 +27,7 @@ const emit = defineEmits<Emit>()
 interface Emit {
   (e: 'update:modelValue', value: any): void
   (e: 'update:processing', value: any): void
+  (e: 'update:file', value: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const videoInput = ref<HTMLInputElement | null>(null)
@@ -67,13 +68,15 @@ async function uploadFileToServerfile(file: any) {
     isSecure: false,
     IsBackground: true,
   }
-  const data = await MethodsUtil.uploadFile(model)
-
-  if (data?.error)
-    isLoadingVideo.value = false
-
-  if (data?.fileFolder)
-    waitingForVideoLoaded(data.fileFolder)
+  await MethodsUtil.uploadFile(model).then(data => {
+    if (data?.fileFolder) {
+      waitingForVideoLoaded(data.fileFolder)
+      emit('update:file', data)
+    }
+  })
+    .catch(() => {
+      isLoadingVideo.value = false
+    })
 }
 function reloadVideo() {
   videoUrl.value = ''
@@ -88,7 +91,7 @@ function addVideoFromFile(event: any) {
     uploadFileToServerfile(file)
   }
 }
-function hanleClickAvatar() {
+function hanleClickVideo() {
   videoInput.value?.click()
 }
 function removeUpload() {
@@ -97,6 +100,9 @@ function removeUpload() {
 }
 watch(isLoadingVideo, (val: any) => {
   emit('update:processing', val)
+})
+defineExpose({
+  hanleClickVideo,
 })
 </script>
 
@@ -123,7 +129,7 @@ watch(isLoadingVideo, (val: any) => {
       :is-text="isLoadingVideo"
       :class="{ 'w-100 h-100': isSizeFull }"
       class="cm-video-input"
-      @click="hanleClickAvatar"
+      @click="hanleClickVideo"
     />
     <video
       v-if="videoUrl && !isLoadingVideo"
@@ -136,7 +142,7 @@ watch(isLoadingVideo, (val: any) => {
         width: 100%;
         object-fit: fill;
       "
-      @click="hanleClickAvatar"
+      @click="hanleClickVideo"
     >
       <source
         :src="SERVERFILE + videoUrl"

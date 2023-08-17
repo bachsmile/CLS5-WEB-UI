@@ -22,14 +22,14 @@ const listTab = ref([
     key: 'condition',
     title: 'condition-content',
     component: CpConditionVideo,
-    isRendered: true,
+    isRendered: false,
     isDisabled: true,
   },
   {
     key: 'condition-complete',
     title: 'condition-completed-content',
     component: CpConditionCompletedVideo,
-    isRendered: true,
+    isRendered: false,
     isDisabled: true,
   },
 ])

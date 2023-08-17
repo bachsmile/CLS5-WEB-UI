@@ -1,26 +1,56 @@
 export default [
-  {
-    path: 'survey',
-    name: 'survey-list',
-  },
+
   {
     path: 'training',
     name: 'admin-training',
     redirect: { name: 'topic-list' },
     children: [
       {
-        path: 'topic',
-        name: 'topic-list',
-
-        // requireAuth: {
-        //   permissionKey: 'UserTypeManaging',
-        //   permissionValue: 1,
-        // },
+        path: 'survey',
+        name: 'survey-list',
         component: () => import('@/pages/admin/training/topic/Index.vue'),
-        redirect: { name: 'manager-topic', params: { tab: 'title' } },
+        redirect: { name: 'manager-survey' },
         children: [
           {
-            path: ':tab',
+            path: '',
+            name: 'manager-survey',
+            component: () => import('@/pages/admin/training/survey/Survey.vue'),
+          },
+          {
+            path: 'add',
+            name: 'add-survey',
+            component: () => import('@/pages/admin/training/survey/edit/EditSurvey.vue'),
+          },
+          {
+            path: 'edit/:id',
+            name: 'edit-survey',
+            component: () => import('@/pages/admin/training/survey/edit/EditSurvey.vue'),
+          },
+          {
+            path: 'edit/:id/add',
+            name: 'edit-survey-add-topic',
+            component: () => import('@/pages/admin/training/survey/edit/EditSurvey.vue'),
+          },
+          {
+            path: 'edit/:id/edit/:topicId',
+            name: 'edit-survey-edit-topic',
+            component: () => import('@/pages/admin/training/survey/edit/EditSurvey.vue'),
+          },
+          {
+            path: 'approve',
+            name: 'approve-survey',
+            component: () => import('@/pages/admin/training/survey/approve/ApproveSurvey.vue'),
+          },
+        ],
+      },
+      {
+        path: 'topic',
+        name: 'topic-list',
+        component: () => import('@/pages/admin/training/topic/Index.vue'),
+        redirect: { name: 'manager-topic' },
+        children: [
+          {
+            path: '',
             name: 'manager-topic',
             component: () => import('@/pages/admin/training/topic/Topic.vue'),
           },
@@ -64,10 +94,10 @@ export default [
         //   permissionValue: 1,
         // },
         component: () => import('@/pages/admin/training/cost/Index.vue'),
-        redirect: { name: 'manager-cost', params: { tab: 'cost-type' } },
+        redirect: { name: 'manager-cost' },
         children: [
           {
-            path: ':tab',
+            path: '',
             name: 'manager-cost',
             component: () => import('@/pages/admin/training/cost/Cost.vue'),
           },

@@ -2,11 +2,15 @@
 import CmAvatar from '@/components/common/CmAvatar.vue'
 import CmBadge from '@/components/common/CmBadge.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
-import CommonService from '@/api/common'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
-import { avatar } from '@/constant/Globals'
+import {
+  avatar,
+  imageFileExtention,
+} from '@/constant/Globals'
 import type { typeVariant } from '@/typescript/enums/enums'
+import ServerFileService from '@/api/server-file/index'
+import constant from '@/constant/constant'
 
 interface Props {
   src?: string
@@ -18,12 +22,14 @@ interface Props {
   iconText?: string
   isRounded?: string | number | boolean
   isAvatar?: boolean
+  hide?: boolean
   offsetX?: number
   offsetY?: number
   size?: number // kích thước theo cài đặt
   isSizeFull?: boolean // kích thước full cha
   isBadge?: boolean
   disabled?: boolean
+  isClassicBorder?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -38,6 +44,8 @@ const props = withDefaults(defineProps<Props>(), ({
   size: avatar.size,
   icon: '',
   isBadge: false,
+  hide: false,
+  isClassicBorder: true,
 }))
 
 /** ** Khởi tạo prop emit */
@@ -45,13 +53,15 @@ const emit = defineEmits<Emit>()
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 interface Emit {
   (e: 'update:src', idxBtn: number): void
+  (e: 'update:file', value: any,): void
 }
 const inputImage = ref<HTMLInputElement | null>(null)
 const isLoading = ref(false)
 const serverfile = window.SERVER_FILE || ''
 const isLoadingImg = ref(false)
-
-function hanleClickAvatar() {
+const selectedFile = ref()
+const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
+function hanleClickImage() {
   inputImage.value?.click()
 }
 
@@ -71,9 +81,12 @@ async function uploadFile(model: any) {
     formData.append('UserId', userData.id)
 
   try {
-    const res = await MethodsUtil.requestApiCustom(CommonService.SERVERFILE, TYPE_REQUEST.POST, formData).then((value: any) => value)
+    const res = await MethodsUtil.requestApiCustom(`${SERVERFILE}${ServerFileService.UploadFile}`, TYPE_REQUEST.POST, formData,
+      {
+        Authorization: constant.TOKEN_FAKE_SV_FILE,
+      }).then((value: any) => value)
     if (res.filePath)
-      toast('SUCCESS', t('common.upload-file-success'))
+      toast('SUCCESS', t('upload-file-success'))
 
     isLoadingImg.value = false
     return res
@@ -87,7 +100,7 @@ async function uploadFile(model: any) {
 }
 
 async function onFileSelected(e: any) {
-  const tmpFiles = e.target.files || e.dataTransfer.files
+  const tmpFiles = e
   if (!tmpFiles.length)
     return
   const file = tmpFiles[0]
@@ -99,9 +112,13 @@ async function onFileSelected(e: any) {
 
   isLoading.value = true
 
-  const data = await uploadFile(model)
-  if (data?.filePath)
-    emit('update:src', data.filePath)
+  await uploadFile(model).then(data => {
+    if (data?.filePath) {
+      emit('update:src', data.filePath)
+      emit('update:file', data)
+    }
+    selectedFile.value = null
+  })
 }
 
 const urlImageFile = computed(() => {
@@ -109,6 +126,10 @@ const urlImageFile = computed(() => {
     return props.src.startsWith('http') ? props.src : serverfile + props.src
 
   return null
+})
+
+defineExpose({
+  hanleClickImage,
 })
 </script>
 
@@ -124,12 +145,13 @@ const urlImageFile = computed(() => {
         icon="fe:edit"
         :color="color"
         :loading="isLoading"
-        @click="hanleClickAvatar"
+        @click="hanleClickImage"
       >
         <CmAvatar
+          v-if="!hide"
           :color="isLoadingImg ? 'white' : color"
           :src="urlImageFile"
-          is-classic-border
+          :is-classic-border="isClassicBorder"
           :size="size"
           :rounded="isRounded"
           :is-avatar="isAvatar"
@@ -141,33 +163,34 @@ const urlImageFile = computed(() => {
         </CmAvatar>
       </CmBadge>
       <CmAvatar
-        v-else
+        v-else-if="!hide"
         :is-loading="isLoadingImg"
         :color="isLoadingImg ? 'white' : color"
         :src="urlImageFile"
         v-bind="propsValue.props"
         :variant="variant"
-        is-classic-border
+        :is-classic-border="isClassicBorder"
         :size="size"
         :rounded="isRounded"
         :is-avatar="isAvatar"
         :icon="icon"
         :is-text="isLoadingImg"
         :class="{ 'w-100 h-100': isSizeFull }"
-        @click="hanleClickAvatar"
+        @click="hanleClickImage"
       >
         <span v-if="isIconText">{{ iconText }}</span>
       </CmAvatar>
       <VFileInput
         ref="inputImage"
+        v-model="selectedFile"
         :disabled="disabled"
         class="d-none"
         label="Select a file"
         outlined
         dense
         hide-details
-        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-        @change="onFileSelected"
+        :accept="imageFileExtention"
+        @update:modelValue="onFileSelected"
       />
     </template>
   </VTooltip>

@@ -95,6 +95,16 @@ function confirmModal() {
       emit('confirm', dataInput.value)
   })
 }
+function resetData() {
+  dataInput.value = {
+    id: null,
+    parentId: null,
+    description: '',
+    icon: '',
+    typeId: 2,
+    name: '',
+  }
+}
 </script>
 
 <template>
@@ -104,6 +114,7 @@ function confirmModal() {
     :persistent="closeOnBackdrop"
     @cancel="cancelModal"
     @confirm="confirmModal"
+    @hide="resetData"
   >
     <Form
       ref="formEditTopic"

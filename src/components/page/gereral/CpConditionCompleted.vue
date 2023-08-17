@@ -587,7 +587,10 @@ function handleCancle() {
                       </div>
                       <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                     </div>
-                    <div class="styleError text-errors">
+                    <div
+                      v-if="errors.length"
+                      class="styleError text-errors"
+                    >
                       {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
@@ -612,7 +615,10 @@ function handleCancle() {
                       </div>
                       <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                     </div>
-                    <div class="styleError text-errors">
+                    <div
+                      v-if="errors.length"
+                      class="styleError text-errors"
+                    >
                       {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
@@ -651,7 +657,10 @@ function handleCancle() {
                         </div>
                         <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -676,7 +685,10 @@ function handleCancle() {
                         </div>
                         <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>

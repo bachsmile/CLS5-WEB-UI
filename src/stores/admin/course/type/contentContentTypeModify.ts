@@ -196,6 +196,7 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
     const params = {
       id,
     }
+
     await MethodsUtil.requestApiCustom(CourseService.GetRequireParticipate, TYPE_REQUEST.GET, params).then((value: any) => {
       conditionAttend.value = value.data
       if (value.data.dateTimeStart && value.data.dateTimeStart !== null) {
@@ -236,10 +237,10 @@ export const contentTypeManagerStore = defineStore('contentTypeManager', () => {
         contentData.value = value?.data
       }
 
-      if (contentData.value.archiveTypeId !== 12)
-        await fetchConditionAttend(contentData.value.courseContentId)
-      if (contentData.value.archiveTypeId !== 10 && contentData.value.archiveTypeId !== 11 && contentData.value.archiveTypeId !== 12)
-        await fetchConditionComplete(contentData.value.courseContentId)
+      // if (contentData.value.archiveTypeId !== 12)
+      //   await fetchConditionAttend(contentData.value.courseContentId)
+      // if (contentData.value.archiveTypeId !== 10 && contentData.value.archiveTypeId !== 11 && contentData.value.archiveTypeId !== 12)
+      //   await fetchConditionComplete(contentData.value.courseContentId)
       isUpdate.value = true
       typeContent.value = MethodsUtil.getTypeContent(contentData.value.archiveTypeId)
     })

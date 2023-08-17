@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import moment from 'moment'
 import CmButtonGroup from '@/components/common/CmButtonGroup.vue'
 import CpSearch from '@/components/page/gereral/CpSearch.vue'
 import toast from '@/plugins/toast'
@@ -57,16 +58,12 @@ const actionAdd = [
 function isDownloading() {
   if (!window._.isEmpty(fileUpload.value)) {
     const items = fileUpload.value?.filter((item: any) => {
-      console.log(item.statusDownload)
-
       return item.statusDownload === 2
     })
-    console.log(items.length)
     emit('update:dowloading', items.length > 0)
     emit('update:itemDownloading', items)
     return items.length > 0
   }
-  console.log(items.length)
   emit('update:dowloading', false)
   emit('update:itemDownloading', null)
   return false
@@ -83,8 +80,6 @@ async function downloadContentCourse() {
 
 const keyword = ref<any>(null)
 async function onCancel() {
-  console.log('cancel')
-
   emit('cancel')
 }
 async function handleSearch(key: any) {
@@ -110,7 +105,6 @@ async function downloadDetailFile(item: any) {
 
       await dowloadFile(params).then(value => {
         item.statusDownload = 3
-        console.log(params)
       }).catch(value => {
         item.statusDownload = 4
       })
@@ -128,16 +122,16 @@ async function downloadFileInFolderDefault() {
       index += 1
   }
 }
+const counts = ref<any>('')
+
 async function dowloadItems(item: any, type?: any, dirHandle?: any) {
+  counts.value = moment().format('DDMMYYYYHHmmss')
   if (isDownloading() && !item?.id) {
     toast('SUCCESS', t('progress-file'))
     return
   }
   if (item?.id) {
     downloadDetailFile(item)
-  }
-  else if (fileURLs.value.length > 0) {
-    handlerZipFileContinute(type)
   }
   else {
     // Tải tất cả các file
@@ -157,8 +151,6 @@ async function getBlobFiles(i: number, list: any[], listFile: any[], type: strin
       if (element.folder === listFile[i]) {
         element.statusDownload = 2
         timeProcess.value = setInterval(() => {
-          console.log(element.size, element.sizes)
-
           if (element.processing < 90) {
             element.processing += 10
             if (element.sizes)
@@ -170,7 +162,6 @@ async function getBlobFiles(i: number, list: any[], listFile: any[], type: strin
     })
     isDownloading()
     await getInfor(listFile[i]).then(async (infoFile: any) => {
-      console.log(infoFile)
       list.forEach(element => {
         if (element.folder === listFile[i])
           element.sizes = infoFile.fileSize
@@ -179,10 +170,8 @@ async function getBlobFiles(i: number, list: any[], listFile: any[], type: strin
         const response = {
           blob: new Blob([value]),
         }
-        console.log(response)
         if (response) {
           totalSize.value += response.blob.size
-          console.log(response.blob.size)
 
           list.forEach(element => {
             if (element.folder === listFile[i]) {
@@ -197,8 +186,9 @@ async function getBlobFiles(i: number, list: any[], listFile: any[], type: strin
             fileNames.value.push(infoFile.fileName)
           }
           else {
-            MethodsUtil.writeFileDownload(response.blob, infoFile.fileName, dirHandle).then((valueWrite: any) => {
-              console.log(valueWrite)
+            MethodsUtil.writeFileDownload(response.blob, `(${counts.value})${infoFile.fileName}`, dirHandle).then((valueWrite: any) => {
+              if (i === listFile.length)
+                toast('SUCCESS', t('downloaded'))
             })
           }
           i += 1
@@ -233,14 +223,16 @@ async function getBlobFiles(i: number, list: any[], listFile: any[], type: strin
         handlerZipFile(params)
       }, 1000)
     }
+    isDownloading()
   }
 }
 function handlerZipFileContinute(type: any) {
   const params = {
     blobs: fileURLs.value,
     fileNames: fileNames.value,
-    zipName: `${props.name}.zip`,
+    zipName: `${counts.value}${props.name}.zip`,
   }
+
   if (type === 'zip') {
     if (totalSize.value > constant.MAX_CAPACITY_DOWNLOAD_FILE) {
       showModalConfirmDownload(totalSize.value)
@@ -256,7 +248,6 @@ function handlerZipFileContinute(type: any) {
 }
 async function handlerZipFile(params: any) {
   await MethodsUtil.exportBlobZipMulFile(params, document, window).then(value => {
-    console.log(value)
     isDownloading()
   })
 }
@@ -280,7 +271,7 @@ async function selectFolderDownload() {
       const fileURL = window.URL.createObjectURL(new Blob([blob]))
       const fileLink = document.createElement('a')
       fileLink.href = fileURL
-      fileLink.setAttribute('download', fileNames.value[index])
+      fileLink.setAttribute('download', `(${counts.value})${fileNames.value[index]}`)
       document.body.appendChild(fileLink)
       fileLink.click()
       document.body.removeChild(fileLink)
@@ -291,7 +282,7 @@ async function selectFolderDownload() {
 function handlerDownload(dirHandle: any) {
   const res = []
   fileURLs.value.forEach(async (element, index) => {
-    MethodsUtil.writeFileDownload(element, fileNames.value[index], dirHandle).then((response: any) => {
+    MethodsUtil.writeFileDownload(element, `(${counts.value})${fileNames.value[index]}`, dirHandle).then((response: any) => {
       res.push(response)
     })
   })

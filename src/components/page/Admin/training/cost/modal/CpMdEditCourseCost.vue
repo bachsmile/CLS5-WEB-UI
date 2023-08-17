@@ -5,27 +5,32 @@ import { validatorStore } from '@/stores/validatator'
 import CmtextArea from '@/components/common/CmtextArea.vue'
 import { comboboxStore } from '@/stores/combobox'
 import CmSelect from '@/components/common/CmSelect.vue'
+import CmInputCurrency from '@/components/common/CmInputCurrency.vue'
 
 // Khởi tạo
 const props = withDefaults(defineProps<Props>(), ({
   isShow: false,
   title: '',
 }))
+
 const emit = defineEmits<Emit>()
+
 const route = useRoute()
 const storeCombobox = comboboxStore()
 const { getComboboxCourse, getCostTypeCombobox, getExamCombobox } = storeCombobox
 const { courseCombobox, costTypeCombobox, examCombobox } = storeToRefs(storeCombobox)
-if (!courseCombobox.value.length && route.params.tab === 'cost-course')
-  getComboboxCourse()
-if (!costTypeCombobox.value.length)
-  getCostTypeCombobox()
-if (!examCombobox.value.length && route.params.tab === 'exam-course')
-  getExamCombobox()
+function getData() {
+  if (!courseCombobox.value.length && route.query.tab === 'cost-course')
+    getComboboxCourse()
+  if (!costTypeCombobox.value.length)
+    getCostTypeCombobox()
+  if (!examCombobox.value.length && route.query.tab === 'exam-course')
+    getExamCombobox()
+}
 
 const { t } = window.i18n() // Khai báo biến ngôn ngữ
 interface Emit {
-  (e: 'confirm', value: any): void
+  (e: 'confirm', value: any, fn: any): void
   (e: 'update:isShow', value: any): void
 }
 interface Props {
@@ -50,6 +55,11 @@ const { schemaOption, Field, Form, useForm, yup } = storeValidate
 const { submitForm } = useForm()
 const schema = reactive({
   name: schemaOption.requiredString(),
+  costTypeId: schemaOption.defaultSelectSingle,
+  unitPrice: schemaOption.defaultString,
+
+  ...(route.query.tab === 'cost-course' ? { courseId: schemaOption.defaultSelectSingle } : {}),
+  ...(route.query.tab === 'cost-exam' ? { examId: schemaOption.defaultSelectSingle } : {}),
 })
 
 const formEdit = ref()
@@ -65,10 +75,12 @@ const dataInput = ref<DataInput>({
   unitPrice: null,
   examId: null,
 })
-function confirmModal() {
+function confirmModal(idx: number, unload: any) {
   formEdit.value.validate().then((status: any) => {
     if (status.valid)
-      emit('confirm', dataInput.value)
+      emit('confirm', dataInput.value, unload)
+
+    else unload()
   })
 }
 function resetData() {
@@ -92,9 +104,11 @@ watch(() => props.dataDetail, (val: DataInput) => {
     :title="t('add-cost')"
     :sub-title="title"
     size="sm"
+    persistent
     @cancel="cancelModal"
     @confirm="confirmModal"
     @hide="resetData"
+    @show="getData"
   >
     <Form
       ref="formEdit"
@@ -103,15 +117,15 @@ watch(() => props.dataDetail, (val: DataInput) => {
     >
       <Field
         v-slot="{ field, errors }"
-        v-model="dataInput.name"
+        :model-value="dataInput.name"
         name="name"
         type="text"
       >
         <CmTextField
+          v-model="dataInput.name"
           :field="field"
           :errors="errors"
-          :model-value="dataInput.name"
-          :text="t('cost-name')"
+          :text="`${t('cost-name')}*`"
           :placeholder="t('cost-name')"
         />
       </Field>
@@ -130,19 +144,19 @@ watch(() => props.dataDetail, (val: DataInput) => {
           custom-key="value"
           append-to-body
           :model-value="dataInput.costTypeId"
-          :text="t('cost-type')"
+          :text="`${t('cost-type')}*`"
           :placeholder="t('type-name-cost')"
         />
       </Field>
 
       <Field
+        v-if="route.query.tab === 'cost-exam'"
         v-slot="{ field, errors }"
-        v-model="dataInput.courseId"
-        name="courseId"
+        v-model="dataInput.examId"
+        name="examId"
         type="text"
       >
         <CmSelect
-          v-if="route.params.tab === 'cost-exam'"
           :field="field"
           :errors="errors"
           :items="examCombobox"
@@ -150,16 +164,25 @@ watch(() => props.dataDetail, (val: DataInput) => {
           append-to-body
           custom-key="value"
           :model-value="dataInput.examId"
-          :text="t('exam-management')"
+          :text="`${t('exam-management')}*`"
           :placeholder="t('exam-management')"
         />
+      </Field>
+      <Field
+        v-if="route.query.tab === 'cost-course'"
+        v-slot="{ field, errors }"
+        v-model="dataInput.courseId"
+        name="courseId"
+        type="text"
+      >
         <CmSelect
-          v-if="route.params.tab === 'cost-course'"
           :items="courseCombobox"
           item-value="key"
-          custom-key="value"
           :model-value="dataInput.courseId"
-          :text="t('course')"
+          :field="field"
+          :errors="errors"
+          custom-key="value"
+          :text="`${t('course')}*`"
           :placeholder="t('course')"
         />
       </Field>
@@ -169,14 +192,13 @@ watch(() => props.dataDetail, (val: DataInput) => {
         name="unitPrice"
         type="text"
       >
-        <CmTextField
+        <CmInputCurrency
+          v-model="dataInput.unitPrice"
           :field="field"
           :errors="errors"
           is-currency
-          :model-value="dataInput.unitPrice"
-          :text="t('money')"
+          :text="`${t('money')}*`"
           :placeholder="t('money')"
-          @change="change"
         />
       </Field>
       <Field

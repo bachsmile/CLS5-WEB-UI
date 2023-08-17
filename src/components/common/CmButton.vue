@@ -166,6 +166,9 @@ defineExpose({
   font-family: inherit;
   letter-spacing: normal;
 }
+.v-btn--size-default {
+  min-width: 36px;
+}
 // .text-button {
 //   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
 // }

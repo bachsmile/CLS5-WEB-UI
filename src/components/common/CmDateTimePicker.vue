@@ -169,7 +169,10 @@ watchEffect(() => {
     <div class="mb-1 ">
       <label class="text-medium-sm color-dark"> {{ text }}</label>
     </div>
-    <div style="position: relative;">
+    <div
+      style="position: relative;"
+      class="py-1"
+    >
       <!-- v-bind="LABEL" -->
       <VueDatePicker
         ref="datepicker"
@@ -334,7 +337,7 @@ watchEffect(() => {
   }
   .input-date-time {
     position: absolute;
-    top: -2px;
+    top: 1px;
     right: 28px;
     width: calc(100% - 56px);
     height: inherit;
@@ -365,6 +368,7 @@ watchEffect(() => {
     }
   }
   .dp__menu_inner {
+    width: 300px !important;
     width: auto;
     .dp__month_year_row{
       margin-bottom: v-bind(marginHeader);
@@ -374,15 +378,19 @@ watchEffect(() => {
   width: 100%;
   display: v-bind(displayCalendar);
   .dp__calendar_item {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 28px;
     .dp__cell_inner {
       border-radius: 20px;
-      width: 100%;
-      height: 100%;
+      width: 40px;
+      height: 40px;
       &.dp__range_start {
         border-radius: 20px;
       }
+    }
+    .dp__date_hover:hover {
+      background-color: unset;
+      color: $color-primary-600;
     }
     .date-picker {
       position: absolute;

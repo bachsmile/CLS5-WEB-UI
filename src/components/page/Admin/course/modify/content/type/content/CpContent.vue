@@ -26,14 +26,14 @@ const listTab = [
     key: 'condition',
     title: 'condition-content',
     component: CpConditionVideo,
-    isRendered: true,
+    isRendered: false,
     isDisabled: computed(() => !route.params.contentId).value,
   },
   {
     key: 'condition-complete',
     title: 'condition-completed-content',
     component: CpConditionCompletedVideo,
-    isRendered: true,
+    isRendered: false,
     isDisabled: computed(() => !route.params.contentId).value,
   },
 ]

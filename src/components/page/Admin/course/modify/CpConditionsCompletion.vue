@@ -7,8 +7,13 @@ import CourseService from '@/api/course/index'
 import { validatorStore } from '@/stores/validatator'
 import toast from '@/plugins/toast'
 
+const props = withDefaults(defineProps<Props>(), {})
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
 const CpActionFooterEdit = defineAsyncComponent(() => import('@/components/page/gereral/CpActionFooterEdit.vue'))
+
+interface Props {
+  isView: boolean
+}
 
 /**
  * store
@@ -79,7 +84,7 @@ onMounted(() => {
     <div>
       <CmCheckBox
         v-model="isAmount"
-        :disabled="!condition.totalRequireContent"
+        :disabled="!condition.totalRequireContent || isView"
         class="mr-2"
       >
         <span class="text-medium-md mr-4">{{ t('number-achieved') }}</span>
@@ -108,7 +113,10 @@ onMounted(() => {
                 </div>
                 <span class="text-regular-md">/{{ condition.totalRequireContent }} {{ t('content').toLowerCase() }}</span>
               </div>
-              <div class="styleError text-errors">
+              <div
+                v-if="errors?.length > 0"
+                class="styleError text-errors"
+              >
                 {{ t(MethodsUtil.showErrorsYub(errors)) }}
               </div>
             </Field>
@@ -118,6 +126,7 @@ onMounted(() => {
     </div>
     <div>
       <CpActionFooterEdit
+        v-if="!isView"
         is-cancel
         is-save
         :title-cancel="t('come-back')"

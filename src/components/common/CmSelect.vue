@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), ({
   placeholder: 'Chọn',
   totalRecord: 0,
   isInfinityScroll: false,
+  clearable: true,
   excludeId: [],
 }))
 const emit = defineEmits<Emit>()
@@ -42,6 +43,7 @@ interface Props {/** ** Interface */
   isInfinityScroll?: boolean
   returnObject?: boolean
   appendToBody?: boolean
+  clearable?: boolean
   customKey?: string
   itemValue?: string
   label?: string
@@ -211,7 +213,7 @@ function withPopper(dropdownList: any, component: any, { width }: any) {
         class="text-medium-sm color-dark"
       >{{ props.text }}</label>
     </div>
-    <div class="cm-select">
+    <div class="cm-select py-1">
       <ISelect
         v-model="valueCurrent"
         v-bind="field"
@@ -227,6 +229,7 @@ function withPopper(dropdownList: any, component: any, { width }: any) {
         :input-id="(option: any) => option.id"
         :append-to-body="appendToBody "
         :calculate-position="withPopper"
+        :clearable="clearable"
         @open="open"
         @close="close"
         @search:blur="emit('search:blur')"

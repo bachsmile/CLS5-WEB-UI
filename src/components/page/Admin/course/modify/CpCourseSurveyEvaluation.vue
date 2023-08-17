@@ -5,6 +5,12 @@ import CmCollapse from '@/components/common/CmCollapse.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
 import DateUtil from '@/utils/DateUtil'
 
+interface Props {
+  isView: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {})
+
 const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CmMdAddEval = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdAddEval.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
@@ -30,14 +36,24 @@ const { actionItemEval, addSurveyCourse, deleteItemsEval, handleSearchEvaluation
 
 /** state */
 
-const headers = reactive([
-  { text: '', value: 'checkbox', width: 50 },
-  { text: t('name-survey'), value: 'name' },
-  { text: t('creator'), value: 'fullname', type: 'custom' },
-  { text: t('date-start'), value: 'startDate', type: 'custom' },
-  { text: t('date-end'), value: 'endDate', type: 'custom' },
-  { text: '', value: 'actions', width: 150 },
-])
+const headers = computed(() => {
+  if (props.isView) {
+    return [
+      { text: t('name-survey'), value: 'name' },
+      { text: t('creator'), value: 'fullname', type: 'custom' },
+      { text: t('date-start'), value: 'startDate', type: 'custom' },
+      { text: t('date-end'), value: 'endDate', type: 'custom' },
+    ]
+  }
+  return [
+    { text: '', value: 'checkbox', width: 50 },
+    { text: t('name-survey'), value: 'name' },
+    { text: t('creator'), value: 'fullname', type: 'custom' },
+    { text: t('date-start'), value: 'startDate', type: 'custom' },
+    { text: t('date-end'), value: 'endDate', type: 'custom' },
+    { text: '', value: 'actions', width: 150 },
+  ]
+})
 const isShowFilter = ref(true)
 
 /** method */
@@ -78,7 +94,7 @@ onMounted(async () => {
       <CpActionHeaderPage
         :title="t('survey-course')"
         :title-custom-add="t('add-survey-course')"
-        is-custom-add-btn
+        :is-custom-add-btn="!isView"
         @click="handlerActionHeader"
       />
     </div>
@@ -87,7 +103,7 @@ onMounted(async () => {
     </CmCollapse>
     <div>
       <CpHeaderAction
-        is-delete
+        :is-delete="!isView"
         is-fillter
         :disabled-delete="disabledDeleteEval"
         @click="handleClickBtn"

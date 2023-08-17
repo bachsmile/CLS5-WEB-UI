@@ -198,8 +198,6 @@ function searchFile(keyword: any) {
 const isDowloading = ref(false)
 const itemDownloading = ref<any>({})
 function cancelModal() {
-  console.log(isDowloading.value)
-
   if (isDowloading.value)
     toast('WARNING', t('progress-file'))
   else

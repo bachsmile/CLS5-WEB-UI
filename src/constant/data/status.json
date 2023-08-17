@@ -178,5 +178,35 @@
             "icon": "prime-check-circle",
             "note": "Chưa điểm danh"
         }
+    ],
+    "StatusQuestion": [
+        {
+            "id": 1,
+            "name": "CourseService.Unsent",
+            "color": "warning",
+            "icon": "tabler:send",
+            "note": "Chưa gửi duyệt"
+        },
+        {
+            "id": 2,
+            "name": "CourseService.Pending",
+            "color": "primary",
+            "icon": "tabler:clock-hour-4",
+            "note": "Chờ duyệt"
+        },
+        {
+            "id": 3,
+            "name": "CourseService.Approved",
+            "color": "success",
+            "icon": "prime-check-circle",
+            "note": " Đã duyệt"
+        },
+        {
+            "id": 4,
+            "name": "CourseService.Declined",
+            "color": "error",
+            "icon": "tabler:circle-minus",
+            "note": "Bị từ chối"
+        }
     ]
 }

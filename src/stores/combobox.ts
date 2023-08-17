@@ -159,6 +159,20 @@ export const comboboxStore = defineStore('combobox', () => {
     examCombobox.value = data
   }
 
+  // Lấy danh sách chức danh
+  const listDistrictCombobox = ref<Any[]>([])
+  const getComboboxListDistrict = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxListDistrict, TYPE_REQUEST.GET)
+    const array = []
+    data.forEach((item: string) => {
+      array.push({
+        key: item,
+        value: item,
+      })
+    })
+    listDistrictCombobox.value = array
+  }
+
   const addFromCombobox = ref([
     { key: t('direct'), value: 1 },
     { key: t('add-from-file'), value: 2 },
@@ -343,7 +357,7 @@ export const comboboxStore = defineStore('combobox', () => {
     wards.value = []
     userLevels.value = []
     courseCombobox.value = []
-
+    listDistrictCombobox.value = []
     eventTypeCombobox.value = []
   }
   return {
@@ -375,6 +389,7 @@ export const comboboxStore = defineStore('combobox', () => {
     authorIdCombobox,
     eventTypeCombobox,
     comboboxAuthor,
+    listDistrictCombobox,
 
     // function
     categoryCostCombobox,
@@ -405,5 +420,6 @@ export const comboboxStore = defineStore('combobox', () => {
     getComboboxEventType,
     getComboboxAuthor,
     getComboboxTypeContent,
+    getComboboxListDistrict,
   }
 })

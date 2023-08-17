@@ -34,7 +34,7 @@ function addSubscriber(callback: (accessToken: any) => void) {
 axiosIns.interceptors.request.use(
   (config: any) => {
     if (token)
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = config.headers.Authorization ?? `Bearer ${token}`
 
     return config
   },

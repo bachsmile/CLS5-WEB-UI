@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { contentTypeVideoManagerStore } from '@/stores/admin/course/type/contentVideoTypeModify'
+import { contentTypeManagerStore } from '@/stores/admin/course/type/contentContentTypeModify'
 import toast from '@/plugins/toast'
 import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
@@ -25,13 +25,13 @@ const route = useRoute()
 const store = load()
 const { unLoadComponent } = store
 
-const storeContentVideoTypeModifyManager = contentTypeVideoManagerStore()
+const storeContentVideoTypeModifyManager = contentTypeManagerStore()
 const { conditionAttend, courseData } = storeToRefs(storeContentVideoTypeModifyManager)
 const { fetchConditionAttend } = storeContentVideoTypeModifyManager
 
 onMounted(() => {
   if (!window._.isEmpty(conditionAttend))
-    fetchConditionAttend(Number(route.params.contentId) || null)
+    fetchConditionAttend(Number(route.params?.contentId) || null)
 })
 
 /** state */

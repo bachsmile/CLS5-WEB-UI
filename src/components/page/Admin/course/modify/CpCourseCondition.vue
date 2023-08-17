@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { conditionManagerStore } from '@/stores/admin/course/condition'
 
+const props = withDefaults(defineProps<Props>(), {})
 const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CmMdAddCourseRequired = defineAsyncComponent(() => import('@/components/page/Admin/course/modal/CpMdAddCourseRequired.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
@@ -17,6 +18,10 @@ const route = useRoute()
 const storeConditionInforManager = conditionManagerStore()
 const { disabledDeleteCourse, queryParamsCourse, itemsCourse, totalRecordCourse, isShowDialogNotiDeleteCourse, callBackAction } = storeToRefs(storeConditionInforManager)
 const { deleteItemsCourse, handleSearchCourse, handlePageClickCourse, selectedRowsCourse, getCourseRequired, confirmDialogDeleteCourse, addCourse, actionItemCourse } = storeConditionInforManager
+
+interface Props {
+  isView: boolean
+}
 
 /** state */
 const isShowModalAddCourse = ref(false)
@@ -62,13 +67,13 @@ onMounted(async () => {
       <CpActionHeaderPage
         :title="t('list-course')"
         :title-custom-add="t('add-course')"
-        is-custom-add-btn
+        :is-custom-add-btn="!isView"
         @click="handlerActionHeader"
       />
     </div>
     <div>
       <CpHeaderAction
-        is-delete
+        :is-delete="!isView"
         :is-fillter="false"
         :disabled-delete="disabledDeleteCourse"
         @click="handleClickBtn"

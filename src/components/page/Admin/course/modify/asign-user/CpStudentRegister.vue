@@ -7,6 +7,7 @@ import { StatusUserAprove } from '@/constant/data/status.json'
 import DateUtil from '@/utils/DateUtil'
 import CmCheckBox from '@/components/common/CmCheckBox.vue'
 
+const props = withDefaults(defineProps<Props>(), {})
 const CpActionHeaderPage = defineAsyncComponent(() => import('@/components/page/gereral/CpActionHeaderPage.vue'))
 const CpHeaderAction = defineAsyncComponent(() => import('@/components/page/gereral/CpHeaderAction.vue'))
 const CmTable = defineAsyncComponent(() => import('@/components/common/CmTable.vue'))
@@ -18,6 +19,9 @@ const CpConfirmDialog = defineAsyncComponent(() => import('@/components/page/ger
 /** lib */
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const route = useRoute()
+interface Props {
+  isView: boolean
+}
 
 /**
  * Store
@@ -95,9 +99,9 @@ onMounted(async () => {
   <div>
     <div>
       <CpActionHeaderPage
-        is-export-btn
         :title-custom-add="t('add-teacher')"
         :title="t('list-student-register')"
+        :is-export-btn="!isView"
         @exportExcel="exportExcelUserReg"
       />
     </div>
@@ -109,10 +113,10 @@ onMounted(async () => {
     </CmCollapse>
     <div>
       <CpHeaderAction
-        is-delete
-        is-back
+        :is-delete="!isView"
+        :is-back="!isView"
         is-fillter
-        is-approve
+        :is-approve="!isView"
         :disabled-back="disabledUserRegBack"
         :disabled-approve="disabledUserRegApprove"
         :disabled-delete="disabledUserRegDelete"

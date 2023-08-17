@@ -51,7 +51,6 @@ const listtab = ref([
     title: 'content-course',
     component: CpContentCourse,
     isDisabled: viewAdd.value,
-
   },
   {
     key: 'user',
@@ -73,6 +72,9 @@ const listtab = ref([
     title: 'conditions-completion',
     component: CpConditionsCompletion,
     isDisabled: viewAdd.value,
+    dataTab: {
+      isView: isViewDetail,
+    },
 
   },
 
@@ -81,6 +83,9 @@ const listtab = ref([
     title: 'cost-management',
     component: CpCostCourse,
     isDisabled: viewAdd.value,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
 
   {
@@ -88,6 +93,9 @@ const listtab = ref([
     title: 'survey-course',
     component: CpCourseSurveyEvaluation,
     isDisabled: viewAdd.value,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
   {
     key: 'semester',
@@ -95,6 +103,7 @@ const listtab = ref([
     component: CpManaging,
     isDisabled: viewAdd.value,
     dataTab: {
+      isView: isViewDetail,
       titlePage: t('semester'),
       header: [
         { text: '', value: 'checkbox', width: 50 },
@@ -152,6 +161,9 @@ const listtab = ref([
     title: 'setting-option',
     component: CpSettingCourse,
     isDisabled: viewAdd.value,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
 ])
 function updateFetchData(data: any) {

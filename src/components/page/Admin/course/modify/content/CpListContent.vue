@@ -62,6 +62,21 @@ const headers = reactive([
   { text: t('create-day'), value: 'registerDate', type: 'custom' },
   { text: '', value: 'actions', width: 150 },
 ])
+
+const isViewDetail = computed(() => route.name === 'course-view')
+
+const headerTable = computed(() => {
+  if (route.name === 'course-view') {
+    return [{ text: t('content'), value: 'name', key: true },
+      { text: t('author-name'), value: 'fullname', type: 'custom' },
+      { text: t('type-content'), value: 'contentArchiveTypeName', type: 'custom' },
+      { text: t('status'), value: 'statusId', type: 'custom' },
+      { text: t('duration-time'), value: 'time', type: 'custom' },
+      { text: t('create-day'), value: 'registerDate', type: 'custom' },
+      { text: '', value: 'actions', width: 150 }]
+  }
+  return headers
+})
 const actionUpdate = [
   {
     title: t('add-from-stock-content'),
@@ -308,7 +323,10 @@ async function updateOnlineLesson(lessonInfo: Any, unload: any) {
       <CpActionHeaderPage
         :title="t('content-list')"
       >
-        <template #actions>
+        <template
+          v-if="!isViewDetail"
+          #actions
+        >
           <div
             cols="12"
             md="3"
@@ -356,13 +374,16 @@ async function updateOnlineLesson(lessonInfo: Any, unload: any) {
     </div>
     <div>
       <CpHeaderAction
-        is-delete
         :is-fillter="false"
+        :is-delete="!isViewDetail"
         :disabled-delete="disabledDelete"
         @click="handleClickBtn"
         @update:keyword="handleSearch"
       >
-        <template #actionLeft>
+        <template
+          v-if="!isViewDetail"
+          #actionLeft
+        >
           <CmButton
             :disabled="disabledEdit"
             size="40"
@@ -381,7 +402,7 @@ async function updateOnlineLesson(lessonInfo: Any, unload: any) {
         key-check-parent-row="contentArchiveTypeId"
         :value-check-parent-row="13"
         :group-options="groupOptions"
-        :headers="headers"
+        :headers="headerTable"
         :items="items"
         custom-id="courseContentId"
         disiable-pagination

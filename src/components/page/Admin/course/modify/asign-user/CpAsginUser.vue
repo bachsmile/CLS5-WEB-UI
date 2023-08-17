@@ -20,25 +20,49 @@ const { queryParams } = storeToRefs(storeAsignUserManager)
 
 const { t } = window.i18n()
 const route = useRoute()
+const isViewDetail = computed(() => route.name === 'course-view')
+const headerUser = computed(() => {
+  if (route.name === 'course-view') {
+    return [{ text: t('Full_Name'), value: 'fullName', width: 300, isFullName: true },
+      { text: t('Email'), value: 'email' },
+      { text: t('Register_Date'), value: 'registeredDate', isDate: true, type: 'custom' },
+      { text: t('organization'), value: 'organization', type: 'menu' }]
+  }
+  return [
+    { text: '', value: 'checkbox' },
+    { text: t('Full_Name'), value: 'fullName', width: 300, isFullName: true },
+    { text: t('Email'), value: 'email' },
+    { text: t('Register_Date'), value: 'registeredDate', isDate: true, type: 'custom' },
+    { text: t('organization'), value: 'organization', type: 'menu' },
+    { text: '', value: 'actions', width: 50 },
+  ]
+})
+
+const headerUserGroup = computed(() => {
+  if (route.name === 'course-view') {
+    return [{ text: t('user-group-name'), value: 'name' },
+      { text: t('description'), value: 'description' }]
+  }
+  return [[
+    { text: '', value: 'checkbox' },
+    { text: t('user-group-name'), value: 'name' },
+    { text: t('description'), value: 'description' },
+    { text: '', value: 'actions', width: 50 },
+  ]]
+})
 const listTab: Tab[] = [
   {
     key: 'assign-user',
     title: 'user',
     component: CpManaging,
     dataTab: {
+      isView: isViewDetail,
       titlePage: t('user-list'),
       customId: 'id', // id table select
       keySearch: 'searchKey',
       isShowExportExcel: false,
       isShowOrg: false,
-      header: [
-        { text: '', value: 'checkbox' },
-        { text: t('Full_Name'), value: 'fullName', width: 300, isFullName: true },
-        { text: t('Email'), value: 'email' },
-        { text: t('Register_Date'), value: 'registeredDate', isDate: true, type: 'custom' },
-        { text: t('organization'), value: 'organization', type: 'menu' },
-        { text: '', value: 'actions', width: 50 },
-      ],
+      header: headerUser,
       params: queryParams,
       actionsTable: [
         {
@@ -74,15 +98,11 @@ const listTab: Tab[] = [
     title: 'group-management',
     component: CpManaging,
     dataTab: {
+      isView: isViewDetail,
       titlePage: t('list-group-user'),
       customId: 'id', // id table select
       isShowExportExcel: false,
-      header: [
-        { text: '', value: 'checkbox' },
-        { text: t('user-group-name'), value: 'name' },
-        { text: t('description'), value: 'description' },
-        { text: '', value: 'actions', width: 50 },
-      ],
+      header: headerUserGroup,
       actionsTable: [
         {
           id: 2,
@@ -120,6 +140,7 @@ const listTab: Tab[] = [
     title: 'organizational-structure-management',
     component: CpOrganization,
     dataTab: {
+      isView: isViewDetail,
       apiList: {
         api: CourseService.GetOrganizationalStructure,
         method: TYPE_REQUEST.GET,
@@ -150,6 +171,9 @@ const listTab: Tab[] = [
     key: 'student-register',
     title: 'student-register',
     component: CpStudentRegister,
+    dataTab: {
+      isView: isViewDetail,
+    },
   },
 
   // {

@@ -24,6 +24,15 @@ export const imageTypes = ['.tif', '.tiff', '.bmp', '.jpg', '.jpeg', '.gif', '.p
 export const otherFileExtention = '.rar, .zip, .txt, .doc, .docx, .pptx, .pptm, .ppt, .pdf, .xls, .xlsm, .xlsx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 export const typeDialog = 'center'
 
+export const MediaType = {
+  NONE: 0,
+  IMAGE: 1,
+  AUDIO: 2,
+  VIDEO: 3,
+  YOUTUBE: 4,
+  OTHER_FILE: 5,
+}
+
 /** Avatar */
 export const avatar = {
   offsetX: 30,

@@ -45,6 +45,7 @@ interface Api {
   [e: string]: any
 }
 interface Props {
+  isView: boolean
   header: Header[]
   actions: Item[]
   apiList: Api
@@ -225,23 +226,25 @@ function handlerAdd(data: any, unload: any) {
     isShowModalEdit.value = false
     getDataTable()
     toast('SUCCESS', t('add-success'))
-    unload()
+    if (unload)
+      unload()
   }).catch((err: any) => {
     toast('ERROR', t(err.response.data.errors[0].message))
-    unload()
+    if (unload)
+      unload()
   })
 }
-function handlerEdit(data: any, unload: any) {
+async function handlerEdit(data: any, unload: any) {
   const payload = {
     ...data,
     ...props.apiEdit.params,
   }
-  MethodsUtil.requestApiCustom(props.apiEdit.api, props.apiEdit.method, payload).then(() => {
+  await MethodsUtil.requestApiCustom(props.apiEdit.api, props.apiEdit.method, payload).then(() => {
     isShowModalEdit.value = false
+    toast('SUCCESS', t('USR_UpdateSuccess'))
     getDataTable()
     if (unload)
       unload()
-    toast('SUCCESS', t('USR_UpdateSuccess'))
   }).catch((err: any) => {
     if (unload)
       unload()
@@ -283,7 +286,9 @@ function exportExcel() {
     :title-page="titlePage"
     :is-show-add-group="false"
     :is-disabled-delete="!listId?.length"
-    :is-show-export-excel="isShowExportExcel"
+    :is-show-export-excel="isShowExportExcel && !isView"
+    :is-show-add="!isView"
+    :is-show-delete="!isView"
     :is-disabled-add="isDisabledAdd"
     @click-add="showModalEdit"
     @click-delete="() => { isShowModalDelete = true }"

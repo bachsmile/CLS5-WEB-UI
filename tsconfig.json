@@ -37,6 +37,9 @@
       "@axios": [
         "src/plugins/axios"
       ],
+      "@axiosV5": [
+        "src/plugins/axiosV5"
+      ],
       "@validators": [
         "src/@core/utils/validators"
       ]

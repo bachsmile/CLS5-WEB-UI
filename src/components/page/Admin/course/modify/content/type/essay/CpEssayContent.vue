@@ -9,7 +9,7 @@ import toast from '@/plugins/toast'
 import { load } from '@/stores/loadComponent.js'
 import { ContentType } from '@/constant/data/contentCourseType.json'
 
-const CmInputEditor = defineAsyncComponent(() => import('@/components/common/CmInputEditor.vue'))
+const CmInputEditor = defineAsyncComponent(() => import('@/components/common/inputEditor/CmInputEditor.vue'))
 const SkUser = defineAsyncComponent(() => import('@/components/page/gereral/skeleton/SkUser.vue'))
 const CmCheckBox = defineAsyncComponent(() => import('@/components/common/CmCheckBox.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
@@ -326,7 +326,10 @@ onDeactivated(() => {
                           </div>
                           <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                         </div>
-                        <div class="styleError text-errors">
+                        <div
+                          v-if="errors.length"
+                          class="styleError text-errors"
+                        >
                           {{ t(MethodsUtil.showErrorsYub(errors)) }}
                         </div>
                       </div>
@@ -348,7 +351,10 @@ onDeactivated(() => {
                           </div>
                           <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                         </div>
-                        <div class="styleError text-errors">
+                        <div
+                          v-if="errors.length"
+                          class="styleError text-errors"
+                        >
                           {{ t(MethodsUtil.showErrorsYub(errors)) }}
                         </div>
                       </div>

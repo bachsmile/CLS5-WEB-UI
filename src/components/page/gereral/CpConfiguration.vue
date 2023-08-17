@@ -254,7 +254,10 @@ defineExpose({
                       </div>
                       <span class="text-regular-md">%</span>
                     </div>
-                    <div class="styleError text-errors">
+                    <div
+                      v-if="errors.length"
+                      class="styleError text-errors"
+                    >
                       {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
@@ -572,7 +575,10 @@ defineExpose({
                       </div>
                       <span class="text-regular-md">{{ t('turns').toLowerCase() }}</span>
                     </div>
-                    <div class="styleError text-errors">
+                    <div
+                      v-if="errors.length"
+                      class="styleError text-errors"
+                    >
                       {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>

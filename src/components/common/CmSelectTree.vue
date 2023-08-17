@@ -45,6 +45,7 @@ interface Props {
 interface Emit {
   (e: 'update', value: any, instanceId: any): void
   (e: 'update:modelValue', value: any): void
+  (e: 'open'): void
 }
 
 /** ** Khởi tạo prop emit */
@@ -91,19 +92,19 @@ function normalizer(node: any) {
 }
 
 /** ** Sao chép biến model modelValue từ prop  modelValue ngăn thay đổi */
-const modelValue = ref(window._.cloneDeep(props.modelValue))
+const modelValueTree = ref(window._.cloneDeep(props.modelValue))
 
 /** ** Biễn render */
 const render = ref(true)
 
 /** ** Cập nhật dữ liệu trên select */
-// const updateValue = () => {
-//   render.value = false
-//   modelValue.value = window._.cloneDeep(props.modelValue)
-//   nextTick(() => {
-//     render.value = true
-//   })
-// }
+function updateValue() {
+  render.value = false
+  modelValueTree.value = window._.cloneDeep(props.modelValue)
+  nextTick(() => {
+    render.value = true
+  })
+}
 
 /** ** function: xử lý khi tao tác trên node */
 function handleUpdate(value: any, instanceId: any) {
@@ -114,10 +115,14 @@ function limitText(count: any) {
   return t('and-count-more', { count })
 }
 
+onMounted(() => {
+  modelValueTree.value = window._.cloneDeep(props.modelValue)
+})
+
 /** ** watch: check value thay đổi từ bên ngoài */
-// watch(() => props.modelValue, value => {
-//   updateValue()
-// })
+watch(() => props.modelValue, value => {
+  updateValue()
+})
 </script>
 
 <template>
@@ -131,7 +136,8 @@ function limitText(count: any) {
     :dir="rtl ? 'rtl' : 'ltr'"
   >
     <Treeselect
-      v-model="modelValue"
+      :model-value="modelValueTree"
+      class="py-1"
       :class="{ styleError: isError || errors?.length > 0 }"
       :value-format="props.valueFormat"
       :options="props.options"
@@ -143,7 +149,7 @@ function limitText(count: any) {
       :open-on-click="props.openOnClick"
       :open-on-focus="props.openOnFocus"
       :clear-on-select="props.clearOnSelect"
-      :close-on-select="props.closeOnSelect"
+      :close-on-select="props.multiple ? props.closeOnSelect : true"
       :always-open="props.alwaysOpen"
       :append-to-body="props.appendToBody"
       :flat="props.flat"
@@ -157,6 +163,7 @@ function limitText(count: any) {
       :max-height="props.maxHeight"
       :normalizer="normalizer"
       @update:modelValue="handleUpdate"
+      @open="emit('open')"
     >
       <template
         v-if="props.customLable"

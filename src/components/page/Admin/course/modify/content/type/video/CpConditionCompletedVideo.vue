@@ -35,8 +35,6 @@ const { settingDefaults } = storeToRefs(configControl)
 onMounted(async () => {
   if (!window._.isEmpty(conditionComplete))
     await fetchConditionComplete(Number(route.params.contentId))
-
-  await console.log(conditionComplete.value)
 })
 
 /** state */

@@ -7,6 +7,7 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import toast from '@/plugins/toast'
 import ArraysUtil from '@/utils/ArrayUtil'
 import type { typeToast } from '@/typescript/interface'
+import StringUtil from '@/utils/StringUtil'
 
 const props = withDefaults(defineProps<Props>(), {
   typeId: 2,
@@ -16,11 +17,12 @@ const SkTree = defineAsyncComponent(() => import('@/components/page/gereral/skel
 const CpMdEditTopic = defineAsyncComponent(() => import('./Modal/CpMdEditTopic.vue'))
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
-const TITLE = Object.freeze({
+const route = useRoute()
+const TITLE = reactive({
   ADD: t('Add-new'),
   ADD_FROM_FILE: t('add-from-file'),
   EXPORT_EXCEL: t('export-excel'),
-  TITLE_PAGE: t('Menu_TopicManaging'),
+  TITLE_PAGE: t(route.query.tab || ''),
   TOPIC_NAME: t('topicName'),
   TOPIC_PARENT: t('topic-parent'),
   PLACEHOLDER_PARENT_TOPIC: t('Select-topic'),
@@ -33,6 +35,7 @@ const TITLE = Object.freeze({
 const CmTreeView = defineAsyncComponent(() => import('@/components/common/CmTreeView.vue'))
 interface Props {
   typeId: number
+  title: any
 }
 const config = reactive({
   roots: [] as any[],
@@ -184,9 +187,16 @@ function handleAction(value: any, node: any) {
       break
   }
 }
-
 function exportExcel() {
-  MethodsUtil.dowloadSampleFile(sharedService.PostExportExcelTopic, TYPE_REQUEST.POST, 'topic.xlsx', { lang: 'vi', topicType: props.typeId })
+  let str = t(route.query.tab)
+  str = StringUtil.removeAccents(str)
+  const array = str.split(' ')
+  const temp: string[] = []
+  array.forEach((element: string) => {
+    temp.push(StringUtil.jsUcfirst(element))
+  })
+  str = temp.join('')
+  MethodsUtil.dowloadSampleFile(sharedService.PostExportExcelTopic, TYPE_REQUEST.POST, `ChuDe${str}.xlsx`, { lang: 'vi', topicType: props.typeId })
 }
 
 const router = useRouter()
@@ -220,7 +230,8 @@ function confirmDelete(topicId: number) {
     :button-prepend="TITLE.EXPORT_EXCEL"
     :button-add="TITLE.ADD"
     :is-show-delete="false"
-    :title-page="TITLE.TITLE_PAGE"
+    class="mt-7"
+    :title-page="t(props.title)"
     :list-item-button-group="listItemButtonGroup"
     @click-export="exportExcel"
     @click-add="showModalEdit"

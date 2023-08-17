@@ -2,7 +2,7 @@
 import { courseInforManagerStore } from '@/stores/admin/course/infor'
 import { validatorStore } from '@/stores/validatator'
 import { avatar } from '@/constant/Globals'
-import CmInputEditor from '@/components/common/CmInputEditor.vue'
+import CmInputEditor from '@/components/common/inputEditor/CmInputEditor.vue'
 import { comboboxStore } from '@/stores/combobox'
 import constant from '@/constant/constant'
 
@@ -155,6 +155,7 @@ if (formOfStudyCombobox.value)
               <CmTextField
                 :field="field"
                 :errors="errors"
+                :disabled="isViewDetail"
                 :text="LABEL.TITLE1"
                 :placeholder="LABEL.TITLE1"
               />
@@ -168,6 +169,7 @@ if (formOfStudyCombobox.value)
             <CmTextField
               v-model="courseData.code"
               :text="LABEL.TITLE2"
+              :disabled="isViewDetail"
               :placeholder="LABEL.TITLE2"
             />
           </VCol>
@@ -187,6 +189,7 @@ if (formOfStudyCombobox.value)
                 :errors="errors"
                 :is-error="errors.length > 0"
                 value-format="id"
+                :disabled="isViewDetail"
                 close-on-select
                 :text="LABEL.TITLE3"
                 :options="topicCombobox"
@@ -209,6 +212,7 @@ if (formOfStudyCombobox.value)
                 :field="field"
                 :errors="errors"
                 :items="formOfStudyCombobox"
+                :disabled="isViewDetail"
                 item-value="key"
                 custom-key="value"
                 :text="LABEL.TITLE4"
@@ -225,6 +229,7 @@ if (formOfStudyCombobox.value)
               v-model="courseData.credit"
               type="number"
               :min="constant.MIN_NUMBER"
+              :disabled="isViewDetail"
               :max="constant.MAX_NUMBER"
               :text="LABEL.TITLE5"
               :placeholder="LABEL.TITLE5"
@@ -249,6 +254,7 @@ if (formOfStudyCombobox.value)
         <VCol>
           <CmInputEditor
             v-model="courseData.about"
+            :disabled="isViewDetail"
             :text="t('introduce-course')"
           />
         </VCol>
@@ -259,6 +265,7 @@ if (formOfStudyCombobox.value)
     </div>
     <div>
       <CpActionFooterEdit
+        v-if="!isViewDetail"
         is-cancel
         is-save
         :is-save-and-update="isShowButton"

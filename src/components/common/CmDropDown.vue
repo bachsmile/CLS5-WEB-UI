@@ -19,6 +19,7 @@ const propsValue = withDefaults(defineProps<Props>(), ({
   index: 0,
   variant: 'outlined',
   isAction: false,
+  isDataResend: false,
 }))
 const emit = defineEmits<Emit>()
 const storeTable = tableStore()
@@ -47,6 +48,7 @@ interface Props {
   isAction?: boolean
   customKey: string
   dataResend?: any
+  isDataResend?: boolean // dùng để trả về item click
   type?: number
   index?: number
   variant?: typeof typeVariant[number]
@@ -106,7 +108,7 @@ function handleClickItemList(item: any) {
   if (propsValue.isAction)
     propsValue.type === 1 ? handleActionTable(MethodsUtil.checlActionKey(item, propsValue.data), propsValue.index, propsValue.dataResend) : handleActionTable()
   else if (item?.action)
-    propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, propsValue.data), propsValue.index, propsValue.dataResend) : item?.action()
+    propsValue.type === 1 ? item?.action(MethodsUtil.checlActionKey(item, propsValue.data), propsValue.index, propsValue.dataResend) : (propsValue.isDataResend ? item?.action([item]) : item?.action())
 
   else
     emit('click', item, propsValue.dataResend)
@@ -125,7 +127,7 @@ function handleClickItemList(item: any) {
           <CmButton
             v-if="type === 2"
             :disabled="disabled"
-            :class="[`${prefixColor}-${color}`, bgColor, className, textButton]"
+            :class="[bgColor, className, textButton]"
             :color="color"
             :variant="variant"
             :props-blind="props"

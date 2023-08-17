@@ -1,6 +1,6 @@
 const CommonService = {
   /** server file */
-  SERVERFILE: 'https://sfv4.cloudlms.top/api/File/upload',
+  SERVERFILE: 'https://rs.cloudlms.top/api/File/upload',
 }
 
 export default CommonService

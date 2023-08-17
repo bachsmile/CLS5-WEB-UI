@@ -4,6 +4,9 @@ body {
   font-family: $font-family-custom !important;
   letter-spacing: normal !important;
 }
+.relative {
+  position: relative;
+}
 .text-primary {
   color: $color-primary-600 !important;
 }
@@ -501,6 +504,9 @@ span {
 [class*="v-col"] {
   padding: 8px 12px !important;
 }
+// [class*="v-row"] {
+//   margin: -8px -12px !important;
+// }
 .embed-responsive {
   position: relative;
   width: 100%;
@@ -557,4 +563,31 @@ span {
   .myn-#{$i} {
     margin-block: (-4 * $i) + px;
   }
+}
+// margin
+@for $i from 0 through 10 {
+  .mn-#{$i} {
+    margin: (-4 * $i) + px;
+  }
+}
+.pxn {
+  padding-inline: 0px !important;
+}
+
+//radio
+.v-radio-group .v-selection-control-group .v-radio:not(:last-child) {
+  margin-inline-end: 2rem;
+}
+.answer-fill-blank {
+  margin: 5px;
+  padding: 0.438rem 1rem;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgb(var(--v-gray-300));
+  border-radius: 0.357rem;
+  display: inline-block;
+  user-select: none;
+}
+.answer-underline {
+  user-select: none;
 }

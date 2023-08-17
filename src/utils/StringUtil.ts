@@ -26,6 +26,8 @@ export default class StringUtil {
    * @return {string}
    */
   static decimalToFixed = (numberFix = 0, numFixed: number) => {
+    if (!numberFix)
+      return 0
     const num = numberFix.toFixed(numFixed)
     const arrNum = num.split('.')
     if (Number(arrNum[1]) === 0)

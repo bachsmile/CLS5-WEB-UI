@@ -61,16 +61,24 @@ h6,
 }
 
 .v-theme--dark {
-  --v-theme-background:
-    var(
-      --skin-theme-background,
-      #{utils.map-deep-get(variables.$css-vars, "default", "--v-theme-background", "dark")}
-    ) !important;
-  --v-theme-surface:
-    var(
-      --skin-theme-surface,
-      #{utils.map-deep-get(variables.$css-vars, "default", "--v-theme-surface", "dark")}
-    ) !important;
+  --v-theme-background: var(
+    --skin-theme-background,
+    #{utils.map-deep-get(
+        variables.$css-vars,
+        "default",
+        "--v-theme-background",
+        "dark"
+      )}
+  ) !important;
+  --v-theme-surface: var(
+    --skin-theme-surface,
+    #{utils.map-deep-get(
+        variables.$css-vars,
+        "default",
+        "--v-theme-surface",
+        "dark"
+      )}
+  ) !important;
 }
 
 // 👉 Button

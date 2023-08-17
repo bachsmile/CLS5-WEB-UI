@@ -39,13 +39,21 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const router = useRouter()
 const route = useRoute()
 const courseId = Number(route.params.id)
-const headers = reactive([
-  { text: '', value: 'checkbox' },
-  { text: t('content'), value: 'name', key: true },
-  { text: t('creator'), value: 'fullname', type: 'custom' },
-  { text: t('create-day'), value: 'registerDate', type: 'custom' },
-  { text: '', value: 'actions', width: 150 },
-])
+const isViewDetail = computed(() => route.name === 'course-view')
+const headers = computed(() => {
+  if (route.name === 'course-view') {
+    return [{ text: t('content'), value: 'name', key: true },
+      { text: t('creator'), value: 'fullname', type: 'custom' },
+      { text: t('create-day'), value: 'registerDate', type: 'custom' }]
+  }
+  return [
+    { text: '', value: 'checkbox' },
+    { text: t('content'), value: 'name', key: true },
+    { text: t('creator'), value: 'fullname', type: 'custom' },
+    { text: t('create-day'), value: 'registerDate', type: 'custom' },
+    { text: '', value: 'actions', width: 150 },
+  ]
+})
 
 const actionAdd = [
   {
@@ -106,7 +114,10 @@ onUnmounted(() => {
       <CpActionHeaderPage
         :title="t('list-reference')"
       >
-        <template #actions>
+        <template
+          v-if="!isViewDetail"
+          #actions
+        >
           <div
             cols="12"
             md="3"
@@ -126,7 +137,7 @@ onUnmounted(() => {
     </div>
     <div>
       <CpHeaderAction
-        is-delete
+        :is-delete="!isViewDetail"
         :is-fillter="false"
         :disabled-delete="disabledDeleteRefer"
         @click="handleClickBtn"

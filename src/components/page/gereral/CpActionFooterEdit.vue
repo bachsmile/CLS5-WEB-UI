@@ -52,7 +52,7 @@ const action = [
 interface Emit {
   (e: 'onCancel'): void
   (e: 'onSave', idx: any, unload: any): void
-  (e: 'onSaveUpdate', idx: any): void
+  (e: 'onSaveUpdate', idx: any, unload: any): void
   (e: 'onSaveGroup', event: any, type: string): void
 }
 
@@ -96,7 +96,7 @@ function handlerPreButton(event: any) {
       <CmButton
         is-load
         color="primary"
-        @click="(idx: any) => emit('onSaveUpdate', idx)"
+        @click="(idx: any, unload: any) => emit('onSaveUpdate', idx, unload)"
       >
         {{ t(titleSaveAndUpdate || '') }}
       </CmButton>

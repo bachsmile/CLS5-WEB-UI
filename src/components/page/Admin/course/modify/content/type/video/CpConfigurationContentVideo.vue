@@ -141,7 +141,10 @@ if (!route.params.contentId)
                       </div>
                       <span class="text-regular-md">%</span>
                     </div>
-                    <div class="styleError text-errors">
+                    <div
+                      v-if="errors.length"
+                      class="styleError text-errors"
+                    >
                       {{ t(MethodsUtil.showErrorsYub(errors)) }}
                     </div>
                   </div>
@@ -212,7 +215,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('question') }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -259,7 +265,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('over') }} {{ 2 }} {{ t('question').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -308,7 +317,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -337,7 +349,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('seconds').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -384,7 +399,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('minutes').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>
@@ -432,7 +450,10 @@ if (!route.params.contentId)
                         </div>
                         <span class="text-regular-md">{{ t('turns').toLowerCase() }}</span>
                       </div>
-                      <div class="styleError text-errors">
+                      <div
+                        v-if="errors.length"
+                        class="styleError text-errors"
+                      >
                         {{ t(MethodsUtil.showErrorsYub(errors)) }}
                       </div>
                     </div>

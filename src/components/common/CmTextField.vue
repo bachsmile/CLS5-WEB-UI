@@ -49,7 +49,6 @@ const formModelValue = ref<any>(props.modelValue)
 /** Method */
 function handleChangeText(val: any) {
   emit('change', formModelValue.value)
-  console.log(formModelValue.value)
   // eslint-disable-next-line vue/no-mutating-props
   props.modelValue = formModelValue.value
 

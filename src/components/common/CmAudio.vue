@@ -86,7 +86,7 @@ function durationchange(e: any) {
 </script>
 
 <template>
-  <div>
+  <div :style="{ width }">
     <audio
       id="audio-controls"
       ref="audioPlayer"

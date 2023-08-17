@@ -2,56 +2,62 @@
 import CmTab from '@/components/common/CmTab.vue'
 import CpManagerTopic from '@/components/page/Admin/training/topic/CpManagerTopic.vue'
 
-const listtab = ref([
+const listtab = [
   {
-    key: 'training-title',
-    title: 'topic-training-title',
+    key: 'training',
+    title: 'training',
     component: CpManagerTopic,
     dataTab: {
       typeId: 2,
+      title: 'training',
     },
   },
   {
-    key: 'topic-exam',
-    title: 'ShareService_TopicExam',
+    key: 'exam',
+    title: 'exam',
     component: CpManagerTopic,
     dataTab: {
       typeId: 3,
+      title: 'exam',
     },
   },
   {
-    key: 'topic-survey',
-    title: 'topic-survey',
+    key: 'survey',
+    title: 'survey',
     component: CpManagerTopic,
     dataTab: {
       typeId: 6,
+      title: 'survey',
     },
   },
   {
-    key: 'topic-question',
-    title: 'ShareService_TopicQuestion',
+    key: 'question',
+    title: 'question',
     component: CpManagerTopic,
     dataTab: {
       typeId: 4,
+      title: 'question',
     },
   },
   {
-    key: 'training-route',
-    title: 'topic-training-route',
+    key: 'train-route',
+    title: 'train-route',
     component: CpManagerTopic,
     dataTab: {
       typeId: 1,
+      title: 'train-route',
     },
   },
   {
-    key: 'topic-forum',
-    title: 'topic-forum',
+    key: 'forum',
+    title: 'forum',
     component: CpManagerTopic,
     dataTab: {
       typeId: 7,
+      title: 'forum',
     },
   },
-])
+]
 </script>
 
 <template>

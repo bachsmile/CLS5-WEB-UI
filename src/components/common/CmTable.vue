@@ -125,6 +125,7 @@ function checkActionShow(action: Array<any>) {
 
 const pageSize = ref(props.pageSize) // số lượng item trên 1 page
 const serverfile = window.SERVER_FILE || ''
+const isSelectTable = computed(() => !!props.headers?.filter((item: any) => item.value === 'checkbox')?.length)
 
 /** method */
 // cập nhật selectedRows
@@ -232,7 +233,7 @@ onMounted(() => {
   })
 })
 const headerValue = computed(() => {
-  if (props.headers[0].value === 'checkbox' && props.headers.length && props.isView) {
+  if (props?.headers[0]?.value === 'checkbox' && props?.headers?.length && props.isView) {
     const headerClone: any = window._.cloneDeep(props.headers)
     headerClone.shift()
     return headerClone
@@ -258,8 +259,22 @@ watch(() => props.items, (val: Item[]) => {
 }, { immediate: true })
 
 watch(totalPaginationLocal, val => {
-  if (props?.isLocalTable)
+  if (props?.isLocalTable) {
+    selectedRows.value = []
     emit('update:totalItems', val)
+    props.items?.forEach((element, index) => {
+      element.originIndex = index
+      element.isSelected = !!element.isSelected
+
+      if (element.isSelected)
+        selectedRows.value.push(element[keyid.value])
+    })
+    const itemSelected = props.items.filter((x: Item) => x.isSelected === true)
+    if (props.returnObject)
+      emit('update:selected', itemSelected)
+    else
+      emit('update:selected', selectedRows.value)
+  }
 })
 </script>
 
@@ -272,7 +287,7 @@ watch(totalPaginationLocal, val => {
     <EasyDataTable
       ref="dataTable"
       alternating
-      :table-class-name="`customize-table ${isExpand ? 'table-expand' : ''}`"
+      :table-class-name="`customize-table ${isExpand ? 'table-expand' : ''} ${isSelectTable ? 'selectedTable' : ''}`"
       :headers="headerValue"
       :items="items"
       :rows-per-page="!disiablePagination ? pageSize : PAGINATION_SIZE_UNLIMIT_DEFAULT"
@@ -655,5 +670,9 @@ watch(totalPaginationLocal, val => {
 }
 .text-header{
   text-transform: capitalize;
+}
+.selectedTable tbody tr td:first-child {
+  display: flex;
+  align-items: start;
 }
 </style>

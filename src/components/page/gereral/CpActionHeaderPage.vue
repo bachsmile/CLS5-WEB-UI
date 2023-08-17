@@ -51,7 +51,7 @@ function handlerCustomButton() {
 
 <template>
   <div
-    class="d-flex justify-space-between my-6"
+    class="d-flex justify-space-between my-2 "
     style="flex-wrap: wrap;"
   >
     <div class="text-medium-lg">

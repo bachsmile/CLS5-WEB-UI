@@ -25,6 +25,7 @@ interface Api {
   [e: string]: any
 }
 interface Props {
+  isView: boolean
   modelValue: any
   apiList: Api
   apiAdd: Api
@@ -40,7 +41,7 @@ const config = reactive({
   roots: [] as any[],
   keyboardNavigation: false,
   dragAndDrop: false,
-  checkboxes: true,
+  checkboxes: !props.isView,
   editable: false,
   disabled: false,
   padding: 25,
@@ -140,6 +141,7 @@ watch(render, val => {
   </div>
   <div>
     <CpActionFooterEdit
+      v-if="!isView"
       is-cancel
       is-save
       :title-cancel="t('come-back')"
