@@ -12,6 +12,12 @@
             "icon": "tabler:video",
             "type": 2
         },
+        "excel": {
+            "color": "primary",
+            "name": "excel",
+            "icon": "ri:file-excel-2-line",
+            "type": 1
+        },
         "default": {
             "color": "primary",
             "name": "file",

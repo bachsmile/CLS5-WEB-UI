@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import CpMdEditAssginUserSurvey from '../../modal/CpMdEditAssginUserSurvey.vue'
+import CpMdEditAssginUserSurvey from '../../../modal/CpMdEditAssginUserSurvey.vue'
 import CpFilterAssignUserSurvey from './CpFilterAssignUserSurvey.vue'
 import CpHeaderAction from '@/components/page/gereral/CpHeaderAction.vue'
 import CpActionHeaderPage from '@/components/page/gereral/CpActionHeaderPage.vue'
@@ -13,6 +13,9 @@ import type { Any } from '@/typescript/interface'
 import CpCustomInfo from '@/components/page/gereral/CpCustomInfo.vue'
 import DateUtil from '@/utils/DateUtil'
 import CmAccodion from '@/components/common/CmAccodion.vue'
+import toast from '@/plugins/toast'
+import { tableStore } from '@/stores/table'
+import CpConfirmDialog from '@/components/page/gereral/CpConfirmDialog.vue'
 
 const isShowFilter = ref(true)
 const { t } = window.i18n()
@@ -94,18 +97,59 @@ function getListCandidates() {
           content: element.groupModels,
         }
       }
+      element.actions = [
+        MethodsUtil.checkActionType({ id: 2 }),
+      ]
     })
-    queryParams.UserIds = result.data.pageLists((i: Any) => i.id)
+    queryParams.UserIds = result.data.pageLists.map((i: Any) => i.id)
     items.value = result.data.pageLists
     totalRecord.value = result.data.totalRecord
   })
 }
 getListCandidates()
+const storeTable = tableStore()
+const { callBackAction } = storeToRefs(storeTable)
+
+callBackAction.value = actionItem
 
 const isShowModalAdd = ref(false)
 
 function showModalAddUser() {
   isShowModalAdd.value = true
+}
+
+function addUser(val: Any) {
+  MethodsUtil.requestApiCustom(QuestionService.PostAddUserToSurvey, TYPE_REQUEST.POST, val).then((result: Any) => {
+    isShowModalAdd.value = false
+    toast('SUCCESS', t(result.message))
+    getListCandidates()
+  }).catch((err: Any) => {
+    toast('ERROR', window.getErrorsMessage(err?.response?.data?.errors, t))
+  })
+}
+
+const isShowModalConfirmDelete = ref(false)
+const selected = ref<any[]>([])
+function confirmDelete() {
+  const payload = {
+    userModel: selected.value,
+    examId: route.params.id,
+    testId: route.params.topicId,
+    type: 1,
+  }
+  MethodsUtil.requestApiCustom(QuestionService.PostDeleteUserFromSurvey, TYPE_REQUEST.POST, payload).then((result: Any) => {
+    isShowModalConfirmDelete.value = false
+    toast('SUCCESS', t(result.message))
+    selected.value = []
+    getListCandidates()
+  }).catch((err: Any) => {
+    toast('ERROR', window.getErrorsMessage(err?.response?.data?.errors, t))
+  })
+}
+
+function actionItem([{ id }, content]: [Any, Any]) {
+  selected.value = [content.id]
+  isShowModalConfirmDelete.value = true
 }
 </script>
 
@@ -120,8 +164,13 @@ function showModalAddUser() {
   </div>
   <CmCollapse :is-show="isShowFilter">
     <CpFilterAssignUserSurvey
-      v-model:query-params="queryParams"
-      @update:query-params="getListCandidates"
+      v-model:page-size="queryParams.pageSize"
+      v-model:page-number="queryParams.pageNumber"
+      v-model:category-title-id="queryParams.categoryTitleId"
+      v-model:titles="queryParams.titles"
+      v-model:group-user="queryParams.groupUser"
+      v-model:or-structure="queryParams.orStructure"
+      @update:page-number="getListCandidates"
     />
   </CmCollapse>
   <div>
@@ -130,13 +179,18 @@ function showModalAddUser() {
       v-model:keyword="queryParams.searchKey"
       v-model:page-number="queryParams.pageNumber"
       v-model:page-size="queryParams.pageSize"
+      is-delete
+      :disabled-delete="selected?.length === 0"
       @update:keyword="getListCandidates"
+      @delete-multiple="() => { isShowModalConfirmDelete = true }"
     />
   </div>
   <div>
     <CmTable
+      v-model:selected="selected"
       v-model:page-number="queryParams.pageNumber"
       v-model:page-size="queryParams.pageSize"
+      :total-record="totalRecord"
       :headers="headers"
       :items="items"
     >
@@ -171,5 +225,15 @@ function showModalAddUser() {
       </template>
     </CmTable>
   </div>
-  <CpMdEditAssginUserSurvey v-model:is-show="isShowModalAdd" />
+  <CpMdEditAssginUserSurvey
+    v-model:is-show="isShowModalAdd"
+    :title="t('add-candidates')"
+    @ok="addUser"
+  />
+  <CpConfirmDialog
+    v-model:is-dialog-visible="isShowModalConfirmDelete"
+    :confirmation-msg="t('confirm-delete-user-from-survey')"
+    :type="2"
+    @confirm="confirmDelete"
+  />
 </template>

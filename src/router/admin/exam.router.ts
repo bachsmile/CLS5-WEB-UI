@@ -1,10 +1,6 @@
 export default [
 
   {
-    path: 'question-survey',
-    name: 'question-survey',
-  },
-  {
     path: 'exam-question-stock-list',
     name: 'exam-question-stock-list',
   },

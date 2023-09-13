@@ -10,7 +10,7 @@ export const useImportFileStore = defineStore('importFile', () => {
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
   const type = ref<number | string | undefined>(2)
   const config = reactive<Config>({ table: { header: [] } })
-
+  const isLocal = ref(true)
   const paramsImport = reactive({
     validData: <any>[],
     invalidData: <any>[],
@@ -31,7 +31,10 @@ export const useImportFileStore = defineStore('importFile', () => {
           if (item[customKeyError.value]) {
             item.messageErr = ''
             item[customKeyError.value].forEach((err: any) => {
-              item.messageErr += `${t(err.location)} ${t(`${err.message}`)} <br> `
+              if (isLocal.value)
+                item.messageErr += `${t(err.location)}: ${t(`${err.message}`)} <br> `
+              else
+                item.messageErr += `${t(`${err.message}`)} <br> `
             })
           }
         }
@@ -44,10 +47,8 @@ export const useImportFileStore = defineStore('importFile', () => {
 
   const getValidData = async (listData: Array<object>, paramExtend?: any) => {
     let model: any = {
-      listLocal: [],
       listExcel: listData,
       isSave: false,
-      type: type.value,
     }
     if (paramExtend) {
       const { customListExcel, customListLocal, customIsSave, ...extend } = paramExtend
@@ -57,16 +58,19 @@ export const useImportFileStore = defineStore('importFile', () => {
       }
       if (customListExcel) {
         model[customListExcel] = listData
-        model.listExcel = []
+        delete model.listExcel
       }
-      if (customListLocal)
+      if (customListLocal) {
         model[customListLocal] = []
+        delete model.listLocal
+      }
 
       if (customIsSave)
         model[customIsSave] = false
     }
     paramsImport.validData = []
     paramsImport.invalidData = []
+
     await MethodsUtil.requestApiCustom(config.importFile?.urlFileDefault, config.importFile?.method, model).then((value: any) => {
       checkDataError(value.data)
       const validData = value.data.filter((item: any) => item.isSuccess === true)
@@ -220,5 +224,5 @@ export const useImportFileStore = defineStore('importFile', () => {
     }
   }
 
-  return { refTableValid, getValidData, checkInvalidData, checkDataError, paramsImport, fileChange, config, type, updateFromFile, customKeyError, $reset }
+  return { refTableValid, getValidData, checkInvalidData, checkDataError, paramsImport, fileChange, config, type, updateFromFile, customKeyError, $reset, isLocal }
 })

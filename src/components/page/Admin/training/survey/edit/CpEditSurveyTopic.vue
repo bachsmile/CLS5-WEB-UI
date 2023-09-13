@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import CpInfoSurveyTopic from './survey-topic/CpInfoSurveyTopic.vue'
 import CpAssignGeneral from './survey-topic/CpAssignGeneral.vue'
+import CpListTestSurvey from './survey-topic/CpListTestSurvey.vue'
 import QuestionService from '@/api/question'
 import CpActionFooterEdit from '@/components/page/gereral/CpActionFooterEdit.vue'
 import CpTabsOrder from '@/components/page/gereral/CpTabsOrder.vue'
@@ -74,7 +75,7 @@ async function createSurvey(isUpdate: boolean, unload: any) {
       MethodsUtil.requestApiCustom(QuestionService.PostCreateSurveyTopic, TYPE_REQUEST.POST, dataInput.value).then((result: Any) => {
         toast('SUCCESS', t(result.message) || t('survey-add-success'))
         if (isUpdate)
-          router.push({ name: 'edit-survey-edit-topic', query: { ...route.query }, params: { id: route.params.id, topicId: result.data } })
+          router.push({ name: 'edit-survey-edit-topic', query: { ...route.query }, params: { id: route.params.id, topicId: result.data.testId } })
         else
           cancel()
         emit('fetchList')
@@ -116,10 +117,22 @@ function cancel() {
   router.push({ name: 'edit-survey', query: { ...query }, params: { id: route.params.id } })
 }
 function transferTab() {
-  router.push({ query: { ...route.query, tab: tab.value } })
+  const query = window._.cloneDeep(route.query)
+  delete query.assignTab
+  delete query.type
+  router.push({ query: { ...query, tab: tab.value } })
 }
 if (route.query.tab || tab.value === '')
   tab.value = route.query.tab as string
+
+onMounted(() => {
+  if (route.query.testTab) {
+    const query = window._.cloneDeep(route.query)
+    delete query.testTab
+    router.push({ query })
+  }
+})
+const isShowFooterEdit = ref(true)
 </script>
 
 <template>
@@ -147,9 +160,17 @@ if (route.query.tab || tab.value === '')
       v-if="route.query.tab === 'candidate'"
     />
   </div>
+  <div>
+    <CpListTestSurvey
+      v-if="route.query.tab === 'test-survey'"
+      v-model:isShowFooterEdit="isShowFooterEdit"
+      :is-hand-work="dataInput.isHandWork"
+    />
+  </div>
 
   <div class="mt-3">
     <CpActionFooterEdit
+      v-if="isShowFooterEdit"
       :is-save="tab === 'info'"
       :is-save-and-update="!route.params.topicId"
       :title-save="t('save')"

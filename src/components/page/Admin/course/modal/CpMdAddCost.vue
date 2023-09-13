@@ -17,7 +17,7 @@ const emit = defineEmits<Emit>()
 const CmSelect = defineAsyncComponent(() => import('@/components/common/CmSelect.vue'))
 const CmDialogs = defineAsyncComponent(() => import('@/components/common/CmDialogs.vue'))
 const CmTextField = defineAsyncComponent(() => import('@/components/common/CmTextField.vue'))
-const CmtextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
+const CmTextArea = defineAsyncComponent(() => import('@/components/common/CmTextArea.vue'))
 
 interface Props {
   isShowModalAddCost: boolean
@@ -196,7 +196,7 @@ watch(() => props.isShowModalAddCost, isShow => {
           name="description"
           type="text"
         >
-          <CmtextArea
+          <CmTextArea
             v-model="costData.description"
             :field="field"
             :errors="errors"

@@ -92,18 +92,15 @@ function normalizer(node: any) {
 }
 
 /** ** Sao chép biến model modelValue từ prop  modelValue ngăn thay đổi */
-const modelValueTree = ref(window._.cloneDeep(props.modelValue))
+const modelValueTree = ref(props.multiple ? [] : null)
 
 /** ** Biễn render */
-const render = ref(true)
+const render = ref('')
 
 /** ** Cập nhật dữ liệu trên select */
 function updateValue() {
-  render.value = false
+  render.value = MethodsUtil.createRandomId(10)
   modelValueTree.value = window._.cloneDeep(props.modelValue)
-  nextTick(() => {
-    render.value = true
-  })
 }
 
 /** ** function: xử lý khi tao tác trên node */
@@ -115,12 +112,8 @@ function limitText(count: any) {
   return t('and-count-more', { count })
 }
 
-onMounted(() => {
-  modelValueTree.value = window._.cloneDeep(props.modelValue)
-})
-
 /** ** watch: check value thay đổi từ bên ngoài */
-watch(() => props.modelValue, value => {
+watch(() => props.modelValue, () => {
   updateValue()
 })
 </script>
@@ -132,11 +125,11 @@ watch(() => props.modelValue, value => {
     >{{ props.text }}</label>
   </div>
   <div
-    v-if="render"
+    :key="render"
     :dir="rtl ? 'rtl' : 'ltr'"
   >
     <Treeselect
-      :model-value="modelValueTree"
+      v-model:model-value="modelValueTree"
       class="py-1"
       :class="{ styleError: isError || errors?.length > 0 }"
       :value-format="props.valueFormat"

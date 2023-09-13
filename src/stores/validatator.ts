@@ -143,6 +143,7 @@ export const validatorStore = defineStore('validator', () => {
     defaultNumberNoReqPosNoNulls: (val: any) => {
       return yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).max(val, ruleMessage.maxValue(val))
     },
+    defaultNumberNoReqNoNullsMaxValue: (val: number) => yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).max(val, ruleMessage.maxValue(val)),
     defaultNumberNoReqPosNoNullNot0: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => value > 0).max(CONFIG.DEFAULT_NUMBER.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER.MAX_VALUE)),
     defaultNumber100Yub: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().required(ruleMessage.required()).max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
     defaultNumber100YubNoRequire: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.positive, (value: any) => value >= 0).nullable().max(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE, ruleMessage.maxValue(CONFIG.DEFAULT_NUMBER_100.MAX_VALUE)),
@@ -151,6 +152,8 @@ export const validatorStore = defineStore('validator', () => {
     defaultNumberTime: yup.number().typeError(ruleMessage.typeNumber).test('positive', ruleMessage.numberMin, (value: any) => {
       return Number(value) >= 0
     }).max(59, ruleMessage.maxValue(59)),
+
+    // ======================================================================================================================================================//
     requiredString: (field?: any) => yup.string().required(ruleMessage.required(field)).max(CONFIG.DEFAULT_STRING.MAX, ruleMessage.max(CONFIG.DEFAULT_STRING.MAX)),
     code: yup.string().max(CONFIG.CODE.MAX, ruleMessage.max(CONFIG.CODE.MAX)).nullable(),
     require: yup.string().required(ruleMessage.required()),

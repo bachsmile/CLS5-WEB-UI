@@ -57,7 +57,7 @@ const DATA_LABEL = Object.freeze({
 
 // get name schools '
 
-const fetchNameSchools = async () => {
+async function fetchNameSchools() {
   await MethodsUtil.requestApiCustom(ApiUser.fetchNameSchools, TYPE_REQUEST.GET).then((value: any) => {
     data.nameSchoolsCombobox = value.data
   })
@@ -66,7 +66,7 @@ const fetchNameSchools = async () => {
 fetchNameSchools()
 
 // get bằng cấp trình độ '
-const fetchDegrees = async () => {
+async function fetchDegrees() {
   await MethodsUtil.requestApiCustom(ApiUser.fetchDegrees, TYPE_REQUEST.GET).then((value: any) => {
     data.degreesCombobox = value.data
   })
@@ -94,7 +94,7 @@ const { values, setValues, resetForm } = useForm({
 
 /** event dialog */
 
-const onCancel = async () => {
+async function onCancel() {
   emit('update:isDialogVisible', false, 'EXPERENCE')
 }
 const myFormExperence = ref(null)
@@ -103,7 +103,7 @@ const myFormExperence = ref(null)
  * add data modal Experience
  */
 
-const addExperience = () => {
+function addExperience() {
   if (props?.experienceData?.isEdit === false)
     emit('update:profile', window._.clone(values), false)
 
@@ -111,7 +111,7 @@ const addExperience = () => {
     emit('update:profile', window._.clone(values), true)
 }
 
-const onConfirmation = () => {
+function onConfirmation() {
   const form: any = myFormExperence.value
   if (form) {
     form.validate().then((success: any) => {
@@ -257,4 +257,3 @@ watch(() => props.experienceData, value => {
 <style scoped lang="scss">
 @use "/src/styles/style-global" as *;
 </style>
-

@@ -19,7 +19,7 @@ const propsValue = withDefaults(defineProps<Props>(), ({
   color: 'dark',
 }))
 
-const positionBorder = (value: number) => {
+function positionBorder(value: number) {
   if (value === 0)
     return 'button-group-prepend'
 
@@ -31,31 +31,35 @@ const positionBorder = (value: number) => {
 </script>
 
 <template>
-  <CmButton
-    v-for="(item, index) in listItem"
-    :key="index"
-    :class="`${positionBorder(index)} button-group ${item.value === modelValue ? 'active' : ''}`"
-    color="color"
-    variant="outlined"
-    @click="item?.action"
-  >
-    <span :class="`color-${color} font-weight-600`">
-      <VIcon
-        v-if="item.icon"
-        :icon="item.icon"
-        size="18"
-      />
-      <span
-        v-if="item.title"
-        class="ml-1"
-      >{{ item.title }}</span>
-    </span>
-  </CmButton>
+  <div class="d-flex flex-nowrap">
+    <CmButton
+      v-for="(item, index) in listItem"
+      :key="index"
+      :class="`${positionBorder(index)} button-group ${item.value === modelValue ? 'active' : ''}`"
+      color="color"
+      variant="outlined"
+      @click="item?.action"
+    >
+      <span :class="`color-${color} font-weight-600`">
+        <VIcon
+          v-if="item.icon"
+          :icon="item.icon"
+          size="18"
+        />
+        <span
+          v-if="item.title"
+          class="ml-1"
+        >{{ item.title }}</span>
+      </span>
+    </CmButton>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 @use "/src/styles/style-global" as *;
 .button-group {
+  border: 1px solid $color-gray-300;
+
   background-color: $color-white;
   text-transform: unset;
   padding: 10px 12px !important;

@@ -171,7 +171,7 @@ function handleChangeFile(data: any, fileUp: any) {
   if (contentRefer.value.name === null)
     contentRefer.value.name = data?.name
 
-  if (!contentRefer.value.url)
+  if (!contentRefer.value.url && !contentRefer.value.urlFileName)
     errorsInputFile.value = [t('please-choose-files')]
 
   else

@@ -2,10 +2,9 @@
 import CpOrganizationSelect from '@/components/page/gereral/CpOrganizationSelect.vue'
 import CmSelect from '@/components/common/CmSelect.vue'
 import { comboboxStore } from '@/stores/combobox'
-import type { Params } from '@/typescript/interface/params'
 
 const props = withDefaults(defineProps<Props>(), {
-  queryParams: null,
+
 })
 
 const emit = defineEmits<Emit>()
@@ -17,39 +16,20 @@ const { organizationsCombobox, categoryTitleCombobox, groupUserCombobox, listDis
 
 const { fetchTOrgStructCombobox, fetchCategoryTitleCombobox, fetchGroupUserCombobox, getComboboxListDistrict } = store
 interface Props {
-  queryParams: QueryParams | null
-}
-interface QueryParams extends Params {
-  UserIds: number[]
   categoryTitleId: number[]
-  examId: number
   groupUser: number[]
   orStructure: number[]
-  searchKey: string
-  testId: number
   titles: any[]
-  typeId: number
 }
-interface Emit {
-  (e: 'update:queryParams', data: QueryParams): void
-}
-const params = ref<QueryParams>({
-  UserIds: [],
-  categoryTitleId: [],
-  examId: 0,
-  groupUser: [],
-  orStructure: [],
-  searchKey: '',
-  testId: 0,
-  titles: [],
-  typeId: 0,
-  pageNumber: 1,
-  pageSize: 10,
-})
-watch(() => props.queryParams, (val: QueryParams) => {
-  params.value = val
-})
 
+interface Emit {
+  (e: 'update:pageNumber', data: number): void
+  (e: 'update:pageSize', data: number): void
+  (e: 'update:categoryTitleId', data: any[]): void
+  (e: 'update:titles', data: any[]): void
+  (e: 'update:orStructure', data: any[]): void
+  (e: 'update:groupUser', data: any[]): void
+}
 if (window._.isEmpty(organizationsCombobox.value))
   fetchTOrgStructCombobox()
 if (window._.isEmpty(categoryTitleCombobox.value))
@@ -59,9 +39,43 @@ if (window._.isEmpty(groupUserCombobox.value))
 if (window._.isEmpty(listDistrictCombobox.value))
   getComboboxListDistrict()
 
-function updateData() {
-  emit('update:queryParams', params.value)
+function updatePage() {
+  emit('update:pageSize', 10)
+  emit('update:pageNumber', 1)
 }
+function updateCategoryTitleId(val: any[]) {
+  emit('update:categoryTitleId', val)
+  updatePage()
+}
+function updateTitles(val: any[]) {
+  emit('update:titles', val)
+  updatePage()
+}
+function updateOrStructure(val: any[]) {
+  emit('update:orStructure', val)
+  updatePage()
+}
+function updateGroupUser(val: any[]) {
+  emit('update:groupUser', val)
+  updatePage()
+}
+
+const organizationalStructureId = ref<any>(null)
+watch(() => props.orStructure, val => {
+  organizationalStructureId.value = val
+}, { immediate: true })
+const listTitle = ref<any[] | null>(null)
+watch(() => props.titles, val => {
+  listTitle.value = val
+}, { immediate: true })
+const groupId = ref<any>(null)
+watch(() => props.groupUser, val => {
+  groupId.value = val
+}, { immediate: true })
+const categories = ref<number[] | null>(null)
+watch(() => props.categoryTitleId, val => {
+  categories.value = val
+}, { immediate: true })
 </script>
 
 <template>
@@ -71,38 +85,43 @@ function updateData() {
       lg="4"
     >
       <CpOrganizationSelect
-        v-model="params.orStructure"
+        v-model="organizationalStructureId"
         multiple
         :text="t('organizational-structure-management')"
         :placeholder="t('organizational-structure-management')"
-        @update:model-value="updateData"
+        @update:model-value="updateOrStructure"
       />
     </VCol>
+
     <VCol
       cols="12"
       lg="4"
     >
       <CmSelect
-        v-model="params.groupUser"
+        v-model="groupId"
         multiple
+        :items="groupUserCombobox"
+        custom-key="name"
+        item-value="id"
         :text="t('user-group')"
         :placeholder="t('user-group')"
-        @update:model-value="updateData"
+        @update:model-value="updateGroupUser"
       />
     </VCol>
+
     <VCol
       cols="12"
       lg="4"
     >
       <CmSelect
-        v-model="params.categoryTitleId"
+        v-model="categories"
         multiple
         :items="categoryTitleCombobox"
         custom-key="value"
         item-value="key"
         :text="t('list-title')"
         :placeholder="t('list-title')"
-        @update:model-value="updateData"
+        @update:model-value="updateCategoryTitleId"
       />
     </VCol>
     <VCol
@@ -110,12 +129,12 @@ function updateData() {
       lg="4"
     >
       <CmSelect
-        v-model="params.titles"
+        v-model="listTitle"
         multiple
         :items="listDistrictCombobox"
         :text="t('title-position')"
         :placeholder="t('title-position')"
-        @update:model-value="updateData"
+        @update:model-value="updateTitles"
       />
     </VCol>
   </VRow>

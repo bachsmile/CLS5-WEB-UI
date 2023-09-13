@@ -124,9 +124,8 @@ function durationchange(e: any) {
         />
       </div>
       <div class="d-flex flex-nowrap align-center time-progress">
-        <div>{{ DateUtil.formatTimeSecondToCustom(timeCurrent) }}</div>
-        <div class="px-1">
-          <span> / </span>
+        <div class="d-flex">
+          {{ DateUtil.formatTimeSecondToCustom(timeCurrent) }} <span class="px-1">/</span>
         </div>
         <div>{{ DateUtil.formatTimeSecondToCustom(time) }}</div>
       </div>

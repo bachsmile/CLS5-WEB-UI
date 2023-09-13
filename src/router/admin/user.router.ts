@@ -95,17 +95,18 @@ export default [
               permissionKey: 'UserTypeManaging',
               permissionValue: 2,
             },
-            breadcrumb: [
-              {
-                title: 'usertype-management',
-                to: { name: 'admin-organization-permission' },
-              },
-              {
-                title: 'add',
-
-                active: true,
-              },
-            ],
+            meta: {
+              breadcrumb: [
+                {
+                  title: 'usertype-management',
+                  to: { name: 'admin-organization-permission-list' },
+                },
+                {
+                  title: 'Add-new',
+                  active: true,
+                },
+              ],
+            },
             component: () => import('@/pages/admin/organization/permission/Edit/EditPermission.vue'),
           },
           {
@@ -114,6 +115,18 @@ export default [
             requireAuth: {
               permissionKey: 'UserTypeManaging',
               permissionValue: 4,
+            },
+            meta: {
+              breadcrumb: [
+                {
+                  title: 'usertype-management',
+                  to: { name: 'admin-organization-permission-list' },
+                },
+                {
+                  title: 'ActionEdit',
+                  active: true,
+                },
+              ],
             },
             component: () => import('@/pages/admin/organization/permission/Edit/EditPermission.vue'),
           },

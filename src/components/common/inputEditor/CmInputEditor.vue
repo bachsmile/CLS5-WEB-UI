@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CmInputEditorMenu from '@/components/common/inputEditor/CmInputEditorMenu.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
+import 'katex/dist/katex.min.css'
 
 interface Emit {
   (e: 'update:modelValue', value: any): void
@@ -35,6 +36,7 @@ const propsValue = withDefaults(defineProps<Props>(), ({
   isDebounce: true,
   isMenuSimple: false,
   disabled: false,
+  isErrors: true,
   rlt: 'left',
   listMenu: () => ([]),
 }))
@@ -203,6 +205,11 @@ function applyOrderedList(key: any) {
 function applyColor(key: any, option: any, value: any) {
   document.execCommand(key, option, value)
 }
+function addMathType(htmlString: any) {
+  console.log(htmlString)
+
+  document.execCommand('insertHTML', false, htmlString)
+}
 function addLinkUrl(key: any, option: any, value: any, selection: any, range: any) {
   const inputEditorTa: any = document.getElementById('inputEditor')
   const {
@@ -291,9 +298,18 @@ defineExpose({
 <template>
   <div>
     <div
+      v-if="propsValue.text"
+      class="mb-1"
+    >
+      <label
+        class="text-label-default"
+      >{{ propsValue.text }}</label>
+    </div>
+    <div
       :style="{ width }"
       class="inputEditor"
       :class="{ styleError: errors?.length }"
+      :title="t(MethodsUtil.showErrorsYub(errors)) ?? '' "
     >
       <!--
         <div>
@@ -306,26 +322,19 @@ defineExpose({
         />
         </div>
       -->
-      <div
-        v-if="propsValue.text"
-        class="mb-1"
-      >
-        <label
-          class="text-label-default"
-        >{{ propsValue.text }}</label>
-      </div>
-
       <div>
         <CmInputEditorMenu
           :status-menu="statusMenu"
           :is-menu-simple="isMenuSimple"
           :list-menu="listMenu"
           :rlt="rlt"
+          :disabled="disabled"
           @change="applyFormatting"
           @changeAlign="applyAlignment"
           @order="applyOrderedList"
           @changeColor="applyColor"
           @addLinkUrl="addLinkUrl"
+          @addMathType="addMathType"
           @update:event="($item: any) => emit('update:event', $item)"
         />
       </div>
@@ -346,7 +355,7 @@ defineExpose({
       />
     </div>
     <div
-      v-if="errors?.length > 0"
+      v-if="errors?.length > 0 && isErrors"
       class="styleError text-errors"
     >
       {{ t(MethodsUtil.showErrorsYub(errors)) }}
@@ -356,6 +365,7 @@ defineExpose({
 
 <style lang="scss" scoped>
   .input-math{
+    position: relative;
     padding: 10px;
     margin-top: -1px;
     border: 1px solid rgba(var(--v-border-color)) !important;

@@ -8,6 +8,7 @@ interface Emit {
 }
 const props = withDefaults(defineProps<Props>(), ({
   text: '',
+  disabled: false,
 }))
 const emit = defineEmits<Emit>()
 const store = load()
@@ -18,6 +19,7 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const isShowModal = ref(false)
 interface Props {
   text?: any
+  disabled?: boolean
 }
 const link = ref({
   text: props.text,
@@ -56,10 +58,10 @@ function addLinkUrl(idx: any) {
     <button
       class=" btn-full cursor-pointer"
       style="border: none"
+      :disabled="disabled"
+      @click="setLink"
     >
-      <strong
-        @click="setLink"
-      >
+      <strong>
         <VIcon
           icon="tabler:link"
           size="18"

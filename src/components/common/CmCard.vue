@@ -8,7 +8,10 @@ interface Props {
   exact?: boolean
   flat?: boolean
   height?: string | number
+  padding?: string
+  borderRadius?: string
   hover?: boolean
+  hideAction?: boolean
   href?: string
   rounded?: string | number | boolean
   variant?: string
@@ -19,6 +22,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), ({
   disabled: false,
   shadow: 'shadow-md',
+  borderRadius: '8px',
+  hideAction: false,
 }))
 </script>
 
@@ -36,6 +41,10 @@ const props = withDefaults(defineProps<Props>(), ({
     :rounded="props.rounded"
     :variant="props.variant"
     :class="`${props.shadow} ${props.backgroud}`"
+    :style="{
+      padding,
+      borderRadius,
+    }"
   >
     <template #image>
       <slot name="image" />
@@ -52,7 +61,10 @@ const props = withDefaults(defineProps<Props>(), ({
     <template #text>
       <slot name="text" />
     </template>
-    <template #actions>
+    <template
+      v-if="!hideAction"
+      #actions
+    >
       <slot name="actions" />
     </template>
   </VCard>
@@ -64,5 +76,14 @@ const props = withDefaults(defineProps<Props>(), ({
 .v-card-title {
   color: $color-gray-900;
   font-weight: $weight-md;
+}
+.v-card-img{
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 10rem;
+  img{
+    height: 100%;
+    object-fit: cover;
+  }
 }
 </style>

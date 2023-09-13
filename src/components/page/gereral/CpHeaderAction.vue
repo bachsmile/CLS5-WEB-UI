@@ -84,6 +84,9 @@ const handleSearch = window._.debounce((value: any) => {
   emit('update:pageNumber', 1)
   emit('update:pageSize', 10)
 }, 500)
+watch(() => props.keyword, (val: string) => {
+  keySearch.value = val
+})
 </script>
 
 <template>
@@ -171,6 +174,7 @@ const handleSearch = window._.debounce((value: any) => {
           :title="isShowFilter ? t('hide-filter') : t('show-filter')"
           @click="handleClickBtn('fillter')"
         />
+        <slot name="actionEnd" />
       </div>
     </VCol>
   </VRow>

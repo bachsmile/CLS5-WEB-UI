@@ -8,6 +8,7 @@ import CmAddLink from './CmAddLink.vue'
 interface Emit {
   (e: 'change', key: any, value?: any): void
   (e: 'update:event', value?: any): void
+  (e: 'addMathType', value?: any): void
   (e: 'changeAlign', key: any, value?: any): void
   (e: 'order', type: any, value?: any): void
   (e: 'changeColor', key: any, option: any, value?: any): void
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<Props>(), ({
     insertUnorderedList: false,
   }),
   isMenuSimple: false,
+  disabled: false,
   rlt: 'left',
   listMenu: [],
 }))
@@ -39,6 +41,7 @@ const config = ref({
 interface Props {
   statusMenu?: any
   isMenuSimple?: boolean
+  disabled?: boolean
   rlt?: string
   listMenu?: any
 }
@@ -50,7 +53,12 @@ function insertA() {
   })
   document.execCommand('insertHTML', false, htmlString)
 }
-
+function addMathType() {
+  const htmlString = katex.renderToString('c = \\pm\\sqrt{a^2 + b^2}', {
+    throwOnError: false,
+  })
+  emit('addMathType', htmlString)
+}
 function styleFontText(key: any, value?: any) {
   activeMenu.value[key] = !activeMenu.value[key as never]
   emit('change', key, value)
@@ -106,6 +114,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('bold')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.bold }"
           @click="styleFontText('bold', 'strong')"
         >
@@ -114,6 +123,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('underline')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.underline }"
           @click="styleFontText('underline', 'u')"
         >
@@ -122,6 +132,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('italic')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.italic }"
           @click="styleFontText('italic', 'em')"
         >
@@ -130,6 +141,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('strikeThrough')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.strikeThrough }"
           @click="styleFontText('strikeThrough', 'strike')"
         >
@@ -138,6 +150,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :class="{ actived: activeMenu.left }"
+          :disabled="disabled"
           :title="t('justifyLeft')"
           @click="styleAsignText('justifyLeft', 'left')"
         >
@@ -146,6 +159,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :class="{ actived: activeMenu.center }"
+          :disabled="disabled"
           :title="t('justifyCenter')"
           @click="styleAsignText('justifyCenter', 'center')"
         >
@@ -154,6 +168,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :class="{ actived: activeMenu.right }"
+          :disabled="disabled"
           :title="t('justifyRight')"
           @click="styleAsignText('justifyRight', 'right')"
         >
@@ -163,6 +178,7 @@ watch(() => props.statusMenu, (val: any) => {
           class="menu-item"
           :title="t('justify')"
           :class="{ actived: activeMenu.justify }"
+          :disabled="disabled"
           @click="styleAsignText('justifyFull', 'justify')"
         >
           <VIcon icon="tabler:align-justified" />
@@ -170,6 +186,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('insertOrderedList')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.insertOrderedList }"
           @click="orderList('insertOrderedList')"
         >
@@ -178,6 +195,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           class="menu-item"
           :title="t('insertUnorderedList')"
+          :disabled="disabled"
           :class="{ actived: activeMenu.insertUnorderedList }"
           @click="orderList('insertUnorderedList')"
         >
@@ -185,6 +203,7 @@ watch(() => props.statusMenu, (val: any) => {
         </button>
         <button
           class="menu-item"
+          :disabled="disabled"
           :title="t('color')"
         >
           <CmPickColor
@@ -194,6 +213,7 @@ watch(() => props.statusMenu, (val: any) => {
         </button>
         <button
           :title="t('no-color')"
+          :disabled="disabled"
           class="menu-item"
           @click="changeColor('foreColor', null, '#000')"
         >
@@ -204,6 +224,7 @@ watch(() => props.statusMenu, (val: any) => {
         </button>
         <button
           class="menu-item"
+          :disabled="disabled"
           :title="t('backColor')"
         >
           <CmPickColor
@@ -214,6 +235,7 @@ watch(() => props.statusMenu, (val: any) => {
         </button>
         <button
           class="menu-item"
+          :disabled="disabled"
           :title="t('no-backColor')"
           @click="changeColor('backColor', null, '#fff')"
         >
@@ -224,21 +246,27 @@ watch(() => props.statusMenu, (val: any) => {
         </button>
         <button
           class="menu-item"
+          :disabled="disabled"
           :title="t('link-insert')"
         >
-          <CmAddLink @addLinkUrl="addLinkUrl" />
+          <CmAddLink
+            :disabled="disabled"
+            @addLinkUrl="addLinkUrl"
+          />
         </button>
         <button
           class="menu-item"
+          :disabled="disabled"
           :title="t('Math')"
         >
           <span>Math</span>
         </button>
-        <div
+        <button
           class="menu-item"
+          @click="addMathType"
         >
           <span>a</span>
-        </div>
+        </button>
         <div class="mark" />
       </div>
       <div
@@ -249,6 +277,7 @@ watch(() => props.statusMenu, (val: any) => {
         <button
           v-for="(item, id) in listMenu"
           :key="id"
+          :disabled="disabled"
           :class="{ actived: item.actived }"
           class="menu-item"
           :title="t(item.title)"

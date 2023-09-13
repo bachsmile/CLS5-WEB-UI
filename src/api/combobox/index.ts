@@ -36,6 +36,8 @@ const ComboboxService = {
   GetComboboxRatingScale: '/ratingscale/combobox-rating-scale',
   GetComboboxContentOffline: '/Course/get-combobox-content-offline',
   GetComboboxListDistrict: '/Title/get-list-distinct',
+  GetComboboxSurveyType: '/survey/get-combobox-survey-type',
+  GetComboboxStatusQuestion: '/question/get-combobox-status',
 }
 
 export default ComboboxService

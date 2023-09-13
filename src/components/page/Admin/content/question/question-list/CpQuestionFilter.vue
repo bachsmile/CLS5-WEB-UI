@@ -4,9 +4,18 @@ import { courseListManagerStore } from '@/stores/admin/course/courseList'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import QuestionService from '@/api/question'
+import type { Any } from '@/typescript/interface'
+import CpTopicSelect from '@/components/page/gereral/CpTopicSelect.vue'
 
 const props = withDefaults(defineProps<Props>(), ({
-  dataFilter: null,
+  topicId: () => ([]),
+  formOfStudy: null,
+  sort: null,
+  statusId: null,
+  ownerId: null,
+  isDisplayHome: null,
+  dateFrom: null,
+  dateTo: null,
 }))
 const emit = defineEmits<Emit>()
 const CmDateTimePicker = defineAsyncComponent(() => import('@/components/common/CmDateTimePicker.vue'))
@@ -19,11 +28,19 @@ interface Emit {
   (e: 'update', value: any): void
   (e: 'update:topicId', value: any): void
   (e: 'update:formOfStudy', value: any): void
+  (e: 'update:sort', value: any): void
+  (e: 'update:statusId', value: any): void
+  (e: 'update:ownerId', value: any): void
+  (e: 'update:isDisplayHome', value: any): void
+  (e: 'update:dateFrom', value: any): void
+  (e: 'update:dateTo', value: any): void
+  (e: 'update:pageSize', value: any): void
+  (e: 'update:pageNumber', value: any): void
 }
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 /** ** Khởi tạo store */
 const storeCombobox = comboboxStore()
-const { topicCombobox, formOfStudyCombobox, compoboxSortCourse, isDisplayHome, compoboxStatusCourse } = storeToRefs(storeCombobox)
+const { topicCombobox, formOfStudyCombobox, compoboxSortCourse, isDisplayHomeCombobox, compoboxStatusCourse } = storeToRefs(storeCombobox)
 const { getComboboxTopic, getComboboxFormStudy, getComboboxStatusCourse } = storeCombobox
 
 const storeCourseListManager = courseListManagerStore()
@@ -31,11 +48,15 @@ const { vSelectOwner } = storeToRefs(storeCourseListManager)
 const { isIntersecting, getTeacherOwnerCourse } = storeCourseListManager
 
 interface Props {
-  dataFilter: any
-  topicId?: any
+  topicId: any[]
   formOfStudy?: any
+  sort?: any
+  isDisplayHome?: any
+  statusId?: any
+  ownerId?: any
+  dateFrom?: any
+  dateTo?: any
 }
-
 const LABEL = Object.freeze({
   FILLTER1: t('choose-topic'),
   FILLTER2: t('form-study'),
@@ -65,10 +86,33 @@ function change(key: any, value: any) {
     case 'topicId':
       emit('update:topicId', value)
       break
-
+    case 'formOfStudy':
+      emit('update:formOfStudy', value)
+      break
+    case 'sort':
+      emit('update:sort', value)
+      break
+    case 'isDisplayHome':
+      emit('update:isDisplayHome', value)
+      break
+    case 'statusId':
+      emit('update:statusId', value)
+      break
+    case 'ownerId':
+      emit('update:ownerId', value)
+      break
+    case 'dateFrom':
+      emit('update:dateFrom', value)
+      break
+    case 'dateTo':
+      emit('update:dateTo', value)
+      break
     default:
       break
   }
+
+  emit('update:pageSize', value)
+  emit('update:pageNumber', value)
 }
 
 const questionLevel = ref()
@@ -77,10 +121,7 @@ function getComboboxQuestionLevel() {
     questionLevel.value = data
   })
 }
-function getComboboxTopicQs() {
-  if (topicCombobox.value)
-    getComboboxTopic(4)
-}
+
 if (formOfStudyCombobox.value)
   getComboboxFormStudy()
 if (compoboxStatusCourse.value)
@@ -93,10 +134,9 @@ onUnmounted(() => {
   formOfStudyCombobox.value = []
   compoboxStatusCourse.value = []
 })
-watch(() => props.topicId, val => {
-  if (val?.length)
-    getComboboxTopicQs()
-}, { deep: true, immediate: true })
+const topics = ref([])
+if (topicCombobox.value)
+  getComboboxTopic(2)
 </script>
 
 <template>
@@ -106,16 +146,14 @@ watch(() => props.topicId, val => {
       md="4"
       sm="4"
     >
-      <CmSelectTree
-        :model-value="topicId"
+      <CpTopicSelect
+        v-model:model-value="topics"
         multiple
-        value-format="id"
-        :text="LABEL.FILLTER1"
-        :options="topicCombobox"
-        :normalizer-custom-type="['id', 'name', 'children']"
-        :placeholder="LABEL.FILLTER1"
+        :type="4"
+        :text="`${t('topic')}`"
+        :is-show-add="false"
+        :placeholder="t('topic')"
         @update:model-value="($event) => change('topicId', $event)"
-        @open="getComboboxTopicQs"
       />
     </VCol>
     <VCol
@@ -140,13 +178,13 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmSelect
-        v-model="formFilter.sort"
+        :model-value="sort"
         :items="compoboxSortCourse"
         item-value="key"
         custom-key="value"
         :text="LABEL.FILLTER3"
         :placeholder="LABEL.FILLTER3"
-        @update:model-value="change"
+        @update:model-value="($event) => change('sort', $event)"
       />
     </VCol>
     <VCol
@@ -155,13 +193,13 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmSelect
-        v-model="formFilter.isDisplayHome"
-        :items="isDisplayHome"
+        :model-value="isDisplayHome"
+        :items="isDisplayHomeCombobox"
         item-value="value"
         custom-key="key"
         :text="LABEL.FILLTER4"
         :placeholder="LABEL.FILLTER4"
-        @update:model-value="change"
+        @update:model-value="($event) => change('isDisplayHome', $event)"
       />
     </VCol>
     <VCol
@@ -170,13 +208,13 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmSelect
-        v-model="formFilter.statusId"
+        :model-value="statusId"
         :items="compoboxStatusCourse"
         item-value="key"
         custom-key="value"
         :text="LABEL.FILLTER5"
         :placeholder="LABEL.FILLTER5"
-        @update:model-value="change"
+        @update:model-value="($event) => change('statusId', $event)"
       />
     </VCol>
     <VCol
@@ -185,7 +223,7 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmSelect
-        v-model="formFilter.ownerId"
+        :model-value="ownerId"
         :text="LABEL.FILLTER6"
         :placeholder="LABEL.FILLTER6"
         :items="vSelectOwner.listCombobox"
@@ -195,7 +233,7 @@ watch(() => props.topicId, val => {
         custom-key="name"
         :append-to-body="false"
         @isIntersecting="isIntersecting"
-        @update:model-value="change"
+        @update:model-value="($event) => change('ownerId', $event)"
       >
         <template #infinityItem>
           <SkUser
@@ -210,10 +248,10 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmDateTimePicker
-        :model-value="formFilter.dateFrom"
+        :model-value="dateFrom"
         :text="LABEL.FILLTER7"
         placeholder="dd/mm/yyyy"
-        @update:model-value="change"
+        @update:model-value="($event) => change('dateFrom', $event)"
       />
     </VCol>
     <VCol
@@ -222,10 +260,10 @@ watch(() => props.topicId, val => {
       sm="4"
     >
       <CmDateTimePicker
-        :model-value="formFilter.dateTo"
+        :model-value="dateTo"
         :text="LABEL.FILLTER8"
         placeholder="dd/mm/yyyy"
-        @update:model-value="change"
+        @update:model-value="($event) => change('dateTo', $event)"
       />
     </VCol>
   </VRow>

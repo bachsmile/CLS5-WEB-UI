@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import CmTextField from '@/components/common/CmTextField.vue'
 import { validatorStore } from '@/stores/validatator'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import CmButton from '@/components/common/CmButton.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
 import QuestionService from '@/api/question'
@@ -161,7 +161,7 @@ function back() {
           name="description"
           type="text"
         >
-          <CmtextArea
+          <CmTextArea
             :field="field"
             :errors="errors"
             :text="`${t('description')}*`"

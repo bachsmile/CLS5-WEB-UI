@@ -115,6 +115,12 @@
             "name": "QUE_Finished",
             "color": "success",
             "note": "Hoàn thành"
+        },
+        {
+            "id": 3001,
+            "name": "CourseService.RecallRequest",
+            "color": "success",
+            "note": "Yêu cầu thu hồi"
         }
     ],
     "StatusTypeFormStudy": [
@@ -208,5 +214,37 @@
             "icon": "tabler:circle-minus",
             "note": "Bị từ chối"
         }
+    ],
+    "statusSurveyTest": [
+        {
+            "id": 3,
+            "name": "QuestionService.TestCodeActive",
+            "color": "success",
+            "icon": "PlayIcon"
+          },
+          {
+            "id": 2,
+            "name": "QuestionService.TestCodePending",
+            "color": "info",
+            "icon": "ClockIcon"
+          },
+          {
+            "id": 1,
+            "name": "QuestionService.TestCodeEditing",
+            "color": "secondary",
+            "icon": "Edit3Icon"
+          },
+          {
+            "id": 4,
+            "name": "QuestionService.TestCodeDeclined",
+            "color": "danger",
+            "icon": "CornerDownLeftIcon"
+          },
+          {
+            "id":3001,
+            "name": "QuestionService.RecallRequest",
+            "color": "success",
+            "icon": "LoaderIcon"
+          }
     ]
 }

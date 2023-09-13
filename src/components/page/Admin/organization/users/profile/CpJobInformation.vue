@@ -107,4 +107,3 @@ if (window._.isEmpty(userLevels.value))
     />
   </div>
 </template>
-

@@ -207,7 +207,7 @@ export default class ArraysUtil {
   //    - Id: tên thuộc tính định danh của mỗi node, mặc định là id
   //    - ParentId: tên thuộc tính của id parent của mỗi phần tử, mặc định là parentId, phần tử gốc thì thuộc tính parentId có giá trị bằng 0
   //    - Children: tên thuộc tính chứa các node con của node hiện tại, mặc định là children
-  static fromListToTree = (originalArray: Array<any>, id = 'id', parentId = 'parentId', children = 'children', depth = null, rootParentId = 0) => {
+  static fromListToTree = (originalArray: Array<any>, id = 'id', parentId = 'parentId', children = 'children', depth = null, rootParentId: any = null) => {
   // Clone mảng ban đầu để tránh mutate dữ liệu (immutable function)
     const array = JSON.parse(JSON.stringify(originalArray))
     const map: any = {}
@@ -235,7 +235,6 @@ export default class ArraysUtil {
         tree.push(node)
       }
     }
-
     return tree
   }
 

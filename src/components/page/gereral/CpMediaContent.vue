@@ -27,7 +27,6 @@ interface Props {
   disabled?: boolean
   type?: number
   typeMedia?: number
-
 }
 interface Emit {
   (e: 'update:fileFolder', value: any): void
@@ -183,7 +182,7 @@ defineExpose({
         v-model:src="urlFile"
         class="w-100 "
         :accept="MethodsUtil.getMediaTypeExtention(typeFile)"
-        :disabled="isViewDetail"
+        :disabled="disabled"
         :is-btn-download="false"
         is-request-file-install
         @change="uploadFileLocal"
@@ -218,7 +217,7 @@ defineExpose({
       >
     </div>
     <div
-      v-if="urlFile"
+      v-if="urlFile && !disabled"
       :class="[type === 1 ? 'actionFile' : 'actionFileAbs']"
     >
       <CmButton
@@ -243,7 +242,10 @@ defineExpose({
       />
     </div>
   </div>
-  <div>
+  <div
+    v-if="!disabled"
+    class="d-none"
+  >
     <CmDialogs
       :title="t('Đường dẫn youtube')"
       :is-dialog-visible="isShowModalYoutube"
@@ -284,7 +286,7 @@ defineExpose({
 .media-content{
   position: relative;
   width: 100%;
-
+  padding-bottom: 12px;
 }
 /* .imageFull{
   width: 100%;
@@ -304,6 +306,7 @@ defineExpose({
     width: 100%;
     height: 100%;
     background-color: lightgray; /* Để thấy rõ vùng ảnh */
+    border-radius: 4px;
   }
 .actionFileAbs{
   position: absolute;

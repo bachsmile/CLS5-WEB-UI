@@ -61,6 +61,20 @@ function handlePageClick(page: number) {
 function handlePageSizeChange(pageSize: number) {
   emit('pageClick', 1, pageSize)
 }
+const visibleItems = ref(PAGINATION_TOTAL_VISIABLE)
+function handleResize() {
+  // Kiểm tra kích thước màn hình và cập nhật giá trị visibleItems
+  if (window.innerWidth >= 768)
+    visibleItems.value = 6 // Giá trị cho màn hình md trở lên
+
+  else
+    visibleItems.value = 3 // Giá trị cho màn hình mobile
+}
+window.addEventListener('resize', handleResize)
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 // watch
 watch([() => props.currentPage], ([newValue]) => {
@@ -70,18 +84,18 @@ watch([() => props.currentPage], ([newValue]) => {
 
 <template>
   <div
-    v-if="showPagination"
+    v-if="showPagination && [1, 2].includes(props.type)"
     class="pagination-container"
   >
     <div
       class="d-flex  flex-wrap "
-      :class="[props.type === 1 ? 'pagination-flex' : 'pagination-flex-modal']"
+      :class="{ 'pagination-flex': props.type === 1, 'pagination-flex-modal': props.type === 2 }"
     >
       <div
         v-if="showPageSelect === true"
         class="d-flex align-center mr-4 pagination-select"
       >
-        <span class="text-nowrap text-regular-sm ">
+        <span class="text-noWrap text-regular-sm ">
           {{ t('show') }}
         </span>
         <VSelect
@@ -96,13 +110,13 @@ watch([() => props.currentPage], ([newValue]) => {
           single-line
           @update:modelValue="handlePageSizeChange"
         />
-        <span class="text-nowrap text-regular-sm ">{{ `${t('of')} ${totalItems} ${t('item')}` }}</span>
+        <span class="text-noWrap text-regular-sm ">{{ `${t('of')} ${totalItems} ${t('item')}` }}</span>
       </div>
       <div class="page-number d-flex align-center">
         <VPagination
           v-model="selectedPage"
           :length="totalItemsLength"
-          :total-visible="PAGINATION_TOTAL_VISIABLE"
+          :total-visible="visibleItems"
           rounded="circle"
           @update:modelValue="handlePageClick"
         >
@@ -137,6 +151,47 @@ watch([() => props.currentPage], ([newValue]) => {
         </VPagination>
       </div>
     </div>
+  </div>
+  <div
+    v-if="props.type === 3"
+    class="pagination-container-none "
+  >
+    <VPagination
+      v-model="selectedPage"
+      :length="totalItemsLength"
+      :total-visible="visibleItems"
+      rounded="circle"
+      @update:modelValue="handlePageClick"
+    >
+      <template #next="{ disabled, onClick }">
+        <button
+          :disabled="disabled"
+          class="btn-pagination"
+          @click="onClick"
+        >
+          <span class="mr-1 text-btn">{{ t('table-btn-next') }}</span>
+          <VIcon
+            icon="tabler:arrow-right"
+            size="20"
+            class="color-icon-default"
+          />
+        </button>
+      </template>
+      <template #prev="{ disabled, onClick }">
+        <button
+          :disabled="disabled"
+          class="btn-pagination"
+          @click="onClick"
+        >
+          <VIcon
+            icon="tabler:arrow-left"
+            size="20"
+            class="color-icon-default mr-1"
+          />
+          <span class="text-medium-sm text-btn">{{ t('table-btn-prev') }}</span>
+        </button>
+      </template>
+    </VPagination>
   </div>
 </template>
 
@@ -196,11 +251,48 @@ watch([() => props.currentPage], ([newValue]) => {
     }
   }
 }
+.pagination-container-none {
+  padding: #{$table-footer-padding};
+  block-size: #{$table-footer-height};
+
+  .pagination-select {
+    .select-size {
+      inline-size: #{$table-rows-per-page-selector-width};
+
+    }
+  }
+
+  .btn-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $pagination-btn-padding;
+    border: $pagination-border;
+    border-radius: $pagination-btn-border-radius;
+    background: $pagination-btn-bg;
+    box-shadow: $pagination-btn-box-shadow;
+
+    .text-btn {
+      color: $table-footer-font-color;
+      font-size: #{$table-footer-font-size};
+    }
+  }
+}
 </style>
 
 <style lang="scss">
  .pagination-container .v-select__selection-text{
     display: flex;
     align-items: center;
+  }
+ .pagination-container-none {
+    .v-pagination__prev{
+      margin-left: 0;
+      margin-right: auto;
+    }
+    .v-pagination__next{
+      margin-left: auto;
+      margin-right: 0;
+    }
   }
 </style>

@@ -82,7 +82,7 @@ onMounted(async () => {
 
     <!-- 👉 Pages -->
     <RouterView v-slot="{ Component, route }">
-      <CmBreadcrumb />
+      <CmBreadcrumb :key="route.name || ''" />
       <Transition
         :name="appRouteTransition"
         mode="out-in"

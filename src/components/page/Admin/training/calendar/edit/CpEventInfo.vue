@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import CmTextField from '@/components/common/CmTextField.vue'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import { validatorStore } from '@/stores/validatator'
 import CmButton from '@/components/common/CmButton.vue'
 import CmSelect from '@/components/common/CmSelect.vue'
@@ -181,7 +181,7 @@ if (route.params.id)
           />
         </Field>
 
-        <CmtextArea
+        <CmTextArea
           v-model="dataInput.description"
           :text="t('description')"
         />

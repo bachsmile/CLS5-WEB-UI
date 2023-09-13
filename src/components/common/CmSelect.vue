@@ -85,7 +85,7 @@ function handleChangeValue(e: any) {
 }
 
 const optionsModel = computed(() => {
-  if (props.items.length) {
+  if (props.items?.length) {
     const exclude = props.items.filter((item: any) => !props.excludeId.includes(item[props.itemValue]))
     const optionsModels = exclude?.map((item: any) => {
       item[props.customKey] = t(item[props.customKey])
@@ -208,10 +208,13 @@ function withPopper(dropdownList: any, component: any, { width }: any) {
 
 <template>
   <div>
-    <div class="mb-1">
+    <div
+      v-if="text"
+      class="mb-1"
+    >
       <label
         class="text-medium-sm color-dark"
-      >{{ props.text }}</label>
+      >{{ text }}</label>
     </div>
     <div class="cm-select py-1">
       <ISelect

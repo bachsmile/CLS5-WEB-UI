@@ -13,13 +13,14 @@ import DateUtil from '@/utils/DateUtil'
 import { tableStore } from '@/stores/table'
 import toast from '@/plugins/toast'
 import CpConfirmDialog from '@/components/page/gereral/CpConfirmDialog.vue'
+import CpCustomInforCourse from '@/components/page/gereral/CpCustomInforCourse.vue'
 
 const { t } = window.i18n()
 
 const router = useRouter()
 const headers = [
   { text: '', value: 'checkbox', width: 50 },
-  { text: t('name-survey-topics'), value: 'name' },
+  { text: t('name-survey-topics'), value: 'name', type: 'custom' },
   { text: t('topic'), value: 'topicName' },
   { text: t('start-time'), value: 'startTime', type: 'custom' },
   { text: t('end-time'), value: 'endTime', type: 'custom' },
@@ -114,6 +115,14 @@ function showAdd() {
       :items="items"
     >
       <template #rowItem="{ col, context }">
+        <div v-if="col === 'name'">
+          <CpCustomInforCourse
+            :context="context"
+            label-title="name"
+            is-sub-title
+            label-sub-title="statusId"
+          />
+        </div>
         <div v-if="col === 'startTime'">
           {{ DateUtil.formatDateToDDMM(context.startTime) }}
         </div>

@@ -169,7 +169,7 @@ async function upFileServer(file: any) {
     },
     headers: {
       // Authorization: `Bearer ${token}`,
-      Authorization: constant.TOKEN_FAKE_SV_FILE,
+      Authorization: constant.TOKEN_SV_FILE,
     },
 
   })

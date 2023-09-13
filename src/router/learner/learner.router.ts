@@ -28,6 +28,34 @@ export default [
       {
         path: 'list-course',
         name: 'list-course',
+        component: () => import('@/pages/users/course/MyCourse.vue'),
+      },
+      {
+        path: 'course-detail/:id',
+        name: 'course-detail',
+        component: () => import('@/pages/users/course/course-detail/MyCourseDetail.vue'),
+        meta: {
+          breadcrumb: [
+            {
+              title: 'my-course',
+              to: { name: 'list-course' },
+            },
+            {
+              title: 'course-detail',
+              active: true,
+            },
+          ],
+        },
+      },
+      {
+        path: 'course-learning/:id',
+        name: 'course-learning',
+        component: () => import('@/pages/users/course/course-learning/CourseLearning.vue'),
+      },
+      {
+        path: 'course-review/:id',
+        name: 'course-review',
+        component: () => import('@/pages/users/course/course-learning/CourseLearning.vue'),
       },
       {
         path: 'calendar',

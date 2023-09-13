@@ -58,7 +58,7 @@ getListOrgStruct()
 </script>
 
 <template>
-  <div class="page-containter-box">
+  <div class="page-container-box">
     <CmTreeView
       :key="render"
       :nodes="nodes"

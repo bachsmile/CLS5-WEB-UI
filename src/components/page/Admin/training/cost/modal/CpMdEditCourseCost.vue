@@ -2,7 +2,7 @@
 import CmDialogs from '@/components/common/CmDialogs.vue'
 import CmTextField from '@/components/common/CmTextField.vue'
 import { validatorStore } from '@/stores/validatator'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import { comboboxStore } from '@/stores/combobox'
 import CmSelect from '@/components/common/CmSelect.vue'
 import CmInputCurrency from '@/components/common/CmInputCurrency.vue'
@@ -207,7 +207,7 @@ watch(() => props.dataDetail, (val: DataInput) => {
         name="description"
         type="text"
       >
-        <CmtextArea
+        <CmTextArea
           :field="field"
           :errors="errors"
           :model-value="dataInput.description"

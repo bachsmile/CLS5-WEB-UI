@@ -54,7 +54,7 @@ const DATA_LABEL = Object.freeze({
 
 // get name schools '
 
-const fetchNameSchools = async () => {
+async function fetchNameSchools() {
   await MethodsUtil.requestApiCustom(ApiUser.fetchNameSchools, TYPE_REQUEST.GET).then(value => {
     data.nameSchoolsCombobox = value.data
   })
@@ -63,7 +63,7 @@ const fetchNameSchools = async () => {
 fetchNameSchools()
 
 // get bằng cấp trình độ '
-const fetchDegrees = async () => {
+async function fetchDegrees() {
   await MethodsUtil.requestApiCustom(ApiUser.fetchDegrees, TYPE_REQUEST.GET).then(value => {
     data.degreesCombobox = value.data
   })
@@ -89,7 +89,7 @@ const { values, setValues, resetForm } = useForm({
 })
 
 /** event dialog */
-const cancelModal = () => {
+function cancelModal() {
   emit('update:isDialogVisible', false, 'EDUCATION')
 }
 
@@ -99,7 +99,7 @@ const myFormEducation = ref(null)
  * add data modal education
  */
 
-const addEducation = () => {
+function addEducation() {
   const school: any = data.nameSchoolsCombobox.find((itemSchoool: any) => itemSchoool.key === values.schoolId)
   if (school)
     values.schoolName = school.value
@@ -114,7 +114,7 @@ const addEducation = () => {
     emit('update:profile', window._.clone(values), true)
 }
 
-const onConfirmation = () => {
+function onConfirmation() {
   const form: any = myFormEducation.value
   if (form) {
     form.validate().then((success: any) => {
@@ -230,4 +230,3 @@ watch(() => props.educationData, value => {
 <style scoped lang="scss">
 @use "@/styles/style-global.scss" as *;
 </style>
-

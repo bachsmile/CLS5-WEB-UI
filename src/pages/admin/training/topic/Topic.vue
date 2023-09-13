@@ -57,6 +57,15 @@ const listtab = [
       title: 'forum',
     },
   },
+  {
+    key: 'library',
+    title: 'lib',
+    component: CpManagerTopic,
+    dataTab: {
+      typeId: 9,
+      title: 'lib',
+    },
+  },
 ]
 </script>
 

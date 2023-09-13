@@ -1,16 +1,19 @@
 <script setup lang="ts">
 interface Emit {
   (e: 'change', key: any, option: any, value?: any): void
+  (e: 'update:color', value?: any): void
 }
 
 const propsValue = withDefaults(defineProps<Props>(), ({
   type: 0,
   isHideInputColor: false,
+  color: null,
 }))
 const emit = defineEmits<Emit>()
 interface Props {
   type?: number
   isHideInputColor?: boolean
+  color?: any
 }
 const colorPicker = ref()
 const backColor = ref()
@@ -23,6 +26,7 @@ function setColor(type: string) {
 }
 function changeColor(e: any, option: any, type: any) {
   emit('change', type, option, e.target.value || null)
+  emit('update:color', e.target.value || null)
 }
 </script>
 
@@ -46,6 +50,26 @@ function changeColor(e: any, option: any, type: any) {
       <input
         id="colorpicker"
         ref="colorPicker"
+        :class="{ colorPicker: isHideInputColor }"
+        type="color"
+        @input="changeColor($event, true, 'foreColor')"
+      >
+    </button>
+    <button
+      v-if="type === 2"
+      class="btn-full cursor-pointer"
+      style="border: none"
+    >
+      <div
+        v-if="isHideInputColor"
+        class="roundColor"
+        :style="{ 'background-color': color }"
+        @click="setColor('foreColor')"
+      />
+      <input
+        id="colorpicker"
+        ref="colorPicker"
+        :value="color"
         :class="{ colorPicker: isHideInputColor }"
         type="color"
         @input="changeColor($event, true, 'foreColor')"
@@ -78,10 +102,19 @@ function changeColor(e: any, option: any, type: any) {
 </template>
 
 <style lang="scss">
+.toolbar-color{
+  display: flex;
+  align-items: center;
+}
 .toolbar-color .colorPicker {
   visibility: hidden;
   position: absolute;
   width: 0px;
   height: 0px;
+
+}
+.roundColor{
+  padding: 20px;
+  border-radius: 50%;
 }
 </style>

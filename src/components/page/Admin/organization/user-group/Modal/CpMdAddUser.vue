@@ -46,9 +46,6 @@ function clearStore() {
   store.$reset()
   store.$dispose()
 }
-function abc() {
-  console.log(listItem.value)
-}
 </script>
 
 <template>
@@ -83,7 +80,6 @@ function abc() {
       :items="listUser"
       :return-object="true"
       :total-record="totalRecord"
-      @update:selected="abc"
     >
       <template #rowItem="{ col, context }">
         <div v-if="col === 'name'">

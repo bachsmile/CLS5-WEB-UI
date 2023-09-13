@@ -69,6 +69,7 @@ interface Props {
   isExpand?: boolean
   componentPropsEdit?: any
   emit?: any
+  getParams?: any
 }
 const storeTable = tableStore()
 const { callBackAction } = storeToRefs(storeTable)
@@ -170,6 +171,9 @@ async function getDataTable() {
     ...queryParams.value,
     ...props.apiList.payload,
   }
+  if (props.getParams)
+    await props.getParams()
+
   const { data } = await MethodsUtil.requestApiCustom(props.apiList.api, props.apiList.method, params)
 
   const result = data.pageLists ?? data

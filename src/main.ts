@@ -91,9 +91,10 @@ app.component('EasyDataTable', Vue3EasyDataTable)
 
 app.use(router)
 const configControl = configStore()
-const { getDefaultSetting } = configControl
+const { getDefaultSetting, getThemeConfig } = configControl
 
 getDefaultSetting()
+getThemeConfig()
 
 // Mount vue app
 app.mount('#app')

@@ -79,15 +79,13 @@ if (formOfStudyCombobox.value)
           <VRow class="d-flex">
             <VCol
               cols="12"
-              md="3"
               class="text-medium-sm color-dark"
             >
               {{ t('image-course') }}
             </VCol>
             <VCol
               cols="12"
-              md="9"
-              class="d-flex justify-center"
+              class="d-flex justify-start"
             >
               <div class="input-avatar">
                 <CmImgUpload
@@ -111,15 +109,13 @@ if (formOfStudyCombobox.value)
           <VRow class="d-flex">
             <VCol
               cols="12"
-              md="3"
               class="text-medium-sm color-dark"
             >
               {{ t('video-course') }}
             </VCol>
             <VCol
               cols="12"
-              md="9"
-              class="d-flex justify-center"
+              class="d-flex justify-start"
             >
               <div class="input-avatar">
                 <CmVideoUpload

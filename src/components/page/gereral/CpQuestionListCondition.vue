@@ -12,6 +12,10 @@ import QuestionService from '@/api/question'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import StringUtil from '@/utils/StringUtil'
 
+/**
+ *  Danh sách câu hỏi điều kiện hoàn thành
+ *
+ */
 const props = withDefaults(defineProps<Props>(), {})
 const emit = defineEmits<Emit>()
 const storeTable = tableStore()

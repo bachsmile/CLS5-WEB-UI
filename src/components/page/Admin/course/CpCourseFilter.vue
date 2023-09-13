@@ -18,7 +18,7 @@ interface Emit {
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 /** ** Khởi tạo store */
 const storeCombobox = comboboxStore()
-const { topicCombobox, formOfStudyCombobox, compoboxSortCourse, isDisplayHome, compoboxStatusCourse } = storeToRefs(storeCombobox)
+const { topicCombobox, formOfStudyCombobox, compoboxSortCourse, isDisplayHomeCombobox, compoboxStatusCourse } = storeToRefs(storeCombobox)
 const { getComboboxTopic, getComboboxFormStudy, getComboboxStatusCourse } = storeCombobox
 
 const storeCourseListManager = courseListManagerStore()
@@ -134,7 +134,7 @@ watch(() => props.dataFilter, val => {
     >
       <CmSelect
         v-model="formFilter.isDisplayHome"
-        :items="isDisplayHome"
+        :items="isDisplayHomeCombobox"
         item-value="value"
         custom-key="key"
         :text="LABEL.FILLTER4"

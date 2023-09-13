@@ -107,10 +107,6 @@ async function getDataDetail() {
 }
 if (route.params.id)
   getDataDetail()
-
-watch(dataInput.value, val => {
-  console.log(val)
-})
 </script>
 
 <template>

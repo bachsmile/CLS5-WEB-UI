@@ -201,9 +201,6 @@ async function actionItem([{ id, name }, content]: [Any, Any]) {
       break
   }
 }
-function abc(val: any) {
-  console.log('selected', selected.value)
-}
 </script>
 
 <template>
@@ -254,7 +251,6 @@ function abc(val: any) {
       :items="items"
       return-object
       :total-record="totalRecord"
-      @update:selected="abc"
     >
       <template #rowItem="{ col, context }">
         <div v-if="col === 'name'">

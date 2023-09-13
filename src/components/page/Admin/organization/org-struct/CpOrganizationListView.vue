@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MethodsUtil from '@/utils/MethodsUtil'
-// eslint-disable-next-line import/no-unresolved
+
 import { orgStructManagerStore } from '@/stores/admin/org-struct/orgStruct'
 
 import SkTree from '@/components/page/gereral/skeleton/SkTree.vue'
@@ -62,6 +62,7 @@ function handleAction(value: any, dataResend: any) {
       break
 
     default:
+      isView.value = false
       break
   }
 }
@@ -73,7 +74,6 @@ onUpdated(() => {
 watch(render, val => {
   isLoading.value = true
 })
-isView.value = true
 getListOrgStruct()
 </script>
 
@@ -81,7 +81,7 @@ getListOrgStruct()
   <SkTree v-show="isLoading" />
   <div
     v-show="!isLoading"
-    class="page-containter-box"
+    class="page-container-box"
   >
     <CmTreeView
       v-if="config?.roots.length"

@@ -9,7 +9,10 @@ import toast from '@/plugins/toast'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import CmSelectTree from '@/components/common/CmSelectTree.vue'
 
-const props = withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
+  isShowAdd: true,
+})
 
 const emit = defineEmits<Emit>()
 
@@ -33,6 +36,7 @@ const TITLE = reactive({
   TITLE_MODAL_DELETE: t('Delete-topic'),
 })
 interface Props {
+  isShowAdd?: boolean
   text?: string
   placeholder?: string
   modelValue?: any[] | any
@@ -47,8 +51,11 @@ interface Emit {
 }
 
 const topicIds = props.multiple ? ref<any[]>([]) : ref<any>(null)
-watch(() => props.modelValue, (val: any[]) => {
-  topicIds.value = val
+watch(() => props.modelValue, (val: any[] | any) => {
+  if (!window._.isEmpty(val) && window._.isEmpty(topicCombobox.value)) {
+    getComboboxTopic(props.type)
+    topicIds.value = val
+  }
 }, { immediate: true })
 
 function change() {
@@ -58,8 +65,10 @@ function change() {
   }
   emit('update:modelValue', topicIds.value)
 }
-if (props.type)
-  getComboboxTopic(props.type)
+onMounted(() => {
+  if (props.type && !window._.isEmpty(props.modelValue))
+    getComboboxTopic(props.type)
+})
 
 const isShowModalEdit = ref(false)
 interface DataInput {
@@ -81,7 +90,10 @@ const dataInput = ref<DataInput>({
 function showModalEdit() {
   isShowModalEdit.value = true
 }
-
+function open() {
+  if (props.type && window._.isEmpty(topicCombobox.value))
+    getComboboxTopic(props.type)
+}
 async function confirm(val: DataInput) {
   let mes = t('add-success')
   let status: typeToast = 'SUCCESS'
@@ -103,7 +115,10 @@ async function confirm(val: DataInput) {
 </script>
 
 <template>
-  <div class="text-medium-sm mt-1">
+  <div
+    v-if="text"
+    class="text-medium-sm mt-1"
+  >
     <label class="text-medium-sm color-dark">{{ t(text) }}</label>
   </div>
   <div class="d-flex vTextField cm-input-field">
@@ -118,9 +133,10 @@ async function confirm(val: DataInput) {
       :normalizer-custom-type="['id', 'name', 'children']"
       :placeholder="placeholder"
       @update:model-value="change"
+      @open="open"
     />
     <CmButton
-      v-if="!disabled"
+      v-if="!disabled && isShowAdd"
       class="ml-2 mt-1"
       size="40"
       :color="errors?.length > 0 ? 'error' : 'primary'"

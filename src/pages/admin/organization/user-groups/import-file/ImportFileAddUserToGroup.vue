@@ -5,7 +5,7 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import ApiGroupUser from '@/api/user'
 
 // Cập nhật năng lực
-const dataColumnExcel = (rowData: Array<any>) => {
+function dataColumnExcel(rowData: Array<any>) {
   // eslint-disable-next-line prefer-const
   let [infor, groupName] = rowData
   return { infor, groupName }
@@ -68,4 +68,3 @@ const titleImport = {
     />
   </div>
 </template>
-

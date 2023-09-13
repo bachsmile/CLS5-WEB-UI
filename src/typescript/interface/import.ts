@@ -1,8 +1,10 @@
+import type { Any } from '.'
+
 // interface
 export interface DowloadSample {
   urlFileDefault: string
   method: string
-  paramsDowload?: object
+  paramsDowload?: Any
   nameFile?: string
 }
 export interface ImportFile {

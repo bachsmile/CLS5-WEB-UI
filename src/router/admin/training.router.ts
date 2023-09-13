@@ -77,11 +77,37 @@ export default [
             path: ':tab/add',
             name: 'manager-calendar-add',
             component: () => import('@/pages/admin/training/calendar/edit/EditCalendar.vue'),
+            meta: {
+              breadcrumb: [
+                {
+                  title: 'Menu_TrainingScheduleManaging',
+                  to: { name: 'manager-calendar' },
+                },
+                {
+                  title: 'Add-new',
+
+                  active: true,
+                },
+              ],
+            },
           },
           {
             path: ':tab/edit/:id',
             name: 'manager-calendar-edit',
             component: () => import('@/pages/admin/training/calendar/edit/EditCalendar.vue'),
+            meta: {
+              breadcrumb: [
+                {
+                  title: 'Menu_TrainingScheduleManaging',
+                  to: { name: 'manager-calendar' },
+                },
+                {
+                  title: 'ActionEdit',
+
+                  active: true,
+                },
+              ],
+            },
           },
         ],
       },

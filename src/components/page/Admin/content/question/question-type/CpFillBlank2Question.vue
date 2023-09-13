@@ -52,7 +52,7 @@ const anserList = ref<any>({
   answerBlank: [] as any[],
 })
 const CmInputEditorRef = ref()
-const isActiveAnsCurrent = ref(1)
+const isActiveAnsCurrent = ref(0)
 
 /** function */
 
@@ -86,8 +86,6 @@ function selectionChange(type: any) {
   if (type) {
     setTimeout(() => {
       selection = window.getSelection()
-      console.log(selection)
-
       range = selection?.getRangeAt(0)
       const text = window.getSelection()?.toString()
       haveSelection.value = range !== null && (Math.abs(range?.startOffset - range?.endOffset) > 0) && !!text
@@ -115,7 +113,7 @@ function checkHasBlank(commonAncestorContainer: any) {
   let isHaveUnder = false
   if (commonAncestorContainer.nodeType === 1) {
     commonAncestorContainer.children?.forEach((itemEl: any) => {
-      if (itemEl.classList.contains('answer-fill-blank'))
+      if (itemEl.classList.contains('answer-select'))
         isHaveUnder = true
     })
     return isHaveUnder
@@ -125,11 +123,9 @@ function checkHasBlank(commonAncestorContainer: any) {
 
 // cập nhật lại event khi click vào đáp án blank 2 trong input editor khi edit
 function updateActionClickAns(key: number) {
-  const keyDataDrop = `blank${key}`
+  const keyDataDrop = `answer-select[data-blank="${key}"]`
   const dropdownElement = CmInputEditorRef.value.inputEditor.querySelector(`.${keyDataDrop}`)
-  console.log(dropdownElement)
-
-  dropdownElement.addEventListener('click', ($event: any) => myFunction($event, dropdownElement, anserList.value.answers[dropdownElement.getAttribute('answer-position')]))
+  dropdownElement?.addEventListener('click', ($event: any) => myFunction($event, dropdownElement, anserList.value.answers[dropdownElement.getAttribute('answer-position')]))
 }
 
 function changeValueContent() {
@@ -155,8 +151,9 @@ function addAnswerBlank2() {
   // kiểm tra xem có chứa đáp án blank2 đã tạo không nếu không sẽ tạo có sẽ cảnh báo
   if (!checkHasBlank(range.commonAncestorContainer)) {
     // html cần chèn vào vị trí được chọn
-    const keyDataDrop = `blank${anserList.value.answers.length}`
-    const htmlAnswer = `<p class="answer-fill-blank ${keyDataDrop}" data-blank="${anserList.value.answers.length}" data="${text}" data-text="${htmlContent}" contenteditable="false" answer-position="${anserList.value.answers.length}">${t('Đáp án A')}</p>`
+    const keyDataDrop = `answer-select[data-blank="${anserList.value.answers.length}"]`
+    const htmlAnswer = `<p class="answer-select ${keyDataDrop}" data-blank="${anserList.value.answers.length}" data="${text}" data-text="${htmlContent}" contenteditable="false" answer-position="${anserList.value.answers.length}">${t('Đáp án A')}</p>`
+    anserList.value.answerBlank[anserList.value.answers.length] = []
 
     /** thêm mẫu blank2 vào input */
     insertHtml(selection, htmlAnswer)
@@ -191,41 +188,71 @@ function addAnswerBlank(content: any, pos: number) {
 }
 
 // ===> thêm phương án blank vào danh sách đáp án
-function addAnswer(content: any, pos: number = anserList.value?.answers?.length + 1, keyBlank?: any, icheckTrue?: boolean) {
+function addAnswer(content: any, pos: number = anserList.value?.answers?.length + 1, keyBlank?: any, isCheckTrue?: boolean, id?: any) {
   anserList.value.answers[anserList.value.answers.length] = {
+    ...(id ? { id } : {}),
     content,
-    isTrue: window._.isEmpty(icheckTrue),
+    isTrue: window._.isEmpty(isCheckTrue),
     position: pos,
     isShuffle: false,
     urlFile: null,
     blank: keyBlank,
   }
 }
+function checkShowAnsIsTrue(el: any) {
+  let correst = 1 // vị trí đáp án đúng của từng blank2
+  const positionBlank = Number(el.getAttribute('data-blank')) // vị trí blank
+  const isCheckTrue = checkAnswerCorrest(positionBlank) // check đáp án đúng trong danh sách câu trả lời nhiễu
+  if (!window._.isEmpty(isCheckTrue)) {
+    // nếu có thì gắn vị trí đó cho biến correst
+    anserList.value?.answerBlank[positionBlank]?.forEach((item: any) => {
+      if (item.isTrue === true) {
+        correst = item.position
+        return false
+      }
+    })
+  }
+
+  el.innerHTML = `Đáp án ${isCheckTrue ? getIndex(correst - 1) : getIndex(0)}`
+}
 
 // format dữ liệu cho blank 2 khi edit
 function formatFillBlank2() {
   anserList.value.answerBlank = []
   const answer: any[] = []
+  const listAns: any[] = []
   anserList.value?.answers?.forEach((item: any, index: number) => {
-    if (typeof item.blank !== 'number') {
-      const position = item.position - 1
-      console.log(anserList.value.answerBlank[position])
-      if (window._.isEmpty(anserList.value.answerBlank[position]))
-        anserList.value.answerBlank[position] = []
-      console.log(index)
+    const position = item.position - 1
+    if (!listAns?.[position])
+      listAns[position] = [] as any
 
-      item.position = anserList.value.answerBlank[position]?.length + 2
-      anserList.value.answerBlank[position][anserList.value.answerBlank[position]?.length] = item
-    }
-    else {
-      answer[answer.length] = item
-    }
+    item.position = listAns[position]?.length + 1
+    listAns[position][listAns[position]?.length] = item
   })
+  listAns.forEach((item: any, index: number) => {
+    anserList.value.answerBlank[anserList.value.answerBlank.length] = item.slice(1)
+    const ansHtml = item.slice(0, 1)[0]
+    ansHtml.blank = index
+
+    answer[answer.length] = ansHtml
+  })
+
   anserList.value.answers = answer
-  anserList.value.answers.forEach((item: any) => {
+
+  const editableDiv = CmInputEditorRef.value.inputEditor
+  const elementAns = editableDiv.querySelectorAll('.answer-select')
+  elementAns.forEach((el: any, pos: number) => {
+    el.setAttribute('data-blank', pos)
+    el.setAttribute('answer-position', pos)
+    el.setAttribute('data-text', anserList.value.answers[pos].content)
+    el.setAttribute('data-id', anserList.value.answers[pos].id ?? '')
+    checkShowAnsIsTrue(el)
+  })
+
+  anserList.value.answers.forEach((item: any, idx: number) => {
+    item.position = idx + 1
     updateActionClickAns(item.blank)
   })
-  console.log(anserList.value)
 }
 
 /** Khi thay đổi vị trí đáp án đúng */
@@ -238,7 +265,7 @@ function changeValueIsTrue(isAnsOrigin: any, val: any) {
   anserList.value?.answerBlank[positionBlank]?.forEach((item: any) => {
     item.isTrue = !isAnsOrigin ? item.position === val : false
   })
-  updatePositionAns()
+  updatePositionAns(true)
 
   // // do chèn data content bằng dom nên input không phản hồi cập nhật dữ liệu=> reactive lại input content
   anserList.value.content = CmInputEditorRef.value.inputEditor.innerHTML
@@ -251,25 +278,27 @@ function changeValueIsTrue(isAnsOrigin: any, val: any) {
 
 /** Hàm thực thi khi click vào các vị trí blank2 trong input */
 function myFunction(ev?: any, el?: any, dataEl?: any) {
-  console.log(123)
-
   isActiveAnsCurrent.value = dataEl.position
   el.classList.add('active')
 }
 
 /** cập nhật dữ liệu và vị trí các đáp án trong dk loại 2 */
-function updatePositionAns() {
+
+function updatePositionAns(type?: boolean) {
   const editableDiv = CmInputEditorRef.value.inputEditor
   anserList.value.answers = []
 
+  if (!type)
+    isActiveAnsCurrent.value = 0
+
   // tìm kiếm đáp án blank2
-  const elementAns = editableDiv.querySelectorAll('.answer-fill-blank')
+  const elementAns = editableDiv.querySelectorAll('.answer-select')
+  const listBlank = ref<any[]>([])
   elementAns.forEach((el: any, pos: number) => {
     let correst = 1 // vị trí đáp án đúng của từng blank2
     const positionBlank = Number(el.getAttribute('data-blank')) // vị trí blank
-    const icheckTrue = checkAnswerCorrest(positionBlank) // check đáp án đúng trong danh sách câu trả lời nhiễu
-
-    if (!window._.isEmpty(icheckTrue)) {
+    const isCheckTrue = checkAnswerCorrest(positionBlank) // check đáp án đúng trong danh sách câu trả lời nhiễu
+    if (!window._.isEmpty(isCheckTrue)) {
       // nếu có thì gắn vị trí đó cho biến correst
       anserList.value?.answerBlank[positionBlank]?.forEach((item: any) => {
         if (item.isTrue === true) {
@@ -279,16 +308,16 @@ function updatePositionAns() {
       })
     }
 
+    // thay dữ liệu vị trí đó thành dạng 'Đáp án ...'
+    el.innerHTML = `Đáp án ${isCheckTrue ? getIndex(correst - 1) : getIndex(0)}`
+
     // cập nhật lại vị trí dom của đáp án blank2 trong input
     el.setAttribute('answer-position', pos)
-
-    // thay dữ liệu vị trí đó thành dạng 'Đáp án ...'
-    el.innerHTML = `Đáp án ${icheckTrue ? getIndex(correst - 1) : getIndex(0)}`
+    listBlank.value.push(Number(el.getAttribute('data-blank')))
 
     // Thêm đáp án vào danh sách đáp án lựa chọn
-    addAnswer(decodeURIComponent(el.getAttribute('data-text')), pos + 1, positionBlank, icheckTrue)
+    addAnswer(decodeURIComponent(el.getAttribute('data-text')), pos + 1, positionBlank, isCheckTrue, el.getAttribute('data-id') ? Number(el.getAttribute('data-id')) : null)
   })
-  console.log(anserList.value)
 }
 
 /** * thao tác với các file đính kèm */
@@ -379,43 +408,12 @@ defineExpose({
 /// /////////////thao tác với input underline
 
 // phương thức xóa đáp án
-function deleteAns(dataDelete: any) {
-  //  ref của input editor
-  const editableDiv = CmInputEditorRef.value.inputEditor
+function deleteAns(dataDelete: number, posBlank: number) {
+  anserList.value?.answerBlank[posBlank]?.splice(dataDelete, 1)
 
-  // tìm kiếm đáp án underline
-  const elementAns = editableDiv.querySelectorAll('.answer-fill-blank')
-  for (let i = 0; i < elementAns.length; i++) {
-    const element = elementAns[i]
-    const answerIndex = element.getAttribute('answer-position')
-
-    // kiểm tra vị trí delete có trùng với vị trí của element được tìm thấy
-    if (dataDelete.position - 1 === Number(answerIndex)) {
-      // tạo một  vùng được chọn mới
-      const range = document.createRange()
-
-      // bao bọc vùng chọn cho element
-      range.selectNode(element)
-
-      // tạo một selection
-      const selection: any = window.getSelection()
-
-      // xóa tất cả các range hiện tại
-      selection.removeAllRanges()
-
-      // add range đã tạo để selection cho vùng được chọn
-      selection.addRange(range)
-      const textReset = selection?.toString()
-      insertHtml(selection, textReset)
-    }
-  }
-
-  anserList.value?.answers?.splice(dataDelete.position - 1, 1)
-
-  anserList.value?.answers?.forEach((element: any, i: number) => {
-    element.position = i + 1
+  anserList.value?.answerBlank[posBlank]?.forEach((element: any, i: number) => {
+    element.position = i + 2
   })
-  updatePositionAns()
 }
 
 // phương thức xóa vùng được chọn
@@ -522,7 +520,7 @@ function deleteSelectedText(selection: any) {
                 :data="ans"
                 :ans-id="1"
                 :is-true="ans.isTrue"
-                @delete="deleteAns"
+                disabled-del
                 @update:isTrue="changeValueIsTrue"
               />
             </div>
@@ -541,12 +539,13 @@ function deleteSelectedText(selection: any) {
               :data="ans"
               :ans-id="idAns + 2"
               :is-true="ans.isTrue"
-              @delete="deleteAns"
+              @delete="($value: any) => deleteAns(idAns, anserList.answers[isActiveAnsCurrent - 1]?.blank)"
               @update:isTrue="changeValueIsTrue"
             />
           </div>
         </div>
         <BLink
+          v-if="isActiveAnsCurrent"
           class="cursor-pointer"
           @click="addAnswerBlank('', isActiveAnsCurrent)"
         >

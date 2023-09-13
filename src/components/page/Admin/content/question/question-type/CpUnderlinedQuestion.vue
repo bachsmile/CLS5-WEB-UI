@@ -163,7 +163,15 @@ function addAnswerUnder() {
   const selection: any = window.getSelection()
 
   // lấy text đang được bôi đen
-  const text = window.getSelection()?.toString()
+  let text: any = window.getSelection()?.toString()
+  const firstCharacter = text.slice(0, 1)
+  if (firstCharacter === ' ')
+    text = text.slice(1)
+
+  const lastCharacter = text.slice(text.length - 1)
+
+  if (lastCharacter === ' ')
+    text = text.slice(0, text.length - 1)
 
   // lấy vùng range được selection
   const range = selection.getRangeAt(0)
@@ -171,7 +179,7 @@ function addAnswerUnder() {
   // kiểm tra xem có chứa đáp án underline đã tạo không nếu không sẽ tạo có sẽ cảnh báo
   if (!checkHasUnderline(range.commonAncestorContainer)) {
     // html cần chèn vào vị trí được chọn
-    const htmlAnswer = `<u class="answer-underline" contenteditable="false" answer-position="${anserList.value.answers.length}">${text}</u>`
+    const htmlAnswer = `${firstCharacter === ' ' ? '<span> </span>' : ''}<u class="answer-underline" contenteditable="false" answer-position="${anserList.value.answers.length}">${text}</u>${lastCharacter === ' ' ? '<span> </span>' : ''}`
     insertHtml(selection, htmlAnswer)
 
     // thêm vào câu trả lời

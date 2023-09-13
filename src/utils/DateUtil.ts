@@ -36,10 +36,10 @@ export default class DateUtil {
   }
 
   // format date to DD/MM/YYYY
-  static formatDateToDDMM = (value: any) => {
+  static formatDateToDDMM = (value: any, type = '/') => {
     if (!value)
       return ''
-    return moment(String(value)).format('DD/MM/YYYY')
+    return moment(String(value)).format(`DD${type}MM${type}YYYY`)
   }
 
   static formatTimeToHHmm = (value: any) => {
@@ -49,7 +49,7 @@ export default class DateUtil {
     return '-'
   }
 
-  static formatSecond = (seconds: any) => {
+  static formatSecond = (seconds: any, location: 'vi') => {
     seconds = Math.round(seconds)
     if (seconds === null || seconds === undefined)
       return '-'
@@ -87,5 +87,28 @@ export default class DateUtil {
         break
     }
     return time
+  }
+
+  static timeRating = (value: any, t: any) => {
+    const date: any = new Date(value)
+    const currentDate: any = new Date()
+    const timeDifference = currentDate - date
+
+    const secondsDifference = Math.floor(timeDifference / 1000)
+    const minutesDifference = Math.floor(secondsDifference / 60)
+    const hoursDifference = Math.floor(minutesDifference / 60)
+    if (secondsDifference === 0)
+      return t('just-a-moment')
+    if (secondsDifference < 60)
+      return `${secondsDifference} ${t('ago-second')}`
+
+    else if (minutesDifference < 60)
+      return `${minutesDifference} ${t('ago-minute')}`
+
+    else if (hoursDifference < 24)
+      return `${hoursDifference} ${t('ago-hours')}`
+
+    else
+      return date.toLocaleString() // Nếu hơn 24 giờ, hiển thị ngày và giờ đầy đủ
   }
 }

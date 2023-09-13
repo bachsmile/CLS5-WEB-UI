@@ -32,6 +32,7 @@ interface tab {
   dataTab?: any // Dữ liệu riêng của từng tab
   isDisabled?: boolean
   isRendered?: boolean
+  isSlot?: boolean
 }
 interface Props {
   hide: boolean
@@ -67,26 +68,35 @@ function getTabActive() {
     tabActive.value = dataTab.value?.key
   }
 }
+const onUnmountedValue = ref(false)
 function activeTab(value: any) {
   dataTab.value = props.listTab.find(x => x.key === value) as tab
-  if (dataTab.value)
+  if (dataTab.value?.isRendered !== undefined && dataTab.value?.isRendered !== null)
     dataTab.value.isRendered = true
-  if (props.type === 'button') {
-    router.push({
-      query: {
-        ...route.query,
-        [props.label]: value,
-      },
-    })
-  }
-  else {
-    router.replace({
-      query: {
-        ...route.query,
-        [props.label]: value,
-      },
-    })
-  }
+  nextTick(() => {
+    if (onUnmountedValue.value)
+      return
+    if (props.type === 'button') {
+      if (props.label) {
+        const temp = window._.cloneDeep(route.query)
+        router.push({
+          query: {
+            ...temp,
+            [props.label]: value,
+          },
+        })
+      }
+    }
+    else {
+      router.replace({
+        query: {
+          ...route.query,
+          [props.label]: value,
+        },
+      })
+    }
+  })
+
   emit('activeTab', tabActive.value)
 }
 
@@ -102,6 +112,12 @@ watch(() => route.query[props.label], val => {
 watch(tabActive, val => {
   activeTab(val)
 }, { immediate: true })
+onUnmounted(() => {
+  router.replace({
+    query: {},
+  })
+  onUnmountedValue.value = true
+})
 </script>
 
 <template>
@@ -140,15 +156,19 @@ watch(tabActive, val => {
         class="content-tab"
       >
         <div
-          v-if="item.isRendered"
+          v-if="item.isRendered "
           v-show="item.key === route.query[props.label]"
         >
           <Component
             :is="item?.component"
+            v-if="!item.isSlot"
             :emit="useEmitter"
             :data-general="dataGeneral"
             v-bind="dataTab?.dataTab"
           />
+          <div v-else>
+            <slot :context="item" />
+          </div>
         </div>
       </div>
     </div>
@@ -177,7 +197,7 @@ watch(tabActive, val => {
   }
   .item-tab {
     border-radius: unset !important;
-    text-transform: capitalize !important;
+    text-transform: initial !important;
     box-shadow: unset !important;
   }
 

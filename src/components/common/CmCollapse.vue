@@ -6,8 +6,11 @@ const props = withDefaults(defineProps<Props>(), {})
 </script>
 
 <template>
-  <VExpandTransition>
-    <div v-show="props.isShow">
+  <VExpandTransition mode="out-in">
+    <div
+      v-show="props.isShow"
+      class="w-100"
+    >
       <slot />
     </div>
   </VExpandTransition>

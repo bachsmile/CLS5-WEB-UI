@@ -17,6 +17,7 @@ interface Props {
   className?: string
   buttonOkName?: string
   buttonCancleName?: string
+  justify?: string
   isHideFooter?: boolean
   persistent?: boolean // ngăn không cho tắt modal
   size?: typeof sizeDialog[] | string
@@ -41,6 +42,7 @@ const props = withDefaults(defineProps<Props>(), ({
   type: 0,
   variant: 'outlined',
   buttonOkName: 'ok-title',
+  justify: 'end',
   buttonCancleName: 'cancel-title',
   isHideFooter: false,
   persistent: false,
@@ -147,14 +149,17 @@ const sizeModal = computed(() => {
           <slot />
         </template>
         <VDivider
-          v-if="isDivSpace"
+          v-if="!isHideFooter"
           class="mb-1"
         />
         <template
           v-if="!isHideFooter"
           #actions
         >
-          <div class="d-flex justify-end w-100">
+          <div
+            class="d-flex  w-100"
+            :class="`justify-${justify}`"
+          >
             <slot name="actions" />
             <CmButton
               v-if="isCancle"
@@ -190,7 +195,7 @@ const sizeModal = computed(() => {
 .v-card-actions {
   padding-top: 12px;
   padding-bottom: 24px;
-  padding-inline: 24px !important;
+  padding-inline: 16px !important;
 }
 
 .modal-custom-divspace .v-card-item {

@@ -239,7 +239,7 @@ function confirmDelete(topicId: number) {
   <SkTree v-if="!isRender" />
   <div
     v-else
-    class="page-containter-box"
+    class="page-container-box"
   >
     <CmTreeView
       :config="config"

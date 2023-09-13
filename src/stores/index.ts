@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { defaultSetting } from '@/constant/data/settingDefault.json'
+import { defaultTheme } from '@/constant/data/image.json'
 import SystemService from '@/api/system/index'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
@@ -14,6 +15,7 @@ export const configStore = defineStore('appConfig', () => {
   const config = reactive({
     isRTL: 'ltr',
   })
+  const defaultThemeValue = ref(defaultTheme)
   const permission = ref<any>(null)
 
   /** end state */
@@ -35,5 +37,15 @@ export const configStore = defineStore('appConfig', () => {
       return value.data
     })
   }
-  return { config, settingDefaults, permission, isTreeBinding, getDefaultSetting }
+  const getThemeConfig = async () => {
+    await MethodsUtil.requestApiCustom(SystemService.ThemeSystem, TYPE_REQUEST.GET).then((value: any) => {
+      defaultThemeValue.value = value.data
+      localStorage.setItem('themeConfig', JSON.stringify(value.data))
+    })
+      .catch(() => {
+        defaultThemeValue.value = defaultTheme
+        localStorage.setItem('themeConfig', JSON.stringify(defaultTheme))
+      })
+  }
+  return { config, settingDefaults, permission, defaultThemeValue, isTreeBinding, getDefaultSetting, getThemeConfig }
 })

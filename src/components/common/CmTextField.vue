@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), ({
   maxlength: constant.MAX_LENGTH_TEXT_FIELD,
   disabled: false,
   isNegative: false,
+  isShowErrors: true,
 }))
 
 const emit = defineEmits<Emit>()
@@ -37,6 +38,7 @@ interface Props {
   disabled?: boolean
   isNullNumber?: boolean
   isNegative?: boolean
+  isShowErrors?: boolean
 }
 interface Emit {
   (e: 'update:modelValue', value: any): void
@@ -130,7 +132,7 @@ watch(() => props.modelValue, val => {
       />
     </div>
     <div
-      v-if="errors?.length > 0"
+      v-if="isShowErrors && errors?.length > 0"
       class="styleError text-errors"
     >
       {{ t(MethodsUtil.showErrorsYub(errors)) }}

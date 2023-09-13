@@ -14,6 +14,7 @@ interface Props {
   labelTitle?: string
   labelSubTitle?: string
   customKeyStatus?: string
+  status?: any[]
 }
 
 const props = withDefaults(defineProps<Props>(), ({
@@ -43,6 +44,13 @@ const linkAvatar = computed(() => {
 
   return ''
 })
+
+const statusList = computed(() => {
+  if (props.status?.length)
+    return props.status
+
+  return StatusTypeCourse
+})
 </script>
 
 <template>
@@ -71,9 +79,9 @@ const linkAvatar = computed(() => {
       </div>
       <div
         v-if="isSubTitle && context[labelSubTitle]"
-        :class="`text-${MethodsUtil.checkType(context[labelSubTitle], StatusTypeCourse, customKeyStatus)?.color}`"
+        :class="`text-${MethodsUtil.checkType(context[labelSubTitle], statusList, customKeyStatus)?.color}`"
       >
-        {{ t(MethodsUtil.checkType(context[labelSubTitle], StatusTypeCourse, customKeyStatus)?.name) }}
+        {{ t(MethodsUtil.checkType(context[labelSubTitle], statusList, customKeyStatus)?.name) }}
       </div>
     </div>
   </div>

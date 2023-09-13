@@ -8,6 +8,8 @@ import type { typeLoading } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import type { Any, typeToast } from '@/typescript/interface'
+import constant from '@/constant/constant'
+import jwtDefaultConfig from '@/auth/jwtDefaultConfig';
 
 //Cài đặt cố định
 declare global {
@@ -34,6 +36,7 @@ interface propertyGlobal {
   TYPE_REQUEST?: any,
   formatFullName?: any,
   SERVER_FILE?: string,
+  TOKEN_SV_FILE?: string,
   userData?: any,
   notificationApiStatus?: any
 }
@@ -96,6 +99,7 @@ const windowDefineConstProperty = ()=> {
     hideAllPageLoading,
     notificationApiStatus: MethodsUtil.notificationApiStatus,
     SERVER_FILE: process.env.VUE_APP_BASE_SERVER_FILE,
+    TOKEN_SV_FILE:localStorage.getItem(jwtDefaultConfig.storageTokenKeyName) ||  constant.TOKEN_SV_FILE,
   }
   defineProperty(global, 'const')
 }

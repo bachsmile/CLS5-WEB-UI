@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import CmDialogs from '@/components/common/CmDialogs.vue'
 import CmTextField from '@/components/common/CmTextField.vue'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import { validatorStore } from '@/stores/validatator'
 
 const props = withDefaults(defineProps<Props>(), {
@@ -88,7 +88,7 @@ function resetData() {
         />
       </Field>
 
-      <CmtextArea
+      <CmTextArea
         v-model="dataInput.description"
         :text="t('description')"
       />

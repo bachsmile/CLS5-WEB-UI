@@ -91,7 +91,7 @@ async function updateValueOrg(value: any) {
 async function handleSave(idx: number, unload: any) {
   const params = {
     ...props.apiAdd?.params,
-    [props.apiAdd.label]: listModelNew.value,
+    [props.apiAdd.label || 'listModelNew']: listModelNew.value,
     listModelOld: listModelOld.value,
   }
   await MethodsUtil.requestApiCustom(props.apiAdd.api, props.apiAdd.method, params).then((value: any) => {
@@ -126,7 +126,7 @@ watch(render, val => {
   <SkTree v-show="isLoading" />
   <div
     v-show="!isLoading"
-    class="page-containter-box"
+    class="page-container-box"
   >
     <CmTreeView
       :key="render"

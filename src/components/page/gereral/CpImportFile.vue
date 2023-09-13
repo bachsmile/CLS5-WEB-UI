@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import CpQuestionName from './CpQuestionName.vue'
+import CpContentView from './CpContentView.vue'
 import CmButton from '@/components/common/CmButton.vue'
 import CmTable from '@/components/common/CmTable.vue'
 import { excelFileExtention } from '@/constant/Globals'
@@ -58,6 +60,7 @@ interface Props {
   titlePageUpload?: string
   isFilter?: boolean
   filterConfig?: filter
+  isPositionErr?: boolean
 }
 
 /** ** Khởi tạo store */
@@ -66,12 +69,14 @@ const storeCombobox = comboboxStore()
 const router = useRouter()
 const { paramsImport } = store
 const { organizationsCombobox } = storeToRefs(storeCombobox)
-const { type, refTableValid } = storeToRefs(store)
+const { type, refTableValid, isLocal } = storeToRefs(store)
 const { checkInvalidData, fileChange, updateFromFile } = store
 // eslint-disable-next-line vue/no-setup-props-destructure
 store.customKeyError = props.customKeyError
-const isEditing = ref(false)
+// eslint-disable-next-line vue/no-setup-props-destructure
+isLocal.value = props.isPositionErr
 
+const isEditing = ref(false)
 const headers = reactive([
   { text: '', value: 'checkbox' },
   ...props?.config?.table?.header,
@@ -79,7 +84,7 @@ const headers = reactive([
 
 const headersInvalid = computed(() => {
   const select = {
-    text: 'Select',
+    text: '',
     value: 'select',
     thClass: 'custom-th-class',
     sortable: false,
@@ -151,6 +156,13 @@ onBeforeUnmount(() => {
   store.$dispose()
   store.$reset()
 })
+
+async function openDetail(dataQs: any) {
+  paramsImport.validData[dataQs.originIndex].isExpand = true
+}
+async function closeDetail(dataQs: any) {
+  paramsImport.validData[dataQs.originIndex].isExpand = false
+}
 </script>
 
 <template>
@@ -225,7 +237,26 @@ onBeforeUnmount(() => {
             :items="paramsImport.validData"
             return-object
             is-import-file
-          />
+          >
+            <template #rowItem="{ col, context }">
+              <div v-if="col === 'content'">
+                <CpQuestionName
+                  :status="context.statusId"
+                  :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.questionData.content : context.contentBasic"
+                  :is-expand="context.isExpand"
+                  @update:open="openDetail(context)"
+                  @update:close="closeDetail(context)"
+                >
+                  <CpContentView
+                    :type="context.questionTypeId"
+                    :data="context"
+                    :show-content="false"
+                    :show-media="false"
+                  />
+                </CpQuestionName>
+              </div>
+            </template>
+          </CmTable>
         </div>
       </div>
       <div
@@ -258,7 +289,17 @@ onBeforeUnmount(() => {
             is-import-file
             :custom-key-error="customKeyError"
             @changeCellvalue="changeCellvalue"
-          />
+          >
+            <template #rowItem="{ col, context }">
+              <div v-if="col === 'content'">
+                <CpQuestionName
+                  :status="context.statusId"
+                  :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.questionData.content : context.contentBasic"
+                  :is-expand="context.isExpand"
+                />
+              </div>
+            </template>
+          </CmTable>
         </div>
       </div>
     </div>

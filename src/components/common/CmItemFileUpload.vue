@@ -6,6 +6,7 @@ import MethodsUtil from '@/utils/MethodsUtil'
 const props = withDefaults(defineProps<Props>(), {
   isShowModal: false,
   iconStatus: true,
+  type: 0, // 0: progress, 1:success, 2:error
   files: () => ([
     { name: 'Real-Time', icon: 'tabler:file', size: 0, processing: 0 },
   ]),
@@ -14,6 +15,7 @@ const emit = defineEmits<Emit>()
 interface Emit {
   (e: 'cancel', value: any): void
   (e: 'downloadFile', value?: any): void
+  (e: 'refesh', value?: any): void
 }
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -28,6 +30,7 @@ interface item {
 interface Props {
   isShowModal: boolean
   iconStatus?: boolean
+  type: number
   files: item[]
 }
 const CmIconNoti = defineAsyncComponent(() => import('@/components/common/CmIconNoti.vue'))
@@ -40,6 +43,9 @@ async function cancel(index: any) {
 }
 async function dowloadItems(item: any) {
   emit('downloadFile', item)
+}
+async function refesh(item: any) {
+  emit('refesh', item)
 }
 
 watch(() => props.files, val => {
@@ -55,7 +61,7 @@ watch(() => props.files, val => {
           v-for="(item, i) in listFile"
           :key="i"
           class="box-process-file"
-          :class="{ 'mb-4': i < listFile.length - 1 }"
+          :class="{ 'mb-4': i < listFile.length - 1, 'error': item.type === 2 }"
           :value="item"
         >
           <template
@@ -64,7 +70,7 @@ watch(() => props.files, val => {
             <div class="d-flex align-start">
               <CmIconNoti
                 :icon="item.icon"
-                :type="3"
+                :type="2"
               />
               <VTooltip
                 v-if="item?.type"
@@ -112,7 +118,14 @@ watch(() => props.files, val => {
               variant="text"
             />
             <CmButton
-              v-else
+              v-if="item.type === 2"
+              color="error"
+              icon="tabler:x"
+              :size-icon="20"
+              variant="text"
+            />
+            <CmButton
+              v-if="item.type === 0"
               color="infor"
               icon="tabler:trash"
               variant="text"
@@ -121,21 +134,31 @@ watch(() => props.files, val => {
           </template>
           <VListItemTitle>
             <div
-              class="ml-3 text-medium-sm text-ellipsis"
+              class="ml-3 text-title text-medium-sm text-ellipsis"
               :title="item.name"
             >
               {{ item.name }}
             </div>
-            <div class="ml-3 mb-2 text-regular-sm ">
+            <div class="text-title-sub ml-3 mb-2 text-regular-sm ">
               {{ item.size ? MethodsUtil.formatCapacity(item.size) : t("undefined") }}
             </div>
-            <div class="ml-3 text-regular-sm ">
+            <div
+              v-if="item.type === 0"
+              class="ml-3 text-regular-sm"
+            >
               <VProgressLinear
                 :model-value="item.processing"
                 striped
                 color="primary"
                 rounded
               />
+            </div>
+            <div
+              v-if="item.type === 2"
+              class="text-title ml-3 text-medium-sm"
+              @click.stop="refesh(item)"
+            >
+              Thử lại
             </div>
           </VListItemTitle>
         </VListItem>
@@ -151,6 +174,19 @@ watch(() => props.files, val => {
   border: 1px solid #2E90FA;
   border-radius: 8px;
   padding: 16px !important;
+}
+.box-process-file.error{
+  width: 100%;
+  height: auto;
+  border: 1px solid rgb(var(--v-error-300));
+  border-radius: 8px;
+  padding: 16px !important;
+  .text-title{
+    color: rgb(var(--v-error-700))
+  }
+  .text-title-sub{
+    color: rgb(var(--v-error-600))
+  }
 }
 .box-items{
   padding: unset;

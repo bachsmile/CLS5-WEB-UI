@@ -1,5 +1,37 @@
 {
-  "orgStruct": "tabler:briefcase",
-  "users": "tabler:users",
-  "title": "prime-check-circle"
+  "reaction": [
+    {
+      "key": "Thích",
+      "value": 1,
+      "color": "#1570EF",
+      "icon": "tabler:thumb-up",
+      "emptyIcon": "tabler:thumb-up",
+      "fullIcon": "tabler:thumb-up-filled"
+    },
+    {
+      "key": "Yêu Thích",
+      "value": 2,
+      "color": "#D92D20",
+      "icon": "tabler:heart",
+      "emptyIcon": "tabler:heart",
+      "fullIcon": "tabler:heart-filled"
+    },
+    {
+      "key": "Ngôi Sao",
+      "value": 3,
+      "color": "#F79009",
+      "icon": "tabler:star",
+      "emptyIcon": "tabler:star",
+      "fullIcon": "tabler:star-filled",
+      "halfIcon": "tabler:star-half-filled"
+    },
+    {
+      "key": "Biểu Tượng Cảm Xúc",
+      "value": 4,
+      "color": "#039855",
+      "icon": "tabler:mood-happy",
+      "emptyIcon": "tabler:mood-happy",
+      "fullIcon": "tabler:mood-happy-filled"
+    }
+  ]
 }

@@ -86,7 +86,7 @@ function handlerPreButton(event: any) {
         is-load
         @click="(idx: any, unload: any) => emit('onSave', idx, unload)"
       >
-        {{ t(titleSave || '') }}
+        {{ t(titleSave || 'save') }}
       </CmButton>
     </div>
     <div
@@ -98,7 +98,7 @@ function handlerPreButton(event: any) {
         color="primary"
         @click="(idx: any, unload: any) => emit('onSaveUpdate', idx, unload)"
       >
-        {{ t(titleSaveAndUpdate || '') }}
+        {{ t(titleSaveAndUpdate || 'save-and-update') }}
       </CmButton>
     </div>
     <div

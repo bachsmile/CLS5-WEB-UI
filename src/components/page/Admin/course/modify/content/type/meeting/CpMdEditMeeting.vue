@@ -4,7 +4,7 @@ import CmTextField from '@/components/common/CmTextField.vue'
 import { validatorStore } from '@/stores/validatator'
 import CmDateTimePicker from '@/components/common/CmDateTimePicker.vue'
 import CmSelect from '@/components/common/CmSelect.vue'
-import CmtextArea from '@/components/common/CmtextArea.vue'
+import CmTextArea from '@/components/common/CmTextArea.vue'
 import toast from '@/plugins/toast'
 import type { Any } from '@/typescript/interface'
 
@@ -238,7 +238,7 @@ const listType = [
           </Field>
         </VCol>
         <VCol cols="12">
-          <CmtextArea
+          <CmTextArea
             :model-value="dataInput.url"
             :text="`${t('description')}`"
           />

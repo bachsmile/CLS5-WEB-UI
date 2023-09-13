@@ -1,0 +1,173 @@
+{
+    "defaultTheme": {
+        "name": "Default Theme",
+        "examImages": [
+            {
+                "key": 14,
+                "value": "/badge/exam1.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam2.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam3.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam4.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam5.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam6.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam7.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam8.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam9.png"
+            },
+            {
+                "key": 14,
+                "value": "/badge/exam10.png"
+            }
+        ],
+        "items": [
+            {
+                "key": 1,
+                "value": "#227ff4"
+            },
+            {
+                "key": 2,
+                "value": "#FFFFFF"
+            },
+            {
+                "key": 3,
+                "value": "#28c76f"
+            },
+            {
+                "key": 4,
+                "value": "#ea5455"
+            },
+            {
+                "key": 5,
+                "value": "#ff9f43"
+            },
+            {
+                "key": 6,
+                "value": "/badge/emptyData.png"
+            },
+            {
+                "key": 7,
+                "value": "/badge/eventDefault.png"
+            },
+            {
+                "key": 8,
+                "value": "/badge/navnewyearapp.png"
+            },
+            {
+                "key": 9,
+                "value": "/badge/suveyComplete.png"
+            },
+            {
+                "key": 10,
+                "value": "/badge/congratulationscousera.gif"
+            },
+            {
+                "key": 11,
+                "value": "/badge/examComplete.png"
+            },
+            {
+                "key": 12,
+                "value": "/badge/suveyComplete.png"
+            },
+            {
+                "key": 13,
+                "value": "/badge/pathComplete.png"
+            },
+            {
+                "key": 15,
+                "value": "/badge/markCourse.png"
+            },
+            {
+                "key": 16,
+                "value": "/badge/markExam.png"
+            },
+            {
+                "key": 17,
+                "value": "/badge/supervisor.png"
+            },
+            {
+                "key": 18,
+                "value": "/badge/feedback.png"
+            },
+            {
+                "key": 19,
+                "value": "/badge/exam1.png"
+            },
+            {
+                "key": 20,
+                "value": "/badge/login-background.png"
+            },
+            {
+                "key": 21,
+                "value": "/badge/lessonComplete.png"
+            },
+            {
+                "key": 22,
+                "value": null
+            },
+            {
+                "key": 23,
+                "value": null
+            },
+            {
+                "key": 24,
+                "value": "/badge/attendance.png"
+            },
+            {
+                "key": 25,
+                "value": null
+            },
+            {
+                "key": 26,
+                "value": "/badge/vertical-nav-10-3.png"
+            },
+            {
+                "key": 27,
+                "value": "/badge/nav-10-3.png"
+            },
+            {
+                "key": 28,
+                "value": true
+            },
+            {
+                "key": 29,
+                "value": "/testDevice/testVideo.mp4"
+            },
+            {
+                "key": 30,
+                "value": null
+            },
+            {
+                "key": 31,
+                "value": null
+            },
+            {
+                "key": 32,
+                "value": null
+            }
+        ]
+    }
+}

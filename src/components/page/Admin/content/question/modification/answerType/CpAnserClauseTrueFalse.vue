@@ -155,7 +155,7 @@ defineExpose({
             cols="4"
             class="d-flex align-center"
           >
-            <div class="px-3">
+            <div class="mr-3">
               {{ getIndex }}
             </div>
           </VCol>

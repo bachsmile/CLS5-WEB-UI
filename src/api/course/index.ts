@@ -39,6 +39,15 @@ const CourseService = {
   GetSampleFileUpdatePoint: 'Course/template-excel-update-point', // Lấy thông tin file mẫu cập nhật điểm
   GetListFilesCourse: 'contentarchive/get-files-in-course', // Lấy danh sách file tải của khóa học
   GetListSurvey: '/surveyexam/get-paging',
+  GetListMyCourse: '/CourseUser/my-courses',
+  GetListMyCourseHome: '/Home/get-list-course',
+  GetDetailCourse: '/course/get-detail',
+  GetContentByCourseId: '/coursecontent/list-user-content-by-courseId',
+  GetCapacityCourse: '/Proficiency/proency-level-by-course',
+  GetGeneralRating: '/course/get-general-evaluation',
+  GetUserEvaluation: '/course/get-paging-user-evaluation',
+  GetCriteriaEvaluation: '/course/get-course-evaluation-criteria',
+  GetCheckUserExist: '/course/check-user-exist',
 
   /** Post */
   PostAddCourseOrg: '/course/add-course-to-organizational-structures',
@@ -94,6 +103,9 @@ const CourseService = {
   PostCreateQr: '/qrcode/create',
   PostUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostuCreateTestConfig: '/coursecontenttest/create',
+  PostCreateEvaluation: '/course/create-evaluation',
+  PostUpdateEvaluation: '/course/update-evaluation',
+  PostDelEvaluation: '/course/delete-evaluation',
   PostUpdatePointOff: '/Course/import-excel-update-mark-content-offline',
   PostuUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostDelCheckinCourse: (id: number | string) => `/course/${id}/checkin/delete`, // Lấy danh sách điểm danh khóa học
