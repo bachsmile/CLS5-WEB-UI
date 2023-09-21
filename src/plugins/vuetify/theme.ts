@@ -21,6 +21,8 @@ const theme: VuetifyOptions['theme'] = {
         'info': '#0086C9',
         'warning': '#dc6803',
         'error': '#d92d20',
+        'purple': '#444CE7',
+        'primary-light': '#0086C9',
         'background': '#F8F7FA',
         'on-background': '#4B465C',
         'on-surface': '#4B465C',

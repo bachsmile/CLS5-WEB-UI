@@ -10,6 +10,21 @@ body {
 .text-primary {
   color: $color-primary-600 !important;
 }
+.color-primary-light {
+  color: $color-primary-400 !important;
+}
+.color-primary {
+  color: $color-primary-600 !important;
+}
+.color-success {
+  color: $color-success-600 !important;
+}
+.color-error {
+  color: $color-error-600 !important;
+}
+.color-info {
+  color: $color-info-600 !important;
+}
 .color-purple {
   color: $color-purple-600 !important;
 }
@@ -86,9 +101,6 @@ body {
   color: $color-gray-900 !important;
 }
 
-.color-success {
-  color: $color-success-600 !important;
-}
 .color-success-700 {
   color: $color-success-700 !important;
 }
@@ -235,7 +247,6 @@ body {
 .bg-white {
   background-color: $color-white !important;
 }
-
 .no-background {
   background-color: transparent;
 }
@@ -348,6 +359,7 @@ span {
 }
 
 .text-errors {
+  width: max-content !important;
   color: $color-error-600 !important;
   line-height: 12px;
   word-break: break-word;
@@ -592,6 +604,12 @@ span {
 @for $i from 0 through 10 {
   .mn-#{$i} {
     margin: (-4 * $i) + px !important;
+  }
+}
+// radius
+@for $i from 0 through 10 {
+  .br-#{$i} {
+    border-radius: (4 * $i) + px !important;
   }
 }
 .pxn {

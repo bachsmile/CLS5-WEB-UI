@@ -5,28 +5,28 @@
       "name": "SuccessDialog",
       "icon": "prime-check-circle",
       "color": "success",
-      "size": 16
+      "size": 24
     },
     {
       "id": 1,
       "name": "WarningDialog",
       "icon": "tabler:alert-triangle",
       "color": "warning",
-      "size": 16
+      "size": 24
     },
     {
       "id": 2,
       "name": "ErrorDialog",
       "icon": "tabler:alert-circle",
       "color": "error",
-      "size": 16
+      "size": 24
     },
     {
       "id": 3,
       "name": "InforDialog",
       "icon": "tabler:eye",
       "color": "primary",
-      "size": 16
+      "size": 24
     }
   ]
 }

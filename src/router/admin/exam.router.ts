@@ -57,6 +57,23 @@ export default [
         },
         component: () => import('@/pages/admin/exam/edit/EditExam.vue'),
       },
+      {
+        path: 'edit/:id/thematic/:thematicId',
+        name: 'exam-edit-thematic',
+        meta: {
+          breadcrumb: [
+            {
+              title: 'exam-list',
+              to: { name: 'list-exam' },
+            },
+            {
+              title: 'QuestionService.ActionEdit',
+              active: true,
+            },
+          ],
+        },
+        component: () => import('@/pages/admin/exam/edit/EditExam.vue'),
+      },
     ],
   },
 ]

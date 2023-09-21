@@ -56,6 +56,8 @@ const QuestionService = {
   PostSurveySubmit: '/survey/submit',
   PostDownloadTemplateQuestion: '/question/generate-excel-template-create-question',
   PostImportQuestionFromFile: '/question/import-questions-excel-json',
+  PostImportSurveyFromFile: '/survey/import-excel-from-json',
+  PostDownloadTemplateSurvey: '/survey/generate-import-excel-template',
 
   /** Delete */
   DeleteSurveyTopic: '/surveytest/delete',

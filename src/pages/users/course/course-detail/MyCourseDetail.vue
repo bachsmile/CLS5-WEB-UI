@@ -5,9 +5,13 @@ import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import CpCourseInfo from '@/components/page/users/course/course-detail/CpCourseInfo.vue'
 import CpTabDesc from '@/components/page/users/course/course-detail/CpTabDesc.vue'
 import CpCourseRelated from '@/components/page/users/course/course-detail/CpCourseRelated.vue'
+import CpCardCourseDetail from '@/components/page/users/course/course-detail/CpCardCourseDetail.vue'
 import CpRatingEvaluate from '@/components/page/gereral/CpRatingEvaluate.vue'
 import StringJwt from '@/utils/Jwt'
 import StringUtil from '@/utils/StringUtil'
+import toast from '@/plugins/toast'
+
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
 const route = useRoute()
 const courseDetail = ref()
@@ -48,7 +52,15 @@ async function getGeneralRating() {
     generaRating.value = data
   })
 }
-
+async function registerCourse(id: number) {
+  const params = { id }
+  MethodsUtil.requestApiCustom(CourseService.PostlRegisterCourse, TYPE_REQUEST.POST, params).then((result: any) => {
+    getDetailCourseById()
+    toast('SUCCESS', t('register-success'))
+  }).catch((err: any) => {
+    toast('ERROR', t(err?.response?.data?.message) || t('register-failed'))
+  })
+}
 watch(() => route.params.id, (val: any) => {
   getDetailCourseById()
   getGeneralRating()
@@ -83,9 +95,10 @@ watch(() => route.params.id, (val: any) => {
           cols="12"
           md="4"
         >
-          <div class="mc-name text-bold-lg">
-            Tên khóa học khóa học khóa học khóa học khóa học
-          </div>
+          <CpCardCourseDetail
+            :data="courseDetail"
+            @register-course="registerCourse"
+          />
         </VCol>
       </VRow>
     </div>

@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<Props>(), ({
   isSave: false,
   isSaveGroup: false,
   isSaveAndUpdate: false,
+  isCancel: true,
   titleCancel: 'cancel-title',
 }))
 
@@ -69,6 +70,7 @@ function handlerPreButton(event: any) {
   <div class="d-flex justify-end">
     <div>
       <CmButton
+        v-if="isCancel"
         bg-color="bg-white"
         color="white"
         text-color="color-dark"

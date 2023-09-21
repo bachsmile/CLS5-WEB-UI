@@ -132,11 +132,11 @@ const isViewDetail = ref(false)
 const minuteWork = ref(0)
 const listQuestions = ref<Any[]>([])
 function abc213(val: any) {
-  console.log(val)
-  console.log(testConfig.value)
+  // console.log(val)
+  // console.log(testConfig.value)
 }
 watch(testConfig.value, val => {
-  console.log(val)
+  // console.log(val)
 })
 </script>
 

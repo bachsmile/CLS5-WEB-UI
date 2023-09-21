@@ -278,6 +278,11 @@ export default class MethodsUtil {
     return null
   }
 
+  static getImage(id: number): string {
+    const result = MethodsUtil.getThemeItem(1)(id)
+    return typeof result === 'string' ? result : ''
+  }
+
   // // kiểm tra quyền trên view
   static checkPermission = (permission: any, key: any, value: any) => {
     if (permission === null) {
@@ -327,6 +332,10 @@ export default class MethodsUtil {
     catch (err: any) {
       return err?.response?.data
     }
+  }
+
+  static async getDocLocalInfoFileDown(folder: any, getFileSize?: any) {
+    return await MethodsUtil.requestApiCustom(`${SERVERFILE}${ServerFileService.GetInforFile}${folder}`, TYPE_REQUEST.GET).then((data: any) => data)
   }
 
   static formatCurrency(value: number, toFixed = 3) {
@@ -523,7 +532,6 @@ export default class MethodsUtil {
         return audioExtention
       case 3:
         return videoExtention
-
       default:
         return otherFileExtention
     }

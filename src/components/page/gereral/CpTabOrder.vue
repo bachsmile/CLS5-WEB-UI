@@ -6,6 +6,7 @@ interface Props {
   isEnd: boolean
   icon: string
   isActive?: boolean
+  disabled?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {})
 const { t } = window.i18n()
@@ -15,8 +16,9 @@ const colorTab = computed(() => {
 </script>
 
 <template>
-  <div class="d-flex align-center cursor-pointer">
+  <div class="d-flex align-center cursor-pointer mb-2">
     <CmButton
+      :disabled="disabled"
       size="40"
       class="d-flex align-center"
       :color="colorTab"

@@ -84,7 +84,6 @@ function hanleUploadFileContent(val: any) {
           ref="inputFile"
           v-model:src="urlFile"
           class="w-100 "
-          :disabled="true"
           :is-btn-download="false"
           @change="uploadFileLocal"
         />

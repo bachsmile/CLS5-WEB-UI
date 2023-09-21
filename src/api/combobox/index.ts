@@ -38,6 +38,8 @@ const ComboboxService = {
   GetComboboxListDistrict: '/Title/get-list-distinct',
   GetComboboxSurveyType: '/survey/get-combobox-survey-type',
   GetComboboxStatusQuestion: '/question/get-combobox-status',
+  GetComboboxTypeQuestion: '/question/get-combobox-question-type',
+  GetComboboxLevel: 'questionlevel/get-combobox',
 }
 
 export default ComboboxService

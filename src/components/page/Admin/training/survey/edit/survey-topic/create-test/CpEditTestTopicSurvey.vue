@@ -31,7 +31,7 @@ const router = useRouter()
 interface Props {
   isHandWork?: boolean
   dataDetail?: any
-  listQuestion: Any[]
+  listQuestion?: Any[]
 }
 
 interface Emit {

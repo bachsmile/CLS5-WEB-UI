@@ -25,7 +25,7 @@ const menuStore = useStoreMenu()
 
 // const { navItems } = storeToRefs(menuStore)
 const { getDataMenu } = menuStore
-const { navItems, userData } = storeToRefs(menuStore)
+const { navItems, userData, role } = storeToRefs(menuStore)
 
 const items = ref<any>([])
 watch(navItems, val => {
@@ -51,6 +51,7 @@ onMounted(async () => {
 
 <template>
   <VerticalNavLayout
+    :key="role?.name"
     :nav-items="items"
     v-bind="layoutAttrs"
   >

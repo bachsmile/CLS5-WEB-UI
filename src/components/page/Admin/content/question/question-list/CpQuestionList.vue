@@ -383,10 +383,11 @@ function getContentNameRef(context: any) {
     <CmCollapse :is-show="isShowFilter">
       <CpQuestionFilter
         v-model:topicId="queryParams.topic"
-        v-model:formOfStudy="queryParams.formOfStudy"
+        v-model:level="queryParams.level"
         v-model:sort="queryParams.sort"
-        v-model:isDisplayHome="queryParams.isDisplayHome"
+        v-model:isGroup="queryParams.isGroup"
         v-model:statusId="queryParams.statusId"
+        v-model:question-type="queryParams.type"
         v-model:ownerId="queryParams.ownerId"
         v-model:dateFrom="queryParams.dateFrom"
         v-model:dateTo="queryParams.dateTo"

@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<Props>(), ({
 function getIndex(position: number) {
   return `${String.fromCharCode(65 + position - 1)}.`
 }
+const { t } = window.i18n()
 </script>
 
 <template>
@@ -69,6 +70,13 @@ function getIndex(position: number) {
             :src="item.urlFile"
           />
         </div>
+      </div>
+      <div :title="item?.isShuffle ? t('allowed-shuffle') : t('not-allowed-shuffle')">
+        <VIcon
+          icon="iconamoon:playlist-shuffle-light"
+          :size="20"
+          :color="item.isShuffle ? 'primary' : ''"
+        />
       </div>
     </div>
   </div>

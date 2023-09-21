@@ -49,7 +49,7 @@ export default class DateUtil {
     return '-'
   }
 
-  static formatSecond = (seconds: any, location: 'vi') => {
+  static formatSecond = (seconds: any, location?: 'vi') => {
     seconds = Math.round(seconds)
     if (seconds === null || seconds === undefined)
       return '-'
@@ -57,16 +57,23 @@ export default class DateUtil {
       const hour = Math.floor(seconds / 3600)
       const minute = Math.floor((seconds % 3600) / 60)
       const second = seconds - (hour * 3600 + minute * 60)
-      return second === 0 ? `${hour}h${minute}m` : `${hour}h${minute}m${second}s`
+
+      return location === 'vi'
+        ? second === 0 ? `${hour} giờ ${minute} phút` : `${hour} giờ ${minute} phút ${second} giây`
+        : second === 0 ? `${hour}h${minute}m` : `${hour}h${minute}m${second}s`
     }
     if (seconds >= 60 && seconds < 3600) {
       const minute = Math.floor(seconds / 60)
       const second = seconds - (minute * 60)
-      return second === 0 ? `${minute}m` : `${minute}m${second}s`
+      return location === 'vi'
+        ? second === 0 ? `${minute} phút` : `${minute} phút ${second} giây`
+        : second === 0 ? `${minute}m` : `${minute}m${second}s`
     }
-    if (seconds < 60 && seconds >= 0)
-      return `${seconds}s`
-
+    if (seconds < 60 && seconds >= 0) {
+      return location === 'vi'
+        ? `${seconds} giây`
+        : `${seconds}s`
+    }
     return 0
   }
 

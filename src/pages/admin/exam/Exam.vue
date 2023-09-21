@@ -50,6 +50,8 @@ const queryParams = reactive<QueryParams>({
   statusId: null,
 })
 const route = useRoute()
+const router = useRouter()
+
 async function getListExam() {
   const { data } = await MethodsUtil.requestApiCustom(QuestionService.GetListExam, TYPE_REQUEST.GET, queryParams)
   items.value = data.pageLists
@@ -75,7 +77,7 @@ onMounted(async () => {
 function actionItem(type: any) {
   switch (type[0]?.name) {
     case 'ActionEdit':
-      // console.log('ActionEdit')
+      router.push({ name: 'exam-edit', params: { id: type[1]?.id }, query: { tab: 'info' } })
 
       break
     default:
@@ -83,7 +85,6 @@ function actionItem(type: any) {
   }
 }
 callBackAction.value = actionItem
-const router = useRouter()
 watch(queryParams, (val: Any) => {
   const params = ObjectUtil.omitByDeep(val)
   router.push({ query: params })
@@ -113,29 +114,32 @@ function addExam() {
     @click-delete="showModalDelete"
     @click-add="addExam"
   />
-  <CmTable
-    v-model:pageNumber="queryParams.pageNumber"
-    v-model:pageSize="queryParams.pageSize"
-    v-model:selected="selected"
-    is-update-row-force
-    :headers="headers"
-    :items="items"
-    :total-record="totalRecord"
-  >
-    <template #rowItem="{ col, context, dataCol }">
-      <div v-if="col === 'name'">
-        <CpCustomInforCourse
-          label-title="name"
-          label-sub-title="statusId"
-          :context="context"
-        />
-      </div>
-      <div v-if="col === 'fullName'">
-        {{ StringUtil.formatFullName(context.firstName, context.lastName) }}
-      </div>
-      <div v-if="dataCol?.isDate">
-        {{ DateUtil.formatDateToDDMM(context[col]) }}
-      </div>
-    </template>
-  </CmTable>
+
+  <div class="mt-5">
+    <CmTable
+      v-model:pageNumber="queryParams.pageNumber"
+      v-model:pageSize="queryParams.pageSize"
+      v-model:selected="selected"
+      is-update-row-force
+      :headers="headers"
+      :items="items"
+      :total-record="totalRecord"
+    >
+      <template #rowItem="{ col, context, dataCol }">
+        <div v-if="col === 'name'">
+          <CpCustomInforCourse
+            label-title="name"
+            label-sub-title="statusId"
+            :context="context"
+          />
+        </div>
+        <div v-if="col === 'fullName'">
+          {{ StringUtil.formatFullName(context.firstName, context.lastName) }}
+        </div>
+        <div v-if="dataCol?.isDate">
+          {{ DateUtil.formatDateToDDMM(context[col]) }}
+        </div>
+      </template>
+    </CmTable>
+  </div>
 </template>

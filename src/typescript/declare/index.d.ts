@@ -24,9 +24,7 @@ declare module 'vue3-tags-input' {
   const Vue3TagsInput: DefineComponent<{}, {}, any>
   export default Vue3TagsInput
 }
-// declare module 'unplugin-vue-define-options/vite' {
-//   import { DefineComponent } from 'vue'
-//   const DefineOptions: DefineComponent<{}, {}, any>
-//   export default DefineOptions
-// }
+declare module '@riophae/vue-treeselect' {
+  export const LOAD_ROOT_OPTIONS: any;
+}
 

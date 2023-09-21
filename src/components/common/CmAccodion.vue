@@ -10,10 +10,13 @@ import GlobalUtil from '@/utils/Global'
 interface Props {
   data: dataAccodion[]
   customKey?: string
+  customKeyChild?: string
   customLabel?: string
   classNameLabel?: Array<any>
   isOpen?: boolean
+  isCustom?: boolean
   isTree?: boolean
+  isBgActive?: boolean
 }
 interface dataAccodion {
   label?: any
@@ -33,11 +36,12 @@ const props = withDefaults(defineProps<Props>(), ({
     content: 'Content',
   }]),
   customKey: 'content',
+  customKeyChild: 'content',
   customLabel: 'label',
   classNameLabel: () => ([]),
   isOpen: false,
-  isTree: false,
-
+  isCustom: false,
+  isBgActive: false,
 }))
 
 const emit = defineEmits<Emit>()
@@ -50,13 +54,13 @@ const panel = props.isOpen ? ref(checkAllValue()) : ref([])
 </script>
 
 <template>
-  <div>
+  <div :class="{ isBgActive }">
     <VExpansionPanels
       v-model="panel"
       class="no-background"
       multiple
     >
-      <template v-if="!isTree">
+      <template v-if="!isTree || isCustom">
         <VExpansionPanel
           v-for="(item, index) in data"
           :key="index"
@@ -107,11 +111,11 @@ const panel = props.isOpen ? ref(checkAllValue()) : ref([])
                   />
                 </div>
                 <div
-                  v-if="listItem[customKey]"
+                  v-if="listItem[customKeyChild]"
                   class="content-item text-regular-sm"
                   :class="[props.classNameLabel[1]]"
                 >
-                  {{ listItem[customKey] }}
+                  {{ listItem[customKeyChild] }}
                 </div>
               </div>
             </div>
@@ -156,9 +160,9 @@ const panel = props.isOpen ? ref(checkAllValue()) : ref([])
 }
 
 .v-expansion-panel-text__wrapper {
-  padding-inline: 2.5rem 1rem !important;
+  padding-inline: 3.5rem 1rem !important;
 }
-.v-expansion-panel-title{
+.isBgActive .v-expansion-panel-title{
   padding: 0px 16px !important;
   &[aria-expanded="true"] {
     /* CSS styles cho khi aria-expanded="true" */

@@ -19,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), ({
   routeName: '',
   hide: false,
   isRender: false,
+  isUnQuery: false,
 }))
 
 const emit = defineEmits<Emit>()
@@ -43,6 +44,7 @@ interface Props {
   routeName?: string
   dataGeneral?: any // hạn chế dùng
   isRender: boolean
+  isUnQuery?: boolean
 }
 const router = useRouter()
 const route = useRoute()
@@ -76,24 +78,26 @@ function activeTab(value: any) {
   nextTick(() => {
     if (onUnmountedValue.value)
       return
-    if (props.type === 'button') {
-      if (props.label) {
-        const temp = window._.cloneDeep(route.query)
-        router.push({
+    if (!props.isUnQuery) {
+      if (props.type === 'button') {
+        if (props.label) {
+          const temp = window._.cloneDeep(route.query)
+          router.push({
+            query: {
+              ...temp,
+              [props.label]: value,
+            },
+          })
+        }
+      }
+      else {
+        router.replace({
           query: {
-            ...temp,
+            ...route.query,
             [props.label]: value,
           },
         })
       }
-    }
-    else {
-      router.replace({
-        query: {
-          ...route.query,
-          [props.label]: value,
-        },
-      })
     }
   })
 
@@ -113,9 +117,9 @@ watch(tabActive, val => {
   activeTab(val)
 }, { immediate: true })
 onUnmounted(() => {
-  router.replace({
-    query: {},
-  })
+  // router.replace({
+  //   query: {},
+  // })
   onUnmountedValue.value = true
 })
 </script>
@@ -157,7 +161,7 @@ onUnmounted(() => {
       >
         <div
           v-if="item.isRendered "
-          v-show="item.key === route.query[props.label]"
+          v-show="!isUnQuery ? item.key === route.query[props.label] : item.key === tabActive "
         >
           <Component
             :is="item?.component"

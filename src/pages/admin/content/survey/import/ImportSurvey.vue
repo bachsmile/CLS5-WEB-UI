@@ -9,68 +9,55 @@ import { useImportFileStore } from '@/stores/ImportFile'
 
 // Cập nhật năng lực
 function dataColumnExcel(rowData: Array<any>) {
-  const [id,
-    groupId,
-    topic,
-    rank,
-    type,
-    contentBasic,
-    urlFile,
-    correctAnswer,
-    shuffle,
-    answerNotShuffle,
-    level
-    , ...array] = rowData
-  const listAnswer: Any[] = array.filter(el => el !== null)
-  const typeId = getQuestionTypeFromname(type)
-  return {
-    id,
-    groupId,
-    topic,
-    rank,
-    type,
-    contentBasic,
-    urlFile,
-    correctAnswer,
-    shuffle,
-    answerNotShuffle,
-    level,
-    content: contentBasic,
+  const listAnswer: Any[] = rowData.filter((el, idx) => el !== null && idx > 5)
+  const data: Any = {
+    topic: rowData[1],
+    type: rowData[2],
+    contentBasic: rowData[3],
+    urlFile: rowData[4],
+    scope: rowData[5],
+    id: rowData[0],
     listAnswer,
-    typeId,
   }
+  data.content = data.contentBasic
+  data.typeId = getQuestionTypeFromname(data.type)
+  if (data.typeId === 5) {
+    const scope = parseInt(data.scope, 10)
+    if (scope) {
+      const amountdifference = scope - data.listAnswer.length
+
+      // nếu ít hơn scope thì thêm đáp án trống
+      if (data.listAnswer.length < scope) {
+        for (let k = 0; k < amountdifference; k += 1)
+          data.listAnswer.push('')
+      }
+      else if (data.listAnswer.length > scope) {
+        for (let k = data.listAnswer.length - 1; k >= -amountdifference; k--)
+          data.listAnswer.pop()
+      }
+    }
+  }
+  return data
 }
 
 // lấy kiểu câu hỏi từ tên
 function getQuestionTypeFromname(questionTypeName: string) {
-  switch (questionTypeName) {
-    case 'Câu hỏi trắc nghiệm một lựa chọn':
-    case 'Single choice questions':
+  switch (questionTypeName?.trim()) {
+    case 'Trắc nghiệm một lựa chọn':
+    case 'Single choice':
       return 1
-    case 'Câu hỏi trắc nghiệm nhiều lựa chọn':
-    case 'Multiple choice questions':
+    case 'Trắc nghiệm nhiều lựa chọn':
+    case 'Multiple choice':
       return 2
-    case 'Câu hỏi gạch chân':
+    case 'Tự luận':
     case 'Underlined questions':
       return 3
-    case 'Câu hỏi lựa chọn đúng sai':
-    case 'True false questions':
+    case 'Phạm vi tuyến tính':
+    case 'Essay':
       return 4
-    case 'Câu hỏi mệnh đề đúng sai':
-    case 'Clause true or false questions':
+    case 'Đánh giá':
+    case 'Linear scale':
       return 5
-    case 'Câu hỏi điền khuyết':
-    case 'Fill in the gap questions':
-      return 6
-    case 'Câu hỏi điền khuyết loại 2':
-    case 'Fill in the gap 2 questions':
-      return 7
-    case 'Câu hỏi ghép đôi':
-    case 'Pairing questions':
-      return 8
-    case 'Câu hỏi tự luận':
-    case 'Essay questions':
-      return 9
     default:
       return 1
   }
@@ -82,20 +69,21 @@ const { type } = storeToRefs(store)
 const listCombobox = ref([])
 type.value = undefined
 
-const config = reactive<Config>(
+const config = reactive<Config | Any>(
   {
     customId: 'id',
-    routerBack: 'admin-organization-user-groups-list',
+    routerBack: 'question-survey-list',
     table: ({
       header: [
         {
           text: t('question-content'),
           value: 'content',
           type: 'custom',
+          isSurvey: true,
         },
         {
           text: t('topic'),
-          value: 'topic',
+          value: 'topicName',
         },
         {
           text: t('Url'),
@@ -108,15 +96,15 @@ const config = reactive<Config>(
       ],
     }),
     dowloadSample: {
-      urlFileDefault: QuestionService.PostDownloadTemplateQuestion,
+      urlFileDefault: QuestionService.PostDownloadTemplateSurvey,
       method: TYPE_REQUEST.POST,
-      nameFile: 'MauThemCauHoi.xlsx',
+      nameFile: 'MauThemCauKhaoSat.xlsx',
       paramsDowload: {
         listTopic: listCombobox.value,
       },
     },
     importFile: {
-      urlFileDefault: QuestionService.PostImportQuestionFromFile,
+      urlFileDefault: QuestionService.PostImportSurveyFromFile,
       method: TYPE_REQUEST.POST,
       dataColumnExcel,
       paramsImport: {
@@ -141,10 +129,10 @@ const actions = ref<Action[]>([
   },
 ])
 const titleImport = {
-  titleList: t('question'),
-  titlePage: t('add-question-from-file'),
-  titleButtonAdd: t('add-question'),
-  titlePageUpload: t('add-question-from-file'),
+  titleList: t('surveys'),
+  titlePage: t('question-survey'),
+  titleButtonAdd: t('add-survey'),
+  titlePageUpload: t('add-survey'),
 }
 </script>
 
@@ -155,6 +143,7 @@ const titleImport = {
       :actions="actions"
       v-bind="titleImport"
       :is-position-err="false"
+      :is-action-check="false"
     />
   </div>
 </template>

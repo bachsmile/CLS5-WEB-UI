@@ -1,7 +1,16 @@
 export default [
   {
-    path: 'setting',
-    name: 'setting',
+    path: 'system',
+    name: 'system',
+    component: () => import('@/pages/admin/system/Index.vue'),
+    redirect: { name: 'setting' },
+    children: [
+      {
+        path: 'setting',
+        name: 'setting',
+        component: () => import('@/pages/admin/system/setting/Setting.vue'),
+      },
+    ],
   },
   {
     path: 'overview-user',

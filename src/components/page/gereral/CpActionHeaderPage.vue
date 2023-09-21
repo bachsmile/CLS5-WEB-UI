@@ -97,6 +97,9 @@ function handlerCustomButton() {
           icon="tabler:chevron-down"
         />
       </div>
+      <slot
+        name="left"
+      />
       <div
         v-if="isCustomBtn"
         cols="12"

@@ -9,6 +9,7 @@ import { useImportFileStore } from '@/stores/ImportFile'
 import MethodsUtil from '@/utils/MethodsUtil'
 import type { Action, Config } from '@/typescript/interface/import'
 import { comboboxStore } from '@/stores/combobox'
+import type { Any } from '@/typescript/interface'
 
 /** ** Khởi tạo prop emit */
 const props = withDefaults(defineProps<Props>(), ({
@@ -32,6 +33,7 @@ const props = withDefaults(defineProps<Props>(), ({
     customKey: 'value',
     itemValue: 'key',
   }),
+  isActionCheck: true,
 }))
 
 const emit = defineEmits<Emit>()
@@ -51,7 +53,7 @@ interface filter {
   modelValue?: any
 }
 interface Props {
-  config: Config
+  config: Config | Any
   titleList?: string
   customKeyError?: string
   actions?: Action[]
@@ -61,6 +63,7 @@ interface Props {
   isFilter?: boolean
   filterConfig?: filter
   isPositionErr?: boolean
+  isActionCheck?: boolean
 }
 
 /** ** Khởi tạo store */
@@ -263,11 +266,16 @@ async function closeDetail(dataQs: any) {
         v-if="paramsImport.invalidData.length"
         class="cp-import-file-invalid"
       >
-        <div class="cp-import-file-header">
+        <div
+          class="cp-import-file-header"
+        >
           <div class="cp-import-file-title">
             {{ `${titleList} ${t('invalid')}` }}
           </div>
-          <div class="cp-import-file-action">
+          <div
+            v-if="isActionCheck"
+            class="cp-import-file-action"
+          >
             <div class="cp-import-file-btn mr-3">
               <CmButton @click="checkInvalidData">
                 {{ t('check') }}
@@ -292,11 +300,7 @@ async function closeDetail(dataQs: any) {
           >
             <template #rowItem="{ col, context }">
               <div v-if="col === 'content'">
-                <CpQuestionName
-                  :status="context.statusId"
-                  :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.questionData.content : context.contentBasic"
-                  :is-expand="context.isExpand"
-                />
+                {{ context.contentBasic }}
               </div>
             </template>
           </CmTable>
@@ -316,7 +320,7 @@ async function closeDetail(dataQs: any) {
       <CmButton
         variant="outlined"
         bg-color="bg-white"
-        color="dark"
+        color="secondary"
         text-color="color-dark"
         @click="() => { router.push({ name: props.config.routerBack }) }"
       >

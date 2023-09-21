@@ -43,6 +43,22 @@ export const comboboxStore = defineStore('combobox', () => {
     { key: '-modifiedDate', value: t('CourseService_Sort_By_Updated_Date') },
   ])
 
+  const comboboxSortQuestion = ref([
+    { key: '+questionContent', value: t('sort-name-az') },
+    { key: '-questionContent', value: t('sort-name-za') },
+    { key: '+time', value: t('sort-time-za') },
+    { key: '-time', value: t('sort-time-az') },
+  ])
+  const comboboxGroupQuestion = ref([
+    {
+      value: t('single-question'),
+      key: false,
+    },
+    {
+      value: t('cluster-question'),
+      key: true,
+    },
+  ])
   const isDisplayHomeCombobox = ref([
     {
       key: t('yes'),
@@ -146,7 +162,17 @@ export const comboboxStore = defineStore('combobox', () => {
     eventTypeCombobox.value = data
   }
 
-  // Lấy danh sách sự kiện
+  // Lấy danh sách loại câu hỏi
+  const comboboxTypeQuestion = ref<Any>([])
+  const getComboboxTypeQuestion = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxTypeQuestion, TYPE_REQUEST.GET)
+    data.forEach((element: combobox) => {
+      element.text = t(element.value)
+    })
+    comboboxTypeQuestion.value = data
+  }
+
+  // Lấy danh sách trạng thái câu hỏi
   const statusQuestionCombobox = ref<Any[]>([])
   const getComboboxStatusQuestion = async () => {
     const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxStatusQuestion, TYPE_REQUEST.GET)
@@ -162,6 +188,14 @@ export const comboboxStore = defineStore('combobox', () => {
       element.text = t(element.value)
     })
     surveyTypeCombobox.value = data
+  }
+  const comboboxLevel = ref<Any[]>([])
+  const getComboboxLevel = async () => {
+    const { data } = await MethodsUtil.requestApiCustom(ComboboxService.GetComboboxLevel, TYPE_REQUEST.GET)
+    data.forEach((element: combobox) => {
+      element.text = t(element.value)
+    })
+    comboboxLevel.value = data
   }
 
   // Lấy danh sách loại chi phí
@@ -411,8 +445,14 @@ export const comboboxStore = defineStore('combobox', () => {
     listDistrictCombobox,
     statusQuestionCombobox,
     surveyTypeCombobox,
+    comboboxLevel,
+    comboboxGroupQuestion,
+    comboboxSortQuestion,
+    comboboxTypeQuestion,
 
     // function
+    getComboboxTypeQuestion,
+    getComboboxLevel,
     getComboboxSurveyType,
     getComboboxStatusQuestion,
     categoryCostCombobox,

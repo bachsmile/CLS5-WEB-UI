@@ -78,24 +78,45 @@ watch(() => props.data, val => {
       class="w-100"
     >
       <div
-        class="box-answer "
+        class="box-answer"
         :class="{ hidden: !showAnswerTrue }"
       >
         <div
           v-if="item.left"
-          class="box-left"
-          v-html="item.left.content"
-        />
+          class="box-left d-flex justify-space-between"
+        >
+          <div
+            v-html="item.left.content"
+          />
+          <div :title="item?.left?.isShuffle ? t('allowed-shuffle') : t('not-allowed-shuffle')">
+            <VIcon
+              icon="iconamoon:playlist-shuffle-light"
+              :size="20"
+              :color="item?.left?.isShuffle ? 'primary' : ''"
+            />
+          </div>
+        </div>
+
         <div
           v-else
           class="box-left-empty"
         />
         <div
           v-if="item.right"
-          class="box-right"
+          class="box-right d-flex justify-space-between"
           :class="[item.left ? 'box-right' : 'box-right-empty']"
-          v-html="item.right.content"
-        />
+        >
+          <div
+            v-html="item.right.content"
+          />
+          <div :title="item?.right?.isShuffle ? t('allowed-shuffle') : t('not-allowed-shuffle')">
+            <VIcon
+              icon="iconamoon:playlist-shuffle-light"
+              :size="20"
+              :color="item?.right?.isShuffle ? 'primary' : ''"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -58,12 +58,16 @@ const UserService = {
   GetListIdUserGroupById: '/event/get-all-group-id-by-event-id',
   GetUserGroup: '/courseuser/get-list-user-group', // GetPagingUserGroup
   GetEventGroup: 'event/get-paging-event-groups',
+  GetInfoPortal: '/management/get-setting-portal',
+  GetSettingExpPoint: '/Experience/get-list',
+  GetPeopleService: '/user/get-people-service',
 
   PostGetAuthorContent: '/courseuser/', // GetPagingUserGroup
   PostDeleteGroupFromEvent: '/event/remove-group-user-from-event',
   PostUpdateOrgFromEvent: '/event/update-organizational-structure-from-event',
 
   /** POST */
+  PostUpdateInfoPortal: '/management/update-setting-portal',
   PostAddGroupUserToEvent: '/event/add-group-user-to-event',
   PostApproveCustomer: 'Customer/approve',
   PostOrgCreate: 'organizationalstructure/create',
@@ -97,6 +101,7 @@ const UserService = {
   /** Put */
   PutReturnCustomer: 'Customer/deny',
   PutUpdateDegree: '/degree/update',
+  PutUpdateExpPoint: '/Experience/update',
 
   /** delete */
   deleteCustomer: '/Customer/delete', // Xóa người dùng

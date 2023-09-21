@@ -29,6 +29,7 @@ watch(() => props.modelValue, val => {
       :icon="i.icon || ''"
       :text="i.title || ''"
       :is-active="active === i.key"
+      :disabled="i.isDisabled"
       :is-end="(idx + 1) === listTab.length"
       @click="updateModel(i.key)"
     />

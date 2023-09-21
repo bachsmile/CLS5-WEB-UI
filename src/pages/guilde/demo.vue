@@ -127,20 +127,20 @@ const toast = useToast()
 const button123 = ref(null)
 
 function abcd(val: any) {
-  console.log(val)
+  // console.log(val)
 }
 
 const date = ref(null)
 watch(date, val => {
-  console.log(val)
+  // console.log(val)
 })
 const fromDate = ref(null)
 watch(fromDate, val => {
-  console.log(val)
+  // console.log(val)
 })
 const toDate = ref(null)
 watch(toDate, val => {
-  console.log(val)
+  // console.log(val)
 })
 </script>
 

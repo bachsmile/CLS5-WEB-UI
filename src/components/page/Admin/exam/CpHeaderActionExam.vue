@@ -120,13 +120,13 @@ function handleSearch(val: string) {
     <VRow>
       <VCol
         cols="12"
-        lg="4"
+        sm="4"
       >
         <CmSelect :text="t('user-create')" />
       </VCol>
       <VCol
         cols="12"
-        lg="4"
+        sm="4"
       >
         <CmSelect
           :model-value="statusId"
@@ -139,7 +139,7 @@ function handleSearch(val: string) {
       </VCol>
       <VCol
         cols="12"
-        lg="4"
+        sm="4"
       >
         <CmSelect :text="t('from-date-to-date')" />
       </VCol>

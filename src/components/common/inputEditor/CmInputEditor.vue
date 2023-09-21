@@ -206,8 +206,6 @@ function applyColor(key: any, option: any, value: any) {
   document.execCommand(key, option, value)
 }
 function addMathType(htmlString: any) {
-  console.log(htmlString)
-
   document.execCommand('insertHTML', false, htmlString)
 }
 function addLinkUrl(key: any, option: any, value: any, selection: any, range: any) {

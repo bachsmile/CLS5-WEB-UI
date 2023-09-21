@@ -60,7 +60,7 @@ export default [
                   to: { name: 'question-list' },
                 },
                 {
-                  title: 'import-file',
+                  title: 'AddFromFiles',
                   active: true,
                 },
               ],
@@ -114,7 +114,23 @@ export default [
             },
             component: () => import('@/pages/admin/content/survey/modification/Modification.vue'),
           },
-
+          {
+            path: 'import-file',
+            name: 'survey-add-from-file',
+            meta: {
+              breadcrumb: [
+                {
+                  title: 'survey-bank',
+                  to: { name: 'question-survey-list' },
+                },
+                {
+                  title: 'AddFromFiles',
+                  active: true,
+                },
+              ],
+            },
+            component: () => import('@/pages/admin/content/survey/import/ImportSurvey.vue'),
+          },
         ],
       },
 

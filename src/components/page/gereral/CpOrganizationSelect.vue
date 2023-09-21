@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import CmSelectTree from '@/components/common/CmSelectTree.vue';
-import { comboboxStore } from '@/stores/combobox';
-import ArrayUtil from '@/utils/ArrayUtil';
+import CmSelectTree from '@/components/common/CmSelectTree.vue'
+import { comboboxStore } from '@/stores/combobox'
+import ArrayUtil from '@/utils/ArrayUtil'
 
 interface Props {/** ** Interface */
   modelValue?: any
@@ -16,6 +16,7 @@ interface Props {/** ** Interface */
   disabled?: boolean
   parentId?: number
   appendToBody?: boolean
+  isRender?: boolean // có muốn render trước
   closeOnSelect?: boolean
   error?: boolean
   bgColor?: string
@@ -30,6 +31,7 @@ interface Emit {
 const props = withDefaults(defineProps<Props>(), ({
   multiple: false,
   closeOnSelect: false,
+  isRender: true,
   disabled: false,
   error: false,
   customKey: 'id',
@@ -75,15 +77,20 @@ async function getAllOrgStruct() {
 function handleChangeSelect(data: any) {
   emit('update:modelValue', data)
 }
+async function dataOrgSelect() {
+  if (window._.isEmpty(organizationsCombobox.value)) {
+    if (!props.typeOrg)
+      await fetchTOrgStructCombobox()
 
+    else
+      await fetchTOrgStructTitleCombobox()
+
+    await getAllOrgStruct()
+  }
+}
 onMounted(async () => {
-  if (!props.typeOrg)
-    await fetchTOrgStructCombobox()
-
-  else
-    await fetchTOrgStructTitleCombobox()
-
-  await getAllOrgStruct()
+  if (props.isRender)
+    await dataOrgSelect()
 })
 </script>
 
@@ -106,6 +113,7 @@ onMounted(async () => {
       :disabled="disabled"
       :normalizer-custom-type="[props.customKey, 'name', 'children']"
       @update:model-value="handleChangeSelect"
+      @open="dataOrgSelect"
     />
   </div>
 </template>

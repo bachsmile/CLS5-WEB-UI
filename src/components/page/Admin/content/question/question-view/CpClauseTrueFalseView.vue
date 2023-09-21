@@ -23,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), ({
   showMedia: true,
   showAnswerTrue: true,
 }))
+const { t } = window.i18n()
 function getIndex(position: number) {
   return `${String.fromCharCode(65 + position - 1)}.`
 }
@@ -73,18 +74,27 @@ function getIndex(position: number) {
         :value="false"
         class="mr-3"
       />
-      <div class="answer-item">
+      <div class="answer-item d-flex justify-space-between">
         <div>
-          <span class="mr-1">{{ getIndex(item.position) }} </span>
-          <span v-html="item.content" />
+          <div>
+            <span class="mr-1">{{ getIndex(item.position) }} </span>
+            <span v-html="item.content" />
+          </div>
+          <div
+            v-if="showMedia"
+            class="view-media mt-2"
+          >
+            <CpMediaContent
+              :disabled="true"
+              :src="item.urlFile"
+            />
+          </div>
         </div>
-        <div
-          v-if="showMedia"
-          class="view-media mt-2"
-        >
-          <CpMediaContent
-            :disabled="true"
-            :src="item.urlFile"
+        <div :title="item?.isShuffle ? t('allowed-shuffle') : t('not-allowed-shuffle')">
+          <VIcon
+            icon="iconamoon:playlist-shuffle-light"
+            :size="20"
+            :color="item?.isShuffle ? 'primary' : ''"
           />
         </div>
       </div>

@@ -36,7 +36,6 @@ function dataColumnExcel(rowData: Array<any>) {
   }
   if (data.typeId === 3 || data.typeId === 6 || data.typeId === 7)
     setHtmlContent(data)
-
   return data
 }
 
@@ -50,7 +49,7 @@ function setHtmlContent(question: Any) {
       const element = question.listAnswer[i]
       const key = `{{${i + 1}}}`
       if (html.includes(key)) {
-        // eslint-disable-next-line no-irregular-whitespace
+        // eslint-disable-next-line no-irregular-whitespace, vue/no-irregular-whitespace
         const blank = `<span class="answer-underline" data-position="${i}">﻿<span contenteditable="false">${element} </span>﻿</span>`
         html = html.replaceAll(key, blank)
       }
@@ -68,7 +67,7 @@ function setHtmlContent(question: Any) {
         const element = question.listAnswer[i]
         const key = `{{${i + 1}}}`
         if (html.includes(key)) {
-          // eslint-disable-next-line no-irregular-whitespace
+          // eslint-disable-next-line no-irregular-whitespace, vue/no-irregular-whitespace
           const blank = `<span class="answer-fill-blank">﻿<span contenteditable="false">( ${i + 1} )</span>﻿</span>`
           html = html.replaceAll(key, blank)
         }
@@ -154,10 +153,10 @@ const { type } = storeToRefs(store)
 const listCombobox = ref([])
 type.value = undefined
 
-const config = reactive<Config>(
+const config = reactive<Config | Any>(
   {
     customId: 'id',
-    routerBack: 'admin-organization-user-groups-list',
+    routerBack: 'question-list',
     table: ({
       header: [
         {
@@ -227,6 +226,7 @@ const titleImport = {
       :actions="actions"
       v-bind="titleImport"
       :is-position-err="false"
+      :is-action-check="false"
     />
   </div>
 </template>

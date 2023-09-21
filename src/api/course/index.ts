@@ -43,11 +43,17 @@ const CourseService = {
   GetListMyCourseHome: '/Home/get-list-course',
   GetDetailCourse: '/course/get-detail',
   GetContentByCourseId: '/coursecontent/list-user-content-by-courseId',
-  GetCapacityCourse: '/Proficiency/proency-level-by-course',
+  GetCapacityCourse: '/proficiency/get-by-course-id',
+  GetDocumentCourse: '/course/get-document',
   GetGeneralRating: '/course/get-general-evaluation',
   GetUserEvaluation: '/course/get-paging-user-evaluation',
   GetCriteriaEvaluation: '/course/get-course-evaluation-criteria',
   GetCheckUserExist: '/course/check-user-exist',
+
+  /** learner */
+  GetLnCheckCourseRequire: '/learner/check-course-require',
+  GetLnCourseProfRequire: '/learner/get-course-proficiency-require',
+  GetLnCheckCourseProfRequire: '/learner/check-course-proficiency-require',
 
   /** Post */
   PostAddCourseOrg: '/course/add-course-to-organizational-structures',
@@ -110,6 +116,7 @@ const CourseService = {
   PostuUpdateQuestionTest: '/CourseContentTest/update-question', // cập nhật danh sách câu hỏi cho bài kiểm tra
   PostDelCheckinCourse: (id: number | string) => `/course/${id}/checkin/delete`, // Lấy danh sách điểm danh khóa học
   PostAddCheckinCourse: (id: number | string) => `/course/${id}/checkin`, // Thêm điểm danh khóa học
+  PostlRegisterCourse: '/learner/register-course',
 
   /** Delete */
   DeleteUserReg: 'courseuser/delete-register',

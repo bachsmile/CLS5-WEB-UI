@@ -12,7 +12,10 @@ interface Props {
 
 <template>
   <div class="content-child">
-    <div class="d-flex">
+    <div
+      class="d-flex"
+      style="max-width: 85%;"
+    >
       <div class="mr-3">
         <VIcon
           :icon="MethodsUtil.checkType(data.typeId, ContentType, 'id')?.icon"

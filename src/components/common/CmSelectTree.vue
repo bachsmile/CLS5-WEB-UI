@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import Treeselect from 'vue3-treeselect'
 import 'vue3-treeselect/dist/vue3-treeselect.css'
+import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import { defaultSetting } from '@/constant/data/settingDefault.json'
 import { MAX_ITEM_SELECT_MULT } from '@/constant/Globals'
 import MethodsUtil from '@/utils/MethodsUtil'
@@ -41,6 +42,7 @@ interface Props {
   normalizerCustomType?: Array<string> // custom key không lấy mặc định là id và lable
   isError?: boolean // trạng thái lỗi
   errors?: any // trạng thái lỗi
+  isLoading?: boolean
 }
 interface Emit {
   (e: 'update', value: any, instanceId: any): void
@@ -57,6 +59,7 @@ const props = withDefaults(defineProps<Props>(), ({
   clearable: true,
   searchable: true,
   disabled: false,
+  isLoading: false,
   openOnClick: true,
   openOnFocus: true,
   clearOnSelect: false,
@@ -116,6 +119,29 @@ function limitText(count: any) {
 watch(() => props.modelValue, () => {
   updateValue()
 })
+const optionValue = ref<any>()
+const called = ref(false)
+watch(() => props.options, val => {
+  if (val.length)
+    called.value = true
+})
+function waitForTrueValue() {
+  return new Promise((resolve: any) => {
+    const intervalId = setInterval(() => {
+      if (called.value === true) {
+        clearInterval(intervalId)
+        resolve()
+      }
+    }, 100)
+  })
+}
+async function loadOptions({ action }: any) {
+  if (action === LOAD_ROOT_OPTIONS) {
+    if (!called.value)
+      await waitForTrueValue()
+    optionValue.value = props.options
+  }
+}
 </script>
 
 <template>
@@ -133,7 +159,8 @@ watch(() => props.modelValue, () => {
       class="py-1"
       :class="{ styleError: isError || errors?.length > 0 }"
       :value-format="props.valueFormat"
-      :options="props.options"
+      :auto-load-root-options="false"
+      :options="optionValue"
       :placeholder="props.placeholder"
       :multiple="props.multiple"
       :clearable="props.clearable"
@@ -145,6 +172,7 @@ watch(() => props.modelValue, () => {
       :close-on-select="props.multiple ? props.closeOnSelect : true"
       :always-open="props.alwaysOpen"
       :append-to-body="props.appendToBody"
+      :load-options="loadOptions"
       :flat="props.flat"
       :sort-value-by="props.sortValueBy"
       :limit="props.maxItem"

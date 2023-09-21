@@ -56,6 +56,7 @@ watch(() => props.modelValue, (val: any[] | any) => {
     getComboboxTopic(props.type)
     topicIds.value = val
   }
+  topicIds.value = val
 }, { immediate: true })
 
 function change() {

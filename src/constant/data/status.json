@@ -123,6 +123,62 @@
             "note": "Yêu cầu thu hồi"
         }
     ],
+    "StatusTypeMyCourse": [
+        {
+            "id": 0,
+            "name": "CourseService.NoStart",
+            "color": "infor",
+            "note": "Chưa bắt đầu"
+        },
+        {
+            "id": 1,
+            "name": "CourseService.LearnerEligible",
+            "color": "error",
+            "note": "Có điều kiện"
+        },
+        {
+            "id": 2,
+            "name": "CourseService.LearnerHaveNotStudiedYet",
+            "color": "purple",
+            "note": "Chưa bắt đầu học"
+        },
+        {
+            "id": 3,
+            "name": "CourseService.LearnerStudying",
+            "color": "primary",
+            "note": "Đang học"
+        },
+        {
+            "id": 4,
+            "name": "CourseService.LearnerCompleted",
+            "color": "success",
+            "note": "Đã hoàn thành"
+        },
+        {
+            "id": 5,
+            "name": "CourseService.LearnerNotCompleted",
+            "color": "error",
+            "note": "Chưa hoàn thành"
+        },
+        {
+            "id": 6,
+            "name": "CourseService.WaitingMarkEssay",
+            "color": "primary-light",
+            "note": "Chờ chấm điểm tự luận"
+        },
+        {
+            "id": 7,
+            "name": "CourseService.Suspended",
+            "color": "error",
+            "note": "Đình chỉ"
+        },
+        {
+            "id": 8,
+            "name": "CourseService.NoAssign",
+            "color": "info",
+            "note": "Chưa được gán"
+        }
+    ],
     "StatusTypeFormStudy": [
         {
             "id": 1,
@@ -221,30 +277,30 @@
             "name": "QuestionService.TestCodeActive",
             "color": "success",
             "icon": "PlayIcon"
-          },
-          {
+        },
+        {
             "id": 2,
             "name": "QuestionService.TestCodePending",
             "color": "info",
             "icon": "ClockIcon"
-          },
-          {
+        },
+        {
             "id": 1,
             "name": "QuestionService.TestCodeEditing",
             "color": "secondary",
             "icon": "Edit3Icon"
-          },
-          {
+        },
+        {
             "id": 4,
             "name": "QuestionService.TestCodeDeclined",
             "color": "danger",
             "icon": "CornerDownLeftIcon"
-          },
-          {
-            "id":3001,
+        },
+        {
+            "id": 3001,
             "name": "QuestionService.RecallRequest",
             "color": "success",
             "icon": "LoaderIcon"
-          }
+        }
     ]
 }

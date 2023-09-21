@@ -254,6 +254,23 @@ async function showDetailAll() {
   const listId = items.value.map((item: any) => item.id)
   await getInforSurveyDetail(result, listId)
 }
+const actionAdd = [
+  {
+    title: t('create-question'),
+    icon: 'circum:pen',
+    action: () => {
+      router.push({ name: 'survey-add' })
+    },
+  },
+  {
+    title: t('add-from-file'),
+    icon: 'tabler:file-plus',
+    action: () => {
+      router.push({ name: 'survey-add-from-file' })
+    },
+  },
+
+]
 </script>
 
 <template>
@@ -263,7 +280,8 @@ async function showDetailAll() {
         :title="t('surveys')"
         :title-custom-add="t('create-question')"
         is-export-btn
-        is-custom-add-btn
+        is-custom-group-btn
+        :action-add="actionAdd"
         @click="handlerActionHeader"
         @exportExcel="exportExcel"
       />

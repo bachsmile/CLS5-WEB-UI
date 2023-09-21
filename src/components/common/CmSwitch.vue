@@ -5,6 +5,13 @@ interface Props {
   listItem: item[]
   color?: string
   modelValue: any
+  type?: any
+
+  // type2
+  label?: string
+  trueValue?: any
+  falseValue?: any
+  hideSetails?: boolean
 }
 interface item {
   title?: string
@@ -17,8 +24,15 @@ interface item {
 const propsValue = withDefaults(defineProps<Props>(), ({
   listItem: () => ([]),
   color: 'dark',
+  type: 1,
+  trueValue: true,
+  falseValue: false,
+  hideSetails: true,
 }))
-
+const emit = defineEmits<Emit>()
+interface Emit {
+  (e: 'update:model-value', value: any): void
+}
 function positionBorder(value: number) {
   if (value === 0)
     return 'button-group-prepend'
@@ -28,10 +42,16 @@ function positionBorder(value: number) {
 
   return 'button-group-default'
 }
+function changeValue(value: any) {
+  emit('update:model-value', value)
+}
 </script>
 
 <template>
-  <div class="d-flex flex-nowrap">
+  <div
+    v-if="type === 1"
+    class="d-flex flex-nowrap"
+  >
     <CmButton
       v-for="(item, index) in listItem"
       :key="index"
@@ -52,6 +72,22 @@ function positionBorder(value: number) {
         >{{ item.title }}</span>
       </span>
     </CmButton>
+  </div>
+  <div
+    v-else
+    class="d-flex align-center"
+  >
+    <div>
+      <VSwitch
+        :model-value="modelValue"
+        :label="label"
+        :color="color"
+        :true-value="trueValue"
+        :false-value="falseValue"
+        :hide-details="hideSetails"
+        @update:modelValue="changeValue"
+      />
+    </div>
   </div>
 </template>
 
