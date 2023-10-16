@@ -17,6 +17,7 @@ interface question {
 }
 interface Props {
   data: question
+  isGroup?: boolean
   showContent: boolean
   showMedia: boolean
   showAnswerTrue: boolean
@@ -83,6 +84,7 @@ function formatDataInit() {
   const spanElements = tempElement.querySelectorAll('span.answer-fill-blank')
 
   // Lặp qua từng phần tử và xóa nội dung bên trong
+  console.log(spanElements)
   spanElements.forEach((spanElement: any, index: number) => {
     const ans = questionValue.value.answers.find((item: any) => item.answeredValue === index + 1)
     if (!window._.isEmpty(ans)) {
@@ -142,7 +144,7 @@ function handleSpanDrop(event: any) {
     .replace('drag', '')
   const contain = event.target.closest('.fill-blank-container')
   if (contain) {
-    let dataAnswer = null
+    let dataAnswer: any = null
     if (event.target.className === 'hover')
       dataAnswer = event.target.parentNode.getAttribute('data-answer')
     else
@@ -309,7 +311,7 @@ watch(() => props.data, val => {
       </div>
       <div class="line-ans">
         <CmBadge
-          v-for="(item, index) in (showAnswerTrue || !isReview && sentence ? questionValue.answers : questionValue.answersClone)"
+          v-for="(item, index) in (showAnswerTrue || !isReview && isSentence ? questionValue.answers : questionValue.answersClone)"
           :key="item.id"
           location="top right"
           color="success"

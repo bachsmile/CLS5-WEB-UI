@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import CpTestThematic from './CpTestThematic.vue'
+import CpApproveTest from '../CpApproveTest.vue'
+import CpEditTest from './edit-test/CpEditTest.vue'
 import CpHeaderAction from '@/components/page/gereral/CpHeaderAction.vue'
 import CmTable from '@/components/common/CmTable.vue'
 import MethodsUtil from '@/utils/MethodsUtil'
 import QuestionService from '@/api/question'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
-import CpCustomInfo from '@/components/page/gereral/CpCustomInfo.vue'
 import DateUtil from '@/utils/DateUtil'
-import CmAccodion from '@/components/common/CmAccodion.vue'
 import CpActionHeaderPage from '@/components/page/gereral/CpActionHeaderPage.vue'
 import CpConfirmDialog from '@/components/page/gereral/CpConfirmDialog.vue'
 import toast from '@/plugins/toast'
@@ -15,6 +14,8 @@ import ExamService from '@/api/exam'
 import { tableStore } from '@/stores/table'
 import CmButton from '@/components/common/CmButton.vue'
 import CpActionFooterEdit from '@/components/page/gereral/CpActionFooterEdit.vue'
+import { StatusTypeCourse } from '@/constant/data/status.json'
+import type { Any } from '@/typescript/interface'
 
 const props = withDefaults(defineProps<Props>(), ({
 }))
@@ -32,26 +33,17 @@ const router = useRouter()
 const route = useRoute()
 
 const queryParams = ref<any>({
-  categoryTitleId: [],
-  examId: null,
-  groupUser: [],
-  orStructure: [],
-  titles: [],
-  pageNumber: 1,
+  thematicId: route.params.thematicId,
   pageSize: 10,
-  searchKey: null,
-  testId: null,
-  typeId: 2,
-  userIds: [],
 })
 
 const headers = ref([
   { text: '', value: 'checkbox', width: 50 },
   { text: t('test-code'), value: 'name', type: 'custom' },
   { text: t('creator'), value: 'registerDate', type: 'custom' },
-  { text: t('time-exam'), value: 'organization', type: 'custom' },
-  { text: t('totalQs'), value: 'organization', type: 'custom' },
-  { text: t('number-question'), value: 'organization', type: 'custom' },
+  { text: t('time-exam'), value: 'time' },
+  { text: t('totalQs'), value: 'totalQuestion' },
+  { text: t('number-question'), value: 'randomPick' },
   { text: '', value: 'actions', width: 150 },
 ])
 const items = ref<any[]>([])
@@ -97,7 +89,6 @@ function confirmDialogDelete(event: any) {
 }
 
 // delete action
-// Hành động xóa năng lực
 async function deleteAction() {
   const params = {
     examId: Number(route.params.id),
@@ -116,59 +107,15 @@ async function handleSearch(value: any) {
   queryParams.value.searchKey = value
 }
 function getListTeacher() {
-  const orgModels = {
-    value: 1,
-    label: t('orgStruct'),
-    icon: 'tabler-briefcase',
-    colorClass: 'color-error',
-    content: [],
-  }
-  const titleModels = {
-    value: 1,
-    label: 'Chức danh',
-    icon: 'prime-check-circle',
-    colorClass: 'color-success',
-    content: [],
-  }
-  const groupModels = {
-    value: 1,
-    label: 'Nhóm người dùng',
-    icon: 'lucide:users',
-    colorClass: 'color-warning',
-    content: [],
-  }
-  queryParams.value.examId = Number(route.params.id)
-  queryParams.value.typeId = props.type
-  queryParams.value.testId = Number(route.params.thematicId)
-  MethodsUtil.requestApiCustom(QuestionService.PostGetListInfobyTest, TYPE_REQUEST.POST, queryParams.value).then((result: any) => {
-    result.data.pageLists.forEach((element: any) => {
-      if (element.orgModels) {
-        let titleData = window._.clone(element.orgModels)
-        titleData = titleData.filter((item: any) => !!item.titleName)
-        element.orgModels = {
-          ...orgModels,
-          content: element.orgModels,
-        }
-        if (titleData.length) {
-          element.titleModels = {
-            ...titleModels,
-            content: titleData,
-          }
-        }
-      }
-      if (element.groupModels) {
-        element.groupModels = {
-          ...groupModels,
-          content: element.groupModels,
-        }
-      }
+  MethodsUtil.requestApiCustomV5(QuestionService.testCodes, TYPE_REQUEST.GET, queryParams.value).then((result: any) => {
+    // const userIds = result.data.map((i: Any) => i.createdBy)
+    result.data.forEach((element: any) => {
       element.actions = [
+        MethodsUtil.checkActionType({ id: 1 }),
         MethodsUtil.checkActionType({ id: 2 }),
       ]
     })
-    queryParams.UserIds = result.data.pageLists.map((i: any) => i.id)
-    items.value = result.data.pageLists
-    totalRecord.value = result.data.totalRecord
+    items.value = result.data
   })
 }
 getListTeacher()
@@ -181,21 +128,36 @@ async function actionItem(type: any) {
     case 'ActionDelete':
       deleteItem(type[1].id)
       break
+    case 'ActionEdit':
+      editItem(type[1].id)
+      break
     default:
       break
   }
 }
 
-const isShowAdd = ref(false)
+const isShow = ref('list')
 function handlerActionHeader(type: any) {
   switch (type) {
     case 'handlerAddButton':
-      isShowAdd.value = true
+      isShow.value = 'add'
+      break
+    case 'handlerCustomButton':
+      isShow.value = 'approve'
       break
 
     default:
       break
   }
+}
+
+const dataDetail = ref<Any>({})
+function editItem(id: number) {
+  router.push({ query: { ...route.query, testCodeId: id } })
+  MethodsUtil.requestApiCustomV5(`${QuestionService.testCodes}/${id}`).then((result: Any) => {
+    isShow.value = 'add'
+    dataDetail.value = result.data
+  })
 }
 
 onMounted(() => {
@@ -208,7 +170,7 @@ watch(queryParams.value, (val: any) => {
 </script>
 
 <template>
-  <div v-if="!isShowAdd">
+  <div v-if="isShow === 'list'">
     <div class="mt-6">
       <CpActionHeaderPage
         :title="t('list-tests')"
@@ -240,99 +202,22 @@ watch(queryParams.value, (val: any) => {
     </div>
     <div>
       <CmTable
-        v-model:pageNumber="queryParams.pageNumber"
-        v-model:pageSize="queryParams.pageSize"
         v-model:selected="dataComponent.selectedRowsIds"
         is-border-row
         is-update-row-force
         :headers="headers"
         :items="items"
         :total-record="totalRecord"
+        disiable-pagination
       >
         <template #rowItem="{ col, context }">
           <div v-if="col === 'name'">
-            <CpCustomInfo
-              :is-show-email="false"
-              :context="context"
-            />
-          </div>
-          <div
-            v-if="col === 'organization'"
-          >
-            <CmAccodion
-              v-if="context.orgModels?.content?.length"
-              :data="[context.orgModels]"
-              custom-key="content"
-              custom-key-child="name"
-              is-open
-            />
-            <CmAccodion
-              v-if="context.groupModels?.content?.length"
-              :data="[context.groupModels]"
-              custom-key="content"
-              custom-key-child="name"
-              is-open
-            />
-
-            <CmAccodion
-              v-if="context.titleModels?.content?.length"
-              is-custom
-              :data="[context.titleModels]"
-              custom-key="content"
-              is-open
+            <div>{{ context.name }}</div>
+            <div
+              :class="`color-${MethodsUtil.checkStatus(context.statusId, StatusTypeCourse)?.color}`"
             >
-              <template #title>
-                <div>
-                  <VAvatar
-                    size="32"
-                    class="mr-2"
-                    :class="[context.titleModels.colorClass]"
-                    variant="tonal"
-                  >
-                    <VIcon
-                      v-if="context.titleModels.icon"
-                      :icon="context.titleModels.icon"
-                      size="14"
-                      :class="[context.titleModels.colorClass]"
-                    />
-                  </VAvatar>
-                </div>
-                <span
-                  class="text-regular-sm"
-                >{{ context.titleModels.label }}</span>
-              </template>
-              <template #text>
-                <div
-                  v-for="(listItem, idItem) in context.titleModels.content"
-                  :key="idItem"
-                  class="mb-2"
-                >
-                  <div
-                    v-if="listItem.titleName"
-                    class="content-item text-regular-sm"
-                  >
-                    <span
-                      :title="t('list-title')"
-                    >
-                      {{ listItem.categoryTitleName }} -
-                    </span>
-                    <span
-                      :title="t('career-titles')"
-                      class="color-primary"
-                    >
-                      {{ listItem.titleName }}
-                    </span>
-
-                    <span
-                      :title="t('level')"
-                      class="color-success"
-                    >
-                      ({{ listItem.level }})
-                    </span>
-                  </div>
-                </div>
-              </template>
-            </CmAccodion>
+              {{ t(MethodsUtil.checkStatus(context.statusId, StatusTypeCourse)?.name) }}
+            </div>
           </div>
           <div v-if="col === 'registerDate'">
             <span>{{ DateUtil.formatDateToDDMM(context.registeredDate) }}</span>
@@ -352,7 +237,15 @@ watch(queryParams.value, (val: any) => {
       @on-cancel="emit('cancel')"
     />
   </div>
-  <div v-else>
-    <CpTestThematic v-model:isShowAdd="isShowAdd" />
+  <div v-if="isShow === 'add'">
+    <CpEditTest
+      v-model:isShowAdd="isShow"
+      :data-detail="dataDetail"
+    />
+  </div>
+  <div
+    v-if="isShow === 'approve'"
+  >
+    <CpApproveTest />
   </div>
 </template>

@@ -25,7 +25,7 @@ interface item {
 
 const propsValue = withDefaults(defineProps<Props>(), ({
   listItem: () => ([]),
-  color: 'dark',
+  color: 'secondary',
   type: 1,
   trueValue: true,
   falseValue: false,
@@ -59,12 +59,12 @@ function changeValue(value: any) {
       v-for="(item, index) in listItem"
       :key="index"
       :class="`${positionBorder(index)} button-group ${item.value === modelValue ? 'active' : ''}`"
-      color="color"
+      :color="color"
       variant="outlined"
       :disabled="disabled"
       @click="item?.action"
     >
-      <span :class="`color-${color} font-weight-600`">
+      <span class="font-weight-600`">
         <VIcon
           v-if="item.icon"
           :icon="item.icon"
@@ -100,7 +100,6 @@ function changeValue(value: any) {
 @use "/src/styles/style-global" as *;
 .button-group {
   border: 1px solid $color-gray-300;
-
   background-color: $color-white;
   text-transform: unset;
   padding: 10px 12px !important;
@@ -110,6 +109,9 @@ function changeValue(value: any) {
   border-bottom-right-radius: unset!important;
   border-right: unset!important;
 }
+.button-group:focus {
+  box-shadow: unset !important;
+}
 
 .button-group-append {
   border-top-left-radius: unset!important;
@@ -117,13 +119,13 @@ function changeValue(value: any) {
   // border-left: unset!important;
 }
 
-.button-group-default {
-  border-radius: 0;
-}
+// .button-group-default {
+//   border-radius: 0;
+// }
 
-.active {
-  background: $color-primary-300 !important;
-}
+// .active {
+//   background: $color-primary-300 !important;
+// }
 
 // .button-group:focus {
 //   background: $color-primary-100 !important;

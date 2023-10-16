@@ -110,5 +110,8 @@
       }
     ]
   },
-  "vue-i18n.i18nPaths": "src\\plugins\\i18n,src\\plugins\\i18n\\locales"
+  "vue-i18n.i18nPaths": "src\\plugins\\i18n,src\\plugins\\i18n\\locales",
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "dev"
+  ]
 }

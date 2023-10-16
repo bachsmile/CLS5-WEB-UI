@@ -79,7 +79,8 @@ watch(() => props.items, val => {
     ]
     element.unitPoint = element.unitPoint ? element.unitPoint : 1
   })
-  listQuestions.value = temp
+  listQuestions.value = window._.clone(temp)
+  console.log(val)
 }, { immediate: true })
 onMounted(() => {
   callBackAction.value = actionItem
@@ -106,7 +107,7 @@ function showModalEditQuestion() {
 }
 function getListQuestion(val: Any[]) {
   val.forEach((element: Any) => {
-    element.unitPoint = element.unitPoint ? element.unitPoint : 1
+    element.point = element.point ? element.point : 1
     element.actions = [
       MethodsUtil.checkActionType({ id: 4 }),
       MethodsUtil.checkActionType({ id: 1 }),
@@ -114,14 +115,16 @@ function getListQuestion(val: Any[]) {
     ]
   })
   listQuestions.value?.push(...val)
+
   emit('update:items', listQuestions.value)
 }
 
 const keyword = ref<string>('')
 const getRows = computed(() => {
+  const listQs = window._.cloneDeep(listQuestions.value)
   if (keyword.value !== null && keyword.value.length > 0) {
     const qts: Any[] = []
-    listQuestions.value?.forEach(element => {
+    listQs?.forEach(element => {
       if (element.isQuestionGroup && element.isQuestionGroup === true) {
         if (element.questionGroupContent
           && StringUtil.removeAccents(element.questionGroupContent?.toLowerCase()).includes(StringUtil.removeAccents(keyword.value?.toLowerCase())) === true
@@ -136,7 +139,7 @@ const getRows = computed(() => {
     })
     return qts
   }
-  return listQuestions.value
+  return listQs
 })
 function updatePoint(val: number, row: Any) {
   const item = listQuestions.value?.find(i => i.id === row.id)
@@ -160,7 +163,7 @@ function standardizedDataInitSingle(valueQs: any) {
   if (valueQs.typeId === 6) {
     const answers: any[] = []
     const answerBlank: any[] = []
-    valueQs.answersClone = window._.cloneDeep(valueQs.answers)
+    valueQs.answersClone = valueQs.answers
 
     valueQs.answers.forEach((element: any) => {
       if (element.isTrue)
@@ -169,13 +172,14 @@ function standardizedDataInitSingle(valueQs: any) {
       else
         answers[answers.length] = element
     })
+
     valueQs.answers = answers.map((item: any, index: number) => {
-      item.position = index + 1
+      item.position = 6
       return item
     })
 
     valueQs.answerBlank = answerBlank.map((item: any, index: number) => {
-      item.position = index + 1
+      item.position = 6
       return item
     })
     const tempElement = document.createElement('div')
@@ -246,15 +250,18 @@ async function openDetail(dataQs: any, el: any) {
   if (dataQs.id) {
     const result = ref()
     listQuestions.value[dataQs.originIndex].loadingShow = true
-    await getInforQuestion(result, dataQs.id).then(() => {
-      listQuestions.value[dataQs.originIndex] = {
-        ...listQuestions.value[dataQs.originIndex],
-        ...result.value,
-      }
-      setTimeout(() => {
-        listQuestions.value[dataQs.originIndex].loadingShow = false
-      }, 500)
-    })
+
+    if (dataQs.isGroup)
+      result.value = standardizedDataInitCluse(dataQs)
+    else
+      result.value = standardizedDataInitSingle(dataQs)
+    listQuestions.value[dataQs.originIndex] = {
+      ...listQuestions.value[dataQs.originIndex],
+      ...result.value,
+    }
+    setTimeout(() => {
+      listQuestions.value[dataQs.originIndex].loadingShow = false
+    }, 500)
     nextTick(() => {
       attachClickEvent(el.value, dataQs)
     })
@@ -267,7 +274,7 @@ async function closeDetail(dataQs: any) {
 function standardizedDataInitCluse(valueQsList: any) {
   valueQsList?.questions.forEach((valueQs: any) => {
     if (valueQs.typeId === 6) {
-      valueQs.answersClone = window._.cloneDeep(valueQs.answers)
+      valueQs.answersClone = valueQs.answers
       const answers: any[] = []
       const answerBlank: any[] = []
       valueQs.answers.forEach((element: any) => {
@@ -344,7 +351,7 @@ function standardizedDataInitCluse(valueQsList: any) {
             <CpQuestionName
               :ref="getContentNameRef(context)"
               :status="context.statusId"
-              :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.content : context.basic"
+              :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.content : (context.basic ? context.basic : context.contentBasic)"
               :is-expand="isShowDetailAll || context.isExpand"
               @update:open="($event: any) => openDetail(context, $event)"
               @update:close="closeDetail(context)"
@@ -370,7 +377,7 @@ function standardizedDataInitCluse(valueQsList: any) {
           </div>
           <div v-if="col === 'unitPoint'">
             <CmTextField
-              v-model="context.unitPoint"
+              v-model="context.point"
               type="number"
               @update:model-value="updatePoint($event, context)"
             />

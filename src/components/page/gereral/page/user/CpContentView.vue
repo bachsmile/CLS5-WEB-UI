@@ -39,7 +39,7 @@ const emit = defineEmits<Emit>()
 const { t } = window.i18n()
 interface Emit {
   (e: 'loaded'): void
-  (e: 'update:isAnsweredGroup'): void
+  (e: 'update:isAnsweredGroup', val?: any): void
   (e: 'update:data', val: any): void
 }
 

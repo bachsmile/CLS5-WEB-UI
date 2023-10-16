@@ -27,8 +27,9 @@ async function setRole(val: any) {
   await setDataMenu()
   localStorage.setItem('role', val.name)
   sessionStorage.setItem('role', val.name)
-  router.push({ name: role.value?.router })
   sessionStorage.setItem('menuItems', JSON.stringify(navItems.value))
+
+  router.push({ name: role.value?.router })
 }
 </script>
 

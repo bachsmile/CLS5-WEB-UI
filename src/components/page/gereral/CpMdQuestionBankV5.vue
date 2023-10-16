@@ -93,7 +93,11 @@ const queryParams = ref<QueryParams>({
 const items = ref<Any[]>([])
 const totalRecord = ref(0)
 function getListQuestion() {
-  MethodsUtil.requestApiCustomV5(QuestionService.GetListQuestionV5, TYPE_REQUEST.GET, queryParams.value).then(({ data }: { data: Any }) => {
+  MethodsUtil.requestApiCustomV5(QuestionService.GetListQuestionDetailV5, TYPE_REQUEST.GET, queryParams.value).then(({ data }: { data: Any }) => {
+    data.listData.forEach((element: Any) => {
+      element.questionId = element.id
+      element.questionTypeId = element.typeId
+    })
     items.value = data.listData
     totalRecord.value = data.totalRecords
   })
@@ -276,22 +280,20 @@ function getIndex(position: number) {
 
 async function getInforQuestionDetail(isShow: boolean) {
   loadingShow.value = true
-  await MethodsUtil.requestApiCustomV5(QuestionService.GetListQuestionDetailV5, TYPE_REQUEST.GET, queryParams.value).then(({ data }: any) => {
-    data?.listData.forEach((element: any, index: number) => {
-      const dynamicRef = getContentNameRef(element) // Truy vấn đến ref của CpQuestionName có id 1
-      element.isExpand = isShow
-      const result = ref()
-      if (element.isGroup)
-        result.value = standardizedDataInitCluse(element)
-      else
-        result.value = standardizedDataInitSingle(element)
-      items.value[index] = {
-        ...items.value[index],
-        ...result.value,
-      }
+  items.value.forEach((element: any, index: number) => {
+    const dynamicRef = getContentNameRef(element) // Truy vấn đến ref của CpQuestionName có id 1
+    element.isExpand = isShow
+    const result = ref()
+    if (element.isGroup)
+      result.value = standardizedDataInitCluse(element)
+    else
+      result.value = standardizedDataInitSingle(element)
+    items.value[index] = {
+      ...items.value[index],
+      ...result.value,
+    }
 
-      attachClickEvent(dynamicRef.value.qsNameContentRef, items.value[index])
-    })
+    attachClickEvent(dynamicRef.value.qsNameContentRef, items.value[index])
   })
 }
 function handleSpanClick(event: any, pos: number, dataQs: any) {
@@ -534,7 +536,7 @@ function standardizedDataInitCluse(valueQsList: any) {
             <CpQuestionName
               :ref="getContentNameRef(context)"
               :status="context.statusId"
-              :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.content : context.basic"
+              :content-basic="context.isExpand && [3, 6, 7].includes(context.typeId) ? context.content : context.contentBasic"
               :is-expand="isShowDetailAll || context.isExpand"
               @update:open="($event: any) => openDetail(context, $event)"
               @update:close="closeDetail(context)"

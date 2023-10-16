@@ -18,8 +18,6 @@ import CpEssaySvView from '@/components/page/Admin/content/survey/survey-view/Cp
 import CpMatrixSingleSvView from '@/components/page/Admin/content/survey/survey-view/CpMatrixSingleSvView.vue'
 import CpMatrixMultiSvView from '@/components/page/Admin/content/survey/survey-view/CpMatrixMultiSvView.vue'
 
-import CpSpliterView from '@/components/page/gereral/CpSpliterView.vue'
-
 const props = withDefaults(defineProps<Props>(), ({
   type: 1,
   showContent: true,
@@ -38,7 +36,7 @@ const emit = defineEmits<Emit>()
 const { t } = window.i18n()
 interface Emit {
   (e: 'loaded'): void
-  (e: 'update:isAnsweredGroup'): void
+  (e: 'update:isAnsweredGroup', val?: any): void
 }
 
 /**
@@ -68,7 +66,7 @@ interface Props {
   totalPoint?: number // tong diem
   isGroup?: boolean
 }
-const dataValue = ref(props.data)
+const dataValue = ref()
 function checkTypeQuestion() {
   switch (props.type) {
     case 1:
@@ -135,16 +133,10 @@ function updateAnswered(value: any, data: any) {
   else
     dataValue.value.isAnswered = value
 }
-function updateAnsweredGroup(value: any, data: any) {
-  dataValue.value.isAnswered = value
-}
-function checkPointGroup(listQs: any) {
-  return listQs.reduce((totalPoint, currentValue) => totalPoint + currentValue.unitPoint, 0)
-}
 onMounted(() => {
   emit('loaded')
 })
-watch(() => props.data, (val: any) => dataValue.value = val)
+watch(() => props.data, (val: any) => dataValue.value = val, { immediate: true })
 </script>
 
 <template>
@@ -172,7 +164,7 @@ watch(() => props.data, (val: any) => dataValue.value = val)
       @update:isAnswered="($value) => updateAnswered($value, dataValue)"
     />
     <div v-else-if="dataValue?.isGroup">
-      <div v-if="!isSentence">
+      <div>
         <div class="mb-1">
           <div>
             {{ t('general-request') }}
@@ -204,56 +196,6 @@ watch(() => props.data, (val: any) => dataValue.value = val)
           />
         </div>
       </div>
-      <CpSpliterView
-        v-else
-        :id="dataValue.id"
-        orientation="vertical"
-        class="mb-5"
-      >
-        <template #first-element>
-          <div
-            class="mb-4"
-          >
-            <span class="text-bold-md color-primary">{{ t('sentence') }} {{ numberQuestion }} - {{ checkPointGroup(dataValue.questions) }}/{{ totalPoint }} {{ t('scores') }}</span>
-            <CmButton
-              class="ml-3"
-              icon="ic:round-bookmark-border"
-              is-rounded
-              color-icon="white"
-              :size="36"
-              :size-icon="20"
-            />
-            <div class="mb-1">
-              <div>
-                {{ t('general-request') }}
-              </div>
-              <div v-html="dataValue.content" />
-            </div>
-          </div>
-        </template>
-        <template #second-element>
-          <div
-            v-for="(qsItem, index) in dataValue?.questions"
-            :key="qsItem.id"
-            class="mb-5"
-          >
-            <CpContentView
-              :type="qsItem.typeId"
-              :data="qsItem"
-              :show-media="false"
-              :number-question="`${numberQuestion}.${index + 1}`"
-              :disabled="isReview"
-              :is-review="isReview"
-              :total-point="totalPoint"
-              :is-sentence="isSentence"
-              :is-show-ans-false="isReview"
-              :is-show-ans-true="isReview"
-              is-group
-              @update:isAnsweredGroup="($value) => updateAnsweredGroup($value, dataValue)"
-            />
-          </div>
-        </template>
-      </CpSpliterView>
     </div>
   </div>
 </template>

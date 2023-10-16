@@ -21,6 +21,7 @@ const QuestionService = {
   GetListQuestionSurveyById: '/surveytestcode/get-list-question',
   GetListApproveSurveyTest: '/surveytestCode/get-paging-send-agree-test-code-survey-exam',
   GetExportExcelQuestion: '/Question/export-excel-list-question',
+  GetMyListExam: '/myexam/get-my-exam',
 
   /** Post */
   PostExportExcelSurvey: '/Survey/export-excel-survey-bank',
@@ -58,6 +59,7 @@ const QuestionService = {
   PostImportQuestionFromFile: '/question/import-questions-excel-json',
   PostImportSurveyFromFile: '/survey/import-excel-from-json',
   PostDownloadTemplateSurvey: '/survey/generate-import-excel-template',
+  PostGetListTest: '/examtest/get-paging-send-agree-test-code-exam',
 
   /** Delete */
   DeleteSurveyTopic: '/surveytest/delete',
@@ -71,8 +73,10 @@ const QuestionService = {
   GetListQuestionV5: '/questions',
   GetListQuestionDetailV5: '/questions/with-detail',
   AddQuestion: '/questions',
-  AddTest: '/testCodes',
-
+  testCodes: '/testCodes',
+  testCodeQuestion: '/testCodes/questions',
+  testCodeSetting: '/testCodes/settings',
+  comboboxGroupConfigAutoTest: '/testCodeAuto/group-combobox?topicId=0&levelId=0&typeId=0&isGroup=null',
 }
 
 export default QuestionService

@@ -86,13 +86,7 @@ export const useStoreMenu = defineStore('useStoreMenu', () => {
   const roleDefault = localStorage.getItem('role')
   const userRoles = ref<Role[]>(userData.value.roles || [])
   const setDataMenu = async () => {
-    if (role && role.value?.name !== roleDefault) {
-      //
-      navItems.value = await getDataMenu(role.value?.id || 1)
-    }
-    else {
-      navItems.value = JSON.parse(localStorage.getItem('menuItem') || '')
-    }
+    navItems.value = await getDataMenu(role.value?.id)
   }
 
   return {

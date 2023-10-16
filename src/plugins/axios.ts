@@ -60,29 +60,31 @@ axiosIns.interceptors.response.use(
       if (!isAlreadyFetchingAccessToken) {
         isAlreadyFetchingAccessToken = true
         isWaitingRefreshToken = true
-        // eslint-disable-next-line promise/no-promise-in-callback
-        refreshToken().then(r => {
-          isWaitingRefreshToken = false
-          isAlreadyFetchingAccessToken = false
-          if (r.data.data.accessToken !== null) {
-            // eventBus.$emit('refreshToken', true)
 
-            // Update accessToken in localStorage
-            AuthUtil.setToken(r.data.data.accessToken)
-            AuthUtil.setRefreshToken(r.data.data.refreshToken)
-            onAccessTokenFetched(r.data.data.accessToken)
-          }
-        }).catch(() => {
-          isWaitingRefreshToken = false
-          isAlreadyFetchingAccessToken = true
-          localStorage.clear()
-          window.location = `/login?redirect=${window.location.pathname}` as never
-        })
+        // refreshToken().then(r => {
+        //   isWaitingRefreshToken = false
+        //   isAlreadyFetchingAccessToken = false
+        //   if (r.data.data.accessToken !== null) {
+        //     // eventBus.$emit('refreshToken', true)
+
+        //     // Update accessToken in localStorage
+        //     AuthUtil.setToken(r.data.data.accessToken)
+        //     AuthUtil.setRefreshToken(r.data.data.refreshToken)
+        //     onAccessTokenFetched(r.data.data.accessToken)
+        //   }
+        // }).catch(() => {
+        //   isWaitingRefreshToken = false
+        //   isAlreadyFetchingAccessToken = true
+        //   localStorage.clear()
+
+        //   // window.location = `/login?redirect=${window.location.pathname}` as never
+        // })
       }
       else if (isWaitingRefreshToken === false) {
         isAlreadyFetchingAccessToken = true
         localStorage.clear()
-        window.location = `/login?redirect=${window.location.pathname}` as never
+
+        // window.location = `/login?redirect=${window.location.pathname}` as never
       }
 
       return new Promise(resolve => {

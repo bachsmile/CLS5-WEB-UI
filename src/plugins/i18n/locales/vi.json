@@ -2631,7 +2631,7 @@
   "exam-finished": "Chuyên đề thi đã kết thúc",
   "exam-happening": "Chuyên đề thi đang diễn ra",
   "exam-in-progress": "Kỳ thi đang diễn ra",
-  "exam-is-comming": "Kỳ thi sắp diễn ra",
+  "exam-is-coming": "Kỳ thi sắp diễn ra",
   "exam-regulations": "Quy định kỳ thi",
   "check-audios": "Kiểm tra âm thanh",
   "exam-point": "Điểm đạt được",
@@ -3664,5 +3664,6 @@
   "QUE_SuperVisorInShiftNotDelete": "Giám sát thi đã tồn tại trong ca thi",
   "confirm-delete-certification": "Bạn có chắc chắn muốn xóa mẫu chứng nhận này không ?",
   "persistent-status": "Cho phép duy trì trạng thái đang thi khi thời gian kỳ thi kết thúc",
-  "auto-request-face": "Tự động gửi yêu cầu nhận diện học viên"
+  "auto-request-face": "Tự động gửi yêu cầu nhận diện học viên",
+  "exam-complete": "Kỳ thi đã hoàn thành"
 }
