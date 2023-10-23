@@ -6,6 +6,7 @@ import 'video.js/dist/video-js.css'
 import '@videojs/http-streaming'
 import { myCourseManagerStore } from '@/stores/user/course/course'
 import ServerFileService from '@/api/server-file/index'
+import 'videojs-youtube'
 
 const myCourseManagerManager = myCourseManagerStore()
 const { contentCurrent, isReview } = storeToRefs(myCourseManagerManager)
@@ -41,6 +42,8 @@ const options = ref<any>({
 const player = ref()
 const currentTimeIOSTemp = ref(0)
 const videoExtension = computed (() => {
+  console.log(isYoutubeVideo(contentCurrent.value.urlFile))
+
   if (isYoutubeVideo(contentCurrent.value.urlFile))
     return 'youtube'
   const arr = contentCurrent.value.urlFile?.split('.')
@@ -49,6 +52,7 @@ const videoExtension = computed (() => {
   return 'm3u8'
 })
 const videoType = computed (() => {
+  console.log(videoExtension.value)
   switch (videoExtension.value) {
     case 'mp3': return 'audio/mpeg'
     case 'flac': return 'audio/x-flac'
@@ -148,6 +152,7 @@ function handleMediaFile() {
     optionPr.headers['Authorization'] = `Bearer ${accessToken.value}`
   }
   player.value.on('ready', () => {
+    console.log(videoType.value, videoSource.value)
     player.value.src({ type: videoType.value, src: videoSource.value })
     player.value.playsinline(true)
   })
@@ -202,6 +207,7 @@ function volumeUpdateChange(value: any) {
 }
 function isYoutubeVideo(url: any) {
   const regExp = /^^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/
+
   return url?.match(regExp) || false
 }
 function getMobileOperatingSystem() {

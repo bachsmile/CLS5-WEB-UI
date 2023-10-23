@@ -5,7 +5,6 @@ import CpFrameLearning from '@/components/page/users/course/course-learning/comp
 import CpScreenStart from '@/components/page/users/course/course-learning/screen/CpScreenStart.vue'
 import CpSideBarContent from '@/components/page/users/course/course-learning/components/CpSideBarContent.vue'
 import { myCourseManagerStore } from '@/stores/user/course/course'
-import { myExamCourseManagerStore } from '@/stores/user/course/courseExam'
 
 const CpSurveyLearning = defineAsyncComponent(() => import('@/components/page/users/course/course-learning/content/CpSurveyLearning.vue'))
 const CpVideoLearning = defineAsyncComponent(() => import('@/components/page/users/course/course-learning/content/CpVideoLearning.vue'))
@@ -13,11 +12,9 @@ const CpTestLearning = defineAsyncComponent(() => import('@/components/page/user
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const myCourseManagerManager = myCourseManagerStore()
-const { contentCurrent } = storeToRefs(myCourseManagerManager)
-const { getDetailContent, checkSurveyInfo, getSurveyInfo, GetListContentCourseById } = myCourseManagerManager
-const myExamCourseManagerManager = myExamCourseManagerStore()
-const { } = storeToRefs(myExamCourseManagerManager)
-const { getExamInfo, getTestQuestion } = myExamCourseManagerManager
+const { contentCurrent, isRenderedContent } = storeToRefs(myCourseManagerManager)
+const { changeContent, checkSurveyInfo, getSurveyInfo, GetListContentCourseById } = myCourseManagerManager
+
 const isShowDialogCert = ref(false)
 const route = useRoute()
 function openCertification() {
@@ -29,25 +26,10 @@ const course = ref({
   courseId: 2803,
 })
 const isShowContent = ref(false)
-const isRenderedContent = ref(false)
 function openInforContent() {
   isShowContent.value = !isShowContent.value
 }
 
-async function changeCurrentContent() {
-  isRenderedContent.value = false
-  if (contentCurrent.value.contentArchiveTypeId === 11) {
-    await checkSurveyInfo()
-    await getSurveyInfo()
-  }
-  if (contentCurrent.value.contentArchiveTypeId === 10) {
-    await getExamInfo().then(() => {
-      getTestQuestion().then(value => {
-        isRenderedContent.value = true
-      })
-    })
-  }
-}
 function componentContentCurrent() {
   switch (contentCurrent.value.contentArchiveTypeId) {
     case 4:
@@ -63,8 +45,8 @@ function componentContentCurrent() {
 }
 onMounted(async () => {
   await GetListContentCourseById(Number(route.params.id))
-  await getDetailContent(8611)
-  await changeCurrentContent()
+
+  await changeContent(15182)
 })
 </script>
 
@@ -84,6 +66,7 @@ onMounted(async () => {
           <CpScreenStart
             is-desc-box
             :is-rendered="isRenderedContent"
+            :content-data="contentCurrent"
             @click="openInforContent"
           >
             <template #descBox>

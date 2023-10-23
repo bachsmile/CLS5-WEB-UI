@@ -3,6 +3,7 @@ import type { Content } from '@/typescript/interface'
 import CourseService from '@/api/course/index'
 import { TYPE_REQUEST } from '@/typescript/enums/enums'
 import MethodsUtil from '@/utils/MethodsUtil'
+import { myExamCourseManagerStore } from '@/stores/user/course/courseExam'
 
 export const myCourseManagerStore = defineStore('myCourseManager', () => {
   /** store */
@@ -10,7 +11,9 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
   const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
   const router = useRouter()
   const route = useRoute()
-
+  const myExamCourseManagerManager = myExamCourseManagerStore()
+  const { } = storeToRefs(myExamCourseManagerManager)
+  const { getExamInfo, getTestQuestion } = myExamCourseManagerManager
   const getStatusCourse = (
     registrationType?: number,
     statusId?: number,
@@ -161,6 +164,7 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
     pageSize: 5,
   })
   const isReview = ref(false)
+  const isRenderedContent = ref(false)
 
   /** ************************************************ Store các nội dung khóa học của tôi**********************************************/
 
@@ -210,6 +214,45 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
       contentCurrent.value = value.data
       router.replace({ name: 'course-learning', query: { contentId: contentCurrent.value.courseContentId } })
     })
+  }
+  async function changeContent(courseContentId: any) {
+    await getDetailContent(courseContentId)
+    await changeCurrentContent()
+  }
+  async function changeCurrentContent() {
+    isRenderedContent.value = false
+    if (contentCurrent.value.contentArchiveTypeId === 11) {
+      await checkSurveyInfo()
+      await getSurveyInfo()
+    }
+    else if (contentCurrent.value.contentArchiveTypeId === 10) {
+      await getExamInfo().then(() => {
+        getTestQuestion().then(value => {
+          isRenderedContent.value = true
+        })
+      })
+    }
+    else {
+      isRenderedContent.value = true
+    }
+  }
+
+  /**
+   *
+   * @param itemContent
+   * @returns {
+   *  type: 1(bấm nút hoàn thành) | 2 (sau khoảng thời gian) | 3 (trả lời câu hỏi) | 4 (sau khoảng thời gian trả lời câu hỏi),
+   *  data: itemContent ( dữ liệu content)
+   * }
+   */
+  const doingComplete = ref<any>(null)
+  function checkTypeDoingComplete(itemContent: any) {
+    if (itemContent.isComplete) {
+      doingComplete.value = {
+        type: 1,
+        data: itemContent,
+      }
+    }
   }
 
   // lấy thông tin nội dung bài khảo sát của người dùng
@@ -319,8 +362,13 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
     contentCurrent, // nội dung học hiện tại
     pageOption,
     isReview,
+    isRenderedContent,
+    doingComplete,
     getDetailContent, // lấy thông tin của nội dung theo id
     GetListContentCourseById, // danh sách nội dung và chuyên  đề
+    changeContent, // xử lý khi change content
+    changeCurrentContent,
+    checkTypeDoingComplete, // check thể loại hoàn thành
     /** khảo sát */
     surveyData,
     surveyQuestion,
