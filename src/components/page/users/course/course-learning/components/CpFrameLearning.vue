@@ -60,28 +60,30 @@ interface Emit {
         </div>
       </div>
       <div class="header-sidebar">
-        <div>
-          <CmButton
-            icon="tabler:info-circle"
-            color="warning"
-            :tooltip="t('info-content')"
-            size="40"
-            :size-icon="20"
-          />
-        </div>
-        <div>
-          <CmButton
-            icon="tabler:chevron-left"
-            variant="tonal"
-            :title="t('previous-post')"
-          />
-        </div>
-        <div>
-          <CmButton
-            icon="tabler:chevron-right"
-            variant="tonal"
-            :title="t('next-post')"
-          />
+        <div class="d-flex justify-end">
+          <div class="mr-6">
+            <CmButton
+              icon="tabler:info-circle"
+              color="warning"
+              :tooltip="t('info-content')"
+              size="40"
+              :size-icon="20"
+            />
+          </div>
+          <div>
+            <CmButton
+              icon="tabler:chevron-left"
+              variant="tonal"
+              :title="t('previous-post')"
+            />
+          </div>
+          <div class="ml-2">
+            <CmButton
+              icon="tabler:chevron-right"
+              variant="tonal"
+              :title="t('next-post')"
+            />
+          </div>
         </div>
       </div>
     </div>
