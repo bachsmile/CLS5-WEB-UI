@@ -128,63 +128,63 @@
             "id": 0,
             "name": "CourseService.NoStart",
             "color": "warning",
-            "icon": "",
+            "icon": "tabler:clock-hour-4",
             "note": "Chưa bắt đầu"
         },
         {
             "id": 1,
             "name": "CourseService.LearnerEligible",
             "color": "error",
-            "icon": "",
+            "icon": "tabler:alert-circle",
             "note": "Có điều kiện"
         },
         {
             "id": 2,
             "name": "CourseService.LearnerHaveNotStudiedYet",
-            "color": "purple",
-            "icon": "",
+            "color": "warning",
+            "icon": "tabler:clock-hour-4",
             "note": "Chưa bắt đầu học"
         },
         {
             "id": 3,
             "name": "CourseService.LearnerStudying",
             "color": "primary",
-            "icon": "",
+            "icon": "tabler:loader",
             "note": "Đang học"
         },
         {
             "id": 4,
             "name": "CourseService.LearnerCompleted",
             "color": "success",
-            "icon": "",
+            "icon": "tabler:check",
             "note": "Đã hoàn thành"
         },
         {
             "id": 5,
             "name": "CourseService.LearnerNotCompleted",
             "color": "error",
-            "icon": "",
+            "icon": "tabler:x",
             "note": "Chưa hoàn thành"
         },
         {
             "id": 6,
             "name": "CourseService.WaitingMarkEssay",
             "color": "primary-light",
-            "icon": "",
+            "icon": "tabler:pencil-minus",
             "note": "Chờ chấm điểm tự luận"
         },
         {
             "id": 7,
             "name": "CourseService.Suspended",
             "color": "warning",
-            "icon": "",
+            "icon": "tabler:alert-triangle",
             "note": "Đình chỉ"
         },
         {
             "id": 8,
             "name": "CourseService.NoAssign",
             "color": "info",
-            "icon": "",
+            "icon": "tabler:circle",
             "note": "Chưa được gán"
         }
     ],

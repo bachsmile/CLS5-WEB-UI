@@ -26,7 +26,8 @@ const listTab = [
 <template>
   <div>
     <CmTab
-      :is-render="false"
+      is-un-query
+      :is-render="true"
       :list-tab="listTab"
       label="conditionPart"
       type="button"

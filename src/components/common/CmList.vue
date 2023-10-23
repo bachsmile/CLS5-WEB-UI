@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits<Emit>()
 interface Emit {
-  (e: 'cancel', value: any): void
+  (e: 'click', value: any): void
 }
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
@@ -14,7 +14,11 @@ const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 interface Props {
   list: any[]
   keyLabel?: string
+  classList?: any
   isCustom?: boolean
+}
+function handleClickRow(item: any) {
+  emit('click', item)
 }
 </script>
 
@@ -23,6 +27,8 @@ interface Props {
     v-for="item in list"
     :key="item.id"
     class="cm-list-item"
+    :class="classList"
+    @click="handleClickRow(item)"
   >
     <div v-if="isCustom">
       <slot :list-item="item" />

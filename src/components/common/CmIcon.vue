@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import type { typeVariant } from '@/typescript/enums/enums'
+
 const propsValue = withDefaults(defineProps<Props>(), ({
   icon: 'fe:edit',
   color: 'primary',
+  variant: 'tonal',
   size: 16,
+  padding: 4,
   bgColor: '',
   type: 1,
 }))
@@ -19,10 +23,12 @@ interface Props {
   color?: string
   icon?: string
   bgColor?: string
+  variant?: typeof typeVariant[number]
   size?: number
   type?: number
+  padding?: any
 }
-const sizeIcon = computed(() => Number(propsValue.size) + 16)
+const sizeIcon = computed(() => Number(propsValue.size))
 </script>
 
 <template>
@@ -31,15 +37,16 @@ const sizeIcon = computed(() => Number(propsValue.size) + 16)
     :icon="icon"
     :size="size"
     :color="color"
-    variant="tonal"
+    variant="variant"
   />
   <VBtn
     v-else
-    :width="sizeIcon"
-    :height="sizeIcon"
+    :width="sizeIcon + padding * 2"
+    :height="sizeIcon + padding * 2"
     :min-width="5"
     rounded
-    variant="tonal"
+    :style="{ padding: `${padding}px` }"
+    :variant="variant"
     :icon="icon"
     :color="bgColor"
   >

@@ -48,6 +48,7 @@
     "vee-validate": "^4.9.5",
     "video.js": "^8.3.0",
     "videojs-contrib-hls": "^5.15.0",
+    "videojs-youtube": "^3.0.1",
     "vue": "^3.3.4",
     "vue-chartjs": "^5.2.0",
     "vue-content-loader": "^2.0.1",
