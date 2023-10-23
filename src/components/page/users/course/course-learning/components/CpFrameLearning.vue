@@ -4,6 +4,7 @@ import CmSheet from '@/components/common/CmSheet.vue'
 
 const emit = defineEmits<Emit>()
 const sheet = ref(false)
+const { t } = window.i18n()
 
 interface Emit {
   (e: 'goHome'): void
@@ -13,52 +14,80 @@ interface Emit {
 
 <template>
   <div class="course-learning">
-    <div class="content">
-      <div class="content-course">
-        <div class="header-action">
-          <div class="action-content">
-            <CmButton
-              class="d-flex mr-2 button-learning"
-              size="36"
-              @click="emit('goHome')"
-            >
-              <VIcon
-                icon="ic:outline-home"
-                size="20"
-              />
-            </CmButton>
-            <CmButton
-              variant="outlined"
-              color="secondary"
-              class="d-flex mr-2 button-learning"
-              size="36"
-              icon="material-symbols:arrow-back-rounded"
-              :size-icon="20"
-              @click="emit('goBack')"
+    <div class="header-learning">
+      <div class="header-action">
+        <div class="action-content">
+          <CmButton
+            class="d-flex mr-2 button-learning"
+            size="36"
+            @click="emit('goHome')"
+          >
+            <VIcon
+              icon="ic:outline-home"
+              size="20"
+            />
+          </CmButton>
+          <CmButton
+            variant="outlined"
+            color="secondary"
+            class="d-flex mr-2 button-learning"
+            size="36"
+            icon="material-symbols:arrow-back-rounded"
+            :size-icon="20"
+            @click="emit('goBack')"
+          />
+        </div>
+        <div class="header-content">
+          <div
+            class="text-bold-lg text-truncate"
+            title="Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học"
+          >
+            Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học
+          </div>
+          <div
+            class="d-flex align-start"
+            style="width: 50%"
+          >
+            <VProgressLinear
+              rounded-bar
+              :model-value="80"
+              color="success"
+              class="mt-6"
+              rounded
+              height="8"
             />
           </div>
-          <div class="header-content">
-            <div
-              class="text-bold-lg text-truncate"
-              title="Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học"
-            >
-              Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học
-            </div>
-            <div
-              class="d-flex align-start"
-              style="width: 50%"
-            >
-              <VProgressLinear
-                rounded-bar
-                :model-value="80"
-                color="success"
-                class="mt-6"
-                rounded
-                height="8"
-              />
-            </div>
-          </div>
         </div>
+      </div>
+      <div class="header-sidebar">
+        <div>
+          <CmButton
+            icon="tabler:info-circle"
+            color="warning"
+            :tooltip="t('info-content')"
+            size="40"
+            :size-icon="20"
+          />
+        </div>
+        <div>
+          <CmButton
+            icon="tabler:chevron-left"
+            variant="tonal"
+            :title="t('previous-post')"
+          />
+        </div>
+        <div>
+          <CmButton
+            icon="tabler:chevron-right"
+            variant="tonal"
+            :title="t('next-post')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content-course">
         <div class="content-learning">
           <slot
             name="content"
@@ -69,17 +98,20 @@ interface Emit {
         <slot name="sidebar" />
       </div>
     </div>
-    <CmSheet
-      v-model="sheet"
-      inset
-      size="30vh"
-      origin="bottom"
+    <div
       class="sidebar-mobile"
     >
-      <div>
-        <slot name="sidebar" />
-      </div>
-    </CmSheet>
+      <CmSheet
+        v-model="sheet"
+        inset
+        size="30vh"
+        origin="bottom"
+      >
+        <div>
+          <slot name="sidebar" />
+        </div>
+      </CmSheet>
+    </div>
   </div>
 </template>
 
@@ -88,65 +120,69 @@ interface Emit {
 
 .course-learning {
   width: calc(100% - 64px);
-  max-width: var(--v-max-width-page);
+  max-width: calc(var(--v-max-width-page) - 64px);
   height: calc(100vh - 64px) ;
   padding: 32px;
   border-radius: 8px;
   margin: 32px;
   background: rba(--v-them-surface);
   box-shadow: 0 2px 4px -2px rgba(16, 24, 40, 6%), 0 4px 8px -2px rgba(16, 24, 40, 10%);
-
   .button-learning {
     height: 36px !important;
     min-height: unset !important;
   }
+  .header-learning {
+    display: flex;
+    .header-action {
+      display: flex;
+      width: 69%;
+      padding-right: 32px;
+      margin-bottom: 32px;
+      .action-content {
+        display: flex;
+        margin-right: 24px;
+      }
 
+      .header-content {
+        width: calc(100% - 112px);
+
+        .v-progress-linear {
+          margin-top: 8px !important;
+        }
+      }
+    }
+    .header-sidebar {
+      display: flex;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
   .content {
     display: flex;
     width: 100%;
-    height: 100%;
-
+    height: calc(100% - 76px);;
     .content-course {
       display: flex;
-      width: 75%;
+      overflow: hidden;
+      width: 68%;
       height: 100%;
       flex-direction: column;
-      padding-right: 32px;
-
-      .header-action {
-        display: flex;
-        width: 100%;
-        margin-bottom: 32px;
-
-        .action-content {
-          display: flex;
-          margin-right: 24px;
-        }
-
-        .header-content {
-          width: calc(100% - 112px);
-
-          .v-progress-linear {
-            margin-top: 8px !important;
-          }
-        }
-      }
-
+      margin-right: 24px;
       .content-learning {
         display: flex;
+        overflow: auto;
         height: 100%;
-        max-height: calc(100% - 64px);
         align-items: center;
         justify-content: center;
         border: 1px solid $color-gray-300;
         border-radius: var(--v-border-radius-xs);
         background-color: $color-gray-200;
-        padding: 1rem;
       }
     }
 
     .sidebar {
-      width: 25%;
+      overflow: auto;
+      width: 32%;
       height: 100%;
     }
   }
@@ -170,10 +206,9 @@ interface Emit {
       .sidebar {
         display: none;
       }
-
-      .sidebar-mobile {
-        display: block;
-      }
+    }
+    .sidebar-mobile {
+      display: block;
     }
   }
 }

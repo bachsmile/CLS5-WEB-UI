@@ -2,7 +2,6 @@
 
 // import CpScreenEnds from '@/components/page/users/course/course-learning/screen/CpScreenEnds.vue'
 import CpFrameLearning from '@/components/page/users/course/course-learning/components/CpFrameLearning.vue'
-import CmButton from '@/components/common/CmButton.vue'
 import CpScreenStart from '@/components/page/users/course/course-learning/screen/CpScreenStart.vue'
 import CpSideBarContent from '@/components/page/users/course/course-learning/components/CpSideBarContent.vue'
 import { myCourseManagerStore } from '@/stores/user/course/course'
@@ -73,14 +72,6 @@ onMounted(async () => {
   <div class="my-course-learning">
     <CpFrameLearning>
       <template #sidebar>
-        <CmButton
-          icon="tabler:info-circle"
-          :disabled="!isRenderedContent"
-          color="warning"
-          :tooltip="t('info-content')"
-          :size-icon="30"
-          @click="openInforContent"
-        />
         <div>
           <CpSideBarContent />
         </div>
@@ -126,16 +117,16 @@ onMounted(async () => {
   justify-content: center;
   background: rgb(var(--v-theme-surface));
   .box {
-    background: rgb(var(--v-theme-surface));
     height: inherit;
     border-radius: var(--v-border-radius-xs);
+    background: rgb(var(--v-theme-surface));
 
     .box-content {
       max-width: 80%;
       padding: 1rem;
       border: 1px solid rgb(var(--v-gray-300));
       border-radius: var(--v-border-radius-xs);
-      background:  rgb(var(--v-gray-50));
+      background: rgb(var(--v-gray-50));
       .mc-desc {
         padding: 12px 16px;
         border-radius: var(--v-border-radius-xs);
@@ -155,10 +146,10 @@ onMounted(async () => {
       }
     }
   }
-  .content-in-box{
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+  .content-in-box {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

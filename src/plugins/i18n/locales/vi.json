@@ -3677,5 +3677,7 @@
   "confirm-delete-certification": "Bạn có chắc chắn muốn xóa mẫu chứng nhận này không ?",
   "persistent-status": "Cho phép duy trì trạng thái đang thi khi thời gian kỳ thi kết thúc",
   "auto-request-face": "Tự động gửi yêu cầu nhận diện học viên",
-  "exam-complete": "Kỳ thi đã hoàn thành"
+  "exam-complete": "Kỳ thi đã hoàn thành",
+  "previous-post": "Bài trước",
+  "next-post": "Bài sau"
 }
