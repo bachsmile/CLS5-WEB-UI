@@ -5,14 +5,15 @@ import MethodsUtil from '@/utils/MethodsUtil'
 import { StatusTypeMyCourse } from '@/constant/data/status.json'
 import { DialogType } from '@/constant/data/notification.json'
 import type { Content } from '@/typescript/interface'
+import DateUtil from '@/utils/DateUtil'
 
 const props = withDefaults(defineProps<Props>(), ({
   isCondition: false,
   isDescBox: false,
   isRendered: false,
   status: 0,
-  name: 'Tên chuyên đề khảo sát khảo sát khảo sát khảo sát',
-  description: ' Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học',
+  name: '',
+  description: 'Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học Nội dung khóa học khóa học',
   listCondition: () => (['Điều kiện điều kiện điều kiện 1', 'Điều kiện điều kiện điều kiện 2']),
   contentData: () => ({
     content: '',
@@ -37,6 +38,7 @@ const props = withDefaults(defineProps<Props>(), ({
     urlFileName: '',
     acceptDownload: false,
     time: 300,
+    statusId: 1,
     isSpeed: false,
     comment: null,
   }),
@@ -108,7 +110,7 @@ function checkTypeContentTitle() {
 
   if (props.contentData.isAfterTime) {
     return `<div class="text-bold-xl text-center">
-               Học <span class="color-success text-bold-xl">03:35  phút</span> để hoàn thành
+               Học <span class="color-success text-bold-xl">${DateUtil.formatTimeSecondToCustom(props.contentData.minuteOfLearn)} phút</span> để hoàn thành
             </div>`
   }
   return ''
@@ -203,11 +205,10 @@ function checkTypeDialog(type: number) {
       </div>
       <div
         v-if="description"
-        class="mc-about"
+        class="mc-about flex-center"
         :class="{ 'text-over-hide': showHideIntr }"
-      >
-        {{ description }}
-      </div>
+        v-html="description"
+      />
       <div
         v-if="description"
         class="flex-center"

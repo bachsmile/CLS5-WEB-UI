@@ -64,12 +64,17 @@ onMounted(async () => {
           class="box flex-center page-containter"
         >
           <CpScreenStart
-            is-desc-box
+            :is-desc-box="!!(contentCurrent.contentArchiveTypeId && [10, 11].includes(contentCurrent.contentArchiveTypeId))"
             :is-rendered="isRenderedContent"
             :content-data="contentCurrent"
+            :description="contentCurrent.content || ''"
+            :name="contentCurrent.courseContentName || ''"
+            :status="contentCurrent.statusId || 0"
             @click="openInforContent"
           >
-            <template #descBox>
+            <template
+              #descBox
+            >
               <div>
                 Tổng số câu hỏi: 10 câu
               </div>
@@ -103,9 +108,9 @@ onMounted(async () => {
     height: inherit;
     border-radius: var(--v-border-radius-xs);
     background: rgb(var(--v-theme-surface));
-
+    width: 100%;
     .box-content {
-      max-width: 80%;
+      width: 80%;
       padding: 1rem;
       border: 1px solid rgb(var(--v-gray-300));
       border-radius: var(--v-border-radius-xs);
