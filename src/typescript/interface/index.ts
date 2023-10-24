@@ -27,6 +27,7 @@ export interface Content {
   noticeTimeAttendance: number
   startDate: string | null
   statusName: string | null
+  statusId: number | null
   timeLearned: number | null
   urlFile: string | null
   essayContent: string | null
