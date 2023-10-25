@@ -28,11 +28,11 @@ export interface Content {
   startDate: string | null
   statusName: string | null
   statusId: number | null
-  timeLearned: number | null
+  timeLearned: number
   urlFile: string | null
   essayContent: string | null
   urlFileEssay: string | null
-  completeRatio: number | null
+  completeRatio: number
   urlFileName: string | null
   acceptDownload: boolean
   time: number | null

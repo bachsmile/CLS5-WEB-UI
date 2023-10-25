@@ -281,7 +281,7 @@ export const myExamCourseManagerStore = defineStore('myExamCourseManager', () =>
   async function getExamInfo() {
     if (!isReview.value) {
       const params = {
-        courseContentId: contentCurrent.value.courseContentId,
+        CourseContentId: contentCurrent.value.courseContentId,
       }
       return await MethodsUtil.requestApiCustom(CourseService.GetGetDataExam, TYPE_REQUEST.GET, params).then(async (result: any) => {
         if (!result.testShiftId || result.testShiftId === null)

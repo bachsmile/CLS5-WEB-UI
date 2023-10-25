@@ -7,10 +7,15 @@ interface Props {/** ** Interface */
   color?: string
   bgColor?: string
   textColor?: string
+  padding?: string
+  borderRadius?: string
+  height?: string
   variant?: typeof typeVariant[number]
 }
 
 const props = withDefaults(defineProps<Props>(), ({
+  padding: '0 10px',
+  height: 'auto',
 }))
 
 const prefixColor = computed(() => {
@@ -19,12 +24,16 @@ const prefixColor = computed(() => {
 
   return 'btn'
 })
+onMounted(() => {
+  console.log('onMounted')
+})
 </script>
 
 <template>
   <VChip
     :color="color"
     :class="[bgColor, className, textColor]"
+    :style="{ padding, borderRadius, height }"
     :variant="variant"
     text-color="white"
     :prepend-icon="prependIcon"

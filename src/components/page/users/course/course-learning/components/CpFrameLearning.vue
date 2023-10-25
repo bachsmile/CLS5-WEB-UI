@@ -1,14 +1,27 @@
 <script setup lang="ts">
 import CmButton from '@/components/common/CmButton.vue'
 import CmSheet from '@/components/common/CmSheet.vue'
+import StringUtil from '@/utils/StringUtil'
 
+const props = withDefaults(defineProps<Props>(), {
+  progress: 0,
+  level: 0,
+  isVisible: false,
+  disabled: false,
+})
 const emit = defineEmits<Emit>()
 const sheet = ref(false)
-const { t } = window.i18n()
+const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
+interface Props {
+  progress?: number
+  title?: string
+  disabled?: boolean
+}
 interface Emit {
   (e: 'goHome'): void
   (e: 'goBack'): void
+  (e: 'openInfor'): void
 }
 </script>
 
@@ -40,34 +53,43 @@ interface Emit {
         <div class="header-content">
           <div
             class="text-bold-lg text-truncate"
-            title="Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học"
+            :title="title"
           >
-            Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa học Tên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa họcTên khóa học khóa học khóa học khóa học khóa học khóa học khóa học
+            {{ title }}
           </div>
           <div
             class="d-flex align-start"
             style="width: 50%"
           >
-            <VProgressLinear
-              rounded-bar
-              :model-value="80"
-              color="success"
-              class="mt-6"
-              rounded
-              height="8"
-            />
+            <div class="mr-3">
+              <VProgressLinear
+                rounded-bar
+                :model-value="progress"
+                color="success"
+                class="mt-6"
+                rounded
+                height="8"
+                style="width: 17.375rem;"
+              />
+            </div>
+            <div class="text-medium-sm d-flex text-noWrap">
+              {{ StringUtil.decimalToFixed(Number(progress), 0) }} %
+            </div>
           </div>
         </div>
       </div>
       <div class="header-sidebar">
-        <div class="d-flex justify-end">
-          <div class="mr-6">
+        <div class="d-flex justify-end flex-center ">
+          <slot name="action" />
+
+          <div class="mr-3">
             <CmButton
               icon="tabler:info-circle"
               color="warning"
               :tooltip="t('info-content')"
               size="40"
               :size-icon="20"
+              @click="emit('openInfor')"
             />
           </div>
           <div>
@@ -157,6 +179,7 @@ interface Emit {
       display: flex;
       width: 100%;
       justify-content: flex-end;
+      margin-bottom: 32px;
     }
   }
   .content {
