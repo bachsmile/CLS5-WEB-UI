@@ -129,6 +129,8 @@ const CourseService = {
   PostlRegisterCourse: '/learner/register-course',
   PostDeleteContentArchive: '/contentarchive/delete',
   PostGenerateSurvey: '/learner/generate-data-survey',
+  PostCompleteContent: '/learner/set-complete-course-content-basic',
+  PostContentCourseUser: '/learner/update-course-content-user',
 
   /** Delete */
   DeleteUserReg: 'courseuser/delete-register',

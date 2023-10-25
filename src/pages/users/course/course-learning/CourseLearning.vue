@@ -1,36 +1,39 @@
 <script setup lang="ts">
-
 // import CpScreenEnds from '@/components/page/users/course/course-learning/screen/CpScreenEnds.vue'
 import CpFrameLearning from '@/components/page/users/course/course-learning/components/CpFrameLearning.vue'
 import CpScreenStart from '@/components/page/users/course/course-learning/screen/CpScreenStart.vue'
 import CpSideBarContent from '@/components/page/users/course/course-learning/components/CpSideBarContent.vue'
 import { myCourseManagerStore } from '@/stores/user/course/course'
+import CmButton from '@/components/common/CmButton.vue'
+import { myCourseMainManagerStore } from '@/stores/user/course/index'
 
 const CpSurveyLearning = defineAsyncComponent(() => import('@/components/page/users/course/course-learning/content/CpSurveyLearning.vue'))
 const CpVideoLearning = defineAsyncComponent(() => import('@/components/page/users/course/course-learning/content/CpVideoLearning.vue'))
 const CpTestLearning = defineAsyncComponent(() => import('@/components/page/users/course/course-learning/content/CpTestLearning.vue'))
+const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue'))
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const myCourseManagerManager = myCourseManagerStore()
-const { contentCurrent, isRenderedContent } = storeToRefs(myCourseManagerManager)
-const { changeContent, checkSurveyInfo, getSurveyInfo, GetListContentCourseById } = myCourseManagerManager
-
-const isShowDialogCert = ref(false)
+const { courseData, isShowContent, contentCurrent, doingComplete, isReview, isCompletedContent, contentRef, studyTimeFormat, studyTime, isViewQuestion } = storeToRefs(myCourseManagerManager)
+const { timeUpdateChange, GetListContentCourseById, changeStatusContent, saveUserLearningData } = myCourseManagerManager
+const myCourseMainManagerManager = myCourseMainManagerStore()
+const { isRenderedContent } = storeToRefs(myCourseMainManagerManager)
+const { changeContent } = myCourseMainManagerManager
 const route = useRoute()
-function openCertification() {
-  isShowDialogCert.value = true
-}
 
 const course = ref({
   courseName: 'a',
   courseId: 2803,
 })
-const isShowContent = ref(false)
 function openInforContent() {
+  console.log(3333111)
   isShowContent.value = !isShowContent.value
+  return 333
 }
 
 function componentContentCurrent() {
+  console.log(contentCurrent.value.contentArchiveTypeId)
+
   switch (contentCurrent.value.contentArchiveTypeId) {
     case 4:
       return CpVideoLearning
@@ -43,16 +46,76 @@ function componentContentCurrent() {
       break
   }
 }
-onMounted(async () => {
-  await GetListContentCourseById(Number(route.params.id))
 
-  await changeContent(15182)
+function handleActionContent(idbtn: number, unload: any) {
+  doingComplete.value.action()
+  setTimeout(() => {
+    unload(idbtn)
+  }, 0)
+}
+
+watch(studyTime, async newValue => {
+  console.log(newValue)
+  if (
+    isCompletedContent.value
+        || newValue < (contentCurrent.value?.minuteOfLearn || 0)
+        || isReview.value
+        || !contentCurrent.value?.isAfterTime)
+    return
+
+  // Hiển thị popover thông báo (nội dung có 2 điều kiện sau khoản thời gian & câu trả lời cuối bài)
+  // if (contentCurrent.value.isAnswerTheQuestion) {
+  //   if (!this.$refs.btnShowQuestion) {
+  //     this.$nextTick().then(() => {
+  //       this.showAnswerQuestionTooltip()
+  //     })
+  //   }
+  //   return
+  // }
+  isCompletedContent.value = true
+  await saveUserLearningData(contentCurrent.value)
+  changeStatusContent(contentCurrent.value.courseContentId, 'CourseService.LearnerCompleted')
 })
+
+GetListContentCourseById(Number(route.params.id))
+changeContent(15182)
 </script>
 
 <template>
-  <div class="my-course-learning">
-    <CpFrameLearning>
+  <div
+    v-if="courseData"
+    class="my-course-learning"
+  >
+    <CpFrameLearning
+      :title="courseData.courseName"
+      :progress="courseData.progress"
+      :disabled="!isRenderedContent"
+      @open-infor="openInforContent"
+    >
+      <template
+        v-if="doingComplete && doingComplete.isShow && !isCompletedContent && !isReview"
+        #action
+      >
+        <div class="mr-3">
+          <CmButton
+            v-if="[1, 3].includes(doingComplete.type)"
+            variant="elevated"
+            is-load
+            :disabled="!isShowContent"
+            :color="doingComplete?.color"
+            :title="!isViewQuestion ? doingComplete?.title : doingComplete?.titleSub"
+            @click="handleActionContent"
+          />
+          <CmChip
+            v-if="doingComplete.type === 2"
+            :color="doingComplete?.color"
+            height="32px"
+            border-radius="16px"
+          >
+            <span class="text-medium-md">{{ studyTimeFormat }}</span>
+          </CmChip>
+        </div>
+      </template>
       <template #sidebar>
         <div>
           <CpSideBarContent />
@@ -86,12 +149,18 @@ onMounted(async () => {
         </div>
 
         <div
-          v-show="isShowContent"
+          v-show="isShowContent && !isViewQuestion"
           class="content-in-box"
         >
           <Component
             :is="componentContentCurrent()"
+            :key="contentCurrent.id"
+            ref="contentRef"
+            @timeUpdateChange="timeUpdateChange"
           />
+        </div>
+        <div v-show="isViewQuestion">
+          a
         </div>
       </template>
     </CpFrameLearning>

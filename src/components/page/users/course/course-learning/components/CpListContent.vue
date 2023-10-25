@@ -2,17 +2,17 @@
 import CmList from '@/components/common/CmList.vue'
 import CmIcon from '@/components/common/CmIcon.vue'
 import { myCourseManagerStore } from '@/stores/user/course/course'
+import { myCourseMainManagerStore } from '@/stores/user/course/index'
 import CpThematicContent from '@/components/page/users/course/course-learning/components/CpThematicContent.vue'
-import ArraysUtil from '@/utils/ArrayUtil'
 import { StatusTypeMyCourse } from '@/constant/data/status.json'
 import MethodsUtil from '@/utils/MethodsUtil'
 import DateUtil from '@/utils/DateUtil'
 import { ContentType } from '@/constant/data/contentCourseType.json'
 
 const myCourseManagerManager = myCourseManagerStore()
-const { courseData } = storeToRefs(myCourseManagerManager)
-const { changeContent } = myCourseManagerManager
-const contentList = ref(courseData.value)
+const { contentList, isShowContent } = storeToRefs(myCourseManagerManager)
+const myCourseMainManagerManager = myCourseMainManagerStore()
+const { changeContent } = myCourseMainManagerManager
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 
 function handleVisible(value: any, item: any) {
@@ -21,7 +21,6 @@ function handleVisible(value: any, item: any) {
 function toggleRowSelection(row: any, type = null) {
   let typeNew: any = null
   const indexParent = contentList.value?.findIndex((item: any) => item.id === row.id) // check vị trí item click đóng mở
-
   if (type === null) {
     contentList.value[indexParent].isShow = contentList.value[indexParent]?.isShow === undefined ? false : !contentList.value[indexParent]?.isShow // khóa isShow biểu trị đạng thái toogle đóng mở
     typeNew = contentList.value[indexParent].isShow
@@ -39,18 +38,12 @@ function toggleRowSelection(row: any, type = null) {
   })
 }
 function changeCurrentContent(contentNew: any) {
-  console.log(contentNew)
+  // isShowContent.value = contentNew.statusName !== 'CourseService.CourseService.NoStart'
+  isShowContent.value = false
+  console.log(isShowContent.value)
+
   changeContent(contentNew.courseContentId)
 }
-onMounted(() => {
-  watch(courseData, (newValue, oldValue) => {
-    if (newValue) {
-      contentList.value = courseData.value?.contents
-      contentList.value = ArraysUtil.formatTreeTable(ArraysUtil.unFlatMapTree(courseData.value?.contents), 'id')
-      console.log(contentList.value)
-    }
-  }, { immediate: true })
-})
 </script>
 
 <template>
@@ -100,7 +93,7 @@ onMounted(() => {
                     height="8"
                   />
                 </div>
-                <div>{{ listItem?.completeRatio }}%</div>
+                <div>{{ Math.round(listItem?.completeRatio) }}%</div>
               </div>
               <div class="text-regular-sm color-text-500">
                 {{ t(MethodsUtil.checkType(listItem.contentArchiveTypeId, ContentType, 'id')?.name) }} • {{ DateUtil.formatTimeSecondToCustom(listItem.time) }}

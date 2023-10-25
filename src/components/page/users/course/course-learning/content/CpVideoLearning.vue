@@ -8,6 +8,11 @@ import { myCourseManagerStore } from '@/stores/user/course/course'
 import ServerFileService from '@/api/server-file/index'
 import 'videojs-youtube'
 
+interface Emit {
+  (e: 'timeUpdateChange', value: any): void
+  (e: 'setCurrentProgress', value: any): void
+}
+const emit = defineEmits<Emit>()
 const myCourseManagerManager = myCourseManagerStore()
 const { contentCurrent, isReview } = storeToRefs(myCourseManagerManager)
 const SERVERFILE = process.env.VUE_APP_BASE_SERVER_FILE
@@ -140,6 +145,7 @@ function handleMediaFile() {
     videojs.options.html5.nativeAudioTracks = false
     videojs.options.html5.nativeVideoTracks = false
   }
+
   player.value = videojs(playerRef.value, options.value)
   const xhr = (videojs as any).Vhs.xhr
   xhr.beforeRequest = (optionPr: any) => {
@@ -198,9 +204,7 @@ function videoStateChange(value: any) {
   // this.$emit('videoStateChange', videoState.value)
 }
 function timeUpdateChange(value: any) {
-  console.log(value)
-
-  // this.$emit('timeUpdateChange', value)
+  emit('timeUpdateChange', value)
 }
 function volumeUpdateChange(value: any) {
   // this.$emit('volumeUpdateChange', value)
@@ -256,8 +260,7 @@ function pause() {
 function seekTo(seconds: any, isUpdateLastPointer?: any) {
   if (isUpdateLastPointer && (getMobileOperatingSystem() === 'iOS' || detectBrowser() === 'Safari')) {
     currentTimeIOSTemp.value = seconds
-
-    // this.$emit('setCurrentProgress', seconds)
+    emit('setCurrentProgress', seconds)
     return
   }
   player.value?.currentTime(seconds)
@@ -276,7 +279,6 @@ onBeforeUnmount(() => {
 })
 onMounted(async () => {
   // kiểm tra file video là local hay youtobe
-  console.log(contentCurrent.value?.urlFile?.includes('/DataFile'))
   if (!contentCurrent.value?.urlFile?.includes('/DataFile') && !contentCurrent.value?.urlFile?.includes('youtube')) {
     const urlFile = contentCurrent.value.acceptDownload ? contentCurrent.value.urlFileName : contentCurrent.value.urlFile
     console.log(urlFile)
@@ -315,6 +317,7 @@ defineExpose({
       playsinline
       :autoplay="false"
     />
+
     <button @click="play">
       play
     </button>
