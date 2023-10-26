@@ -200,7 +200,7 @@ getData()
                   rounded
                 />
               </div>
-              <div class="text-noWrap progress-label text-regular-xs">
+              <div class="text-nowrap progress-label text-regular-xs">
                 {{ item.rate }} {{ t('stars') }}
               </div>
             </div>

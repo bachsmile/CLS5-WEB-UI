@@ -13,7 +13,7 @@ import {
   PDFPageView,
 } from 'pdfjs-dist/web/pdf_viewer'
 
-const PdfjsWorker = await import('pdfjs-dist/build/pdf.worker.entry')
+const PdfjsWorker = import('pdfjs-dist/build/pdf.worker.entry')
 
 pdf.GlobalWorkerOptions.workerSrc = PdfjsWorker
 

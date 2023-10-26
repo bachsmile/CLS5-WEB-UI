@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import ViewPdf from '@/components/common/view-pdf'
 import ObserverLoadingPage from '@/components/common/view-pdf/ObserverLoadingPage.vue'

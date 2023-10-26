@@ -8,6 +8,7 @@ import CpConfirmDialog from '@/components/page/gereral/CpConfirmDialog.vue'
 import toast from '@/plugins/toast'
 import CmPagination from '@/components/common/CmPagination.vue'
 import CmSheet from '@/components/common/CmSheet.vue'
+import { myCourseManagerStore } from '@/stores/user/course/course'
 
 const props = withDefaults(defineProps<Props>(), {
   isShow: false,
@@ -26,6 +27,8 @@ const layoutMobile = ref(false)
 const myExamCourseManagerManager = myExamCourseManagerStore()
 const { isConnected, examData, questionStore, pageOption, isReview, totalPoint, quantityFileUploading, connection, pageNumberUploadingChange, timer, isShowSubmitError, isShowModalUploading } = storeToRefs(myExamCourseManagerManager)
 const { onFullScreenChange, handleChangeTab, mouseLeave, handleFocusExam, submitExam, handleConnected, handleDisconnected } = myExamCourseManagerManager
+const myCourseManagerManager = myCourseManagerStore()
+const { isPause } = storeToRefs(myCourseManagerManager)
 const config = ref({
   wheelPropagation: false,
   suppressScrollX: true,
@@ -390,6 +393,7 @@ defineExpose({
                   :is-review="isReview"
                   :total-point="totalPoint"
                   is-sentence
+                  :is-pause="isPause"
                   :is-show-ans-false="isReview"
                   :is-show-ans-true="isReview"
                   @loaded="emit('loaded')"

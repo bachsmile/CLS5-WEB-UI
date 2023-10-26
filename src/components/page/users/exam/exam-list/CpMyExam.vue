@@ -259,12 +259,12 @@ const isComponent = computed(() => {
         >
           <template #rowItem="{ col, context }">
             <div v-if="col === 'startTime'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 <span>{{ DateUtil.formatTimeToHHmm(context.startDate) }}  {{ DateUtil.formatDateToDDMM(context.startDate) }} </span>
               </div>
             </div>
             <div v-if="col === 'endTime'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 <span>{{ DateUtil.formatTimeToHHmm(context.endDate) }}  {{ DateUtil.formatDateToDDMM(context.endDate) }}  </span>
               </div>
             </div>

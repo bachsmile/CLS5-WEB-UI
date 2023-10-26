@@ -25,7 +25,7 @@ interface Props {
   point?: number | null
   customKeyValue?: string
   isGroup?: boolean // câu trong nhóm
-
+  isPause?: boolean // câu trong nhóm
 }
 const props = withDefaults(defineProps<Props>(), ({
   data: () => ({
@@ -113,6 +113,7 @@ watch(() => props.data, val => {
         class="view-media mb-5 "
       >
         <CpMediaContent
+          :is-pause="isPause"
           :disabled="true"
           :src="questionValue.urlFile"
         />
@@ -145,6 +146,7 @@ watch(() => props.data, val => {
           class="view-media mt-2"
         >
           <CpMediaContent
+            :is-pause="isPause"
             :disabled="true"
             :src="item.urlFile"
           />

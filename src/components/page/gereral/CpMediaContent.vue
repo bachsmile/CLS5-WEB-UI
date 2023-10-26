@@ -14,6 +14,7 @@ import {
 const props = withDefaults(defineProps<Props>(), ({
   src: '',
   type: 1,
+  autoplay: false,
 }))
 
 const emit = defineEmits<Emit>()
@@ -30,6 +31,8 @@ interface Props {
   type?: number
   typeMedia?: number
   isDownload?: boolean
+  autoplay?: boolean
+  isPause?: boolean
 }
 interface Emit {
   (e: 'update:fileFolder', value: any): void
@@ -164,6 +167,7 @@ async function initData(val: any) {
     urlFile.value = `https://www.youtube.com/embed/${youtubeId.value}`
   }
 }
+const mediaVideo = ref()
 watch(() => props.src, async (val: any) => {
   if (window._.isEmpty(val)) {
     urlFile.value = val
@@ -177,10 +181,15 @@ watch(() => props.typeMedia, async (val: any) => {
   if (val)
     typeFile.value = val
 }, { deep: true, immediate: true })
+watch(() => props.isPause, (val: any) => {
+  if (val === false)
+    mediaVideo.value.pause()
+})
 defineExpose({
   inputFile,
   refUploadVideo,
   refUploadImg,
+  mediaVideo,
   openImage: () => refUploadImg.value?.hanleClickImage(),
   openVideo: () => inputFile.value?.openChooseFile(),
   openAudio: () => inputFile.value?.openChooseFile(),
@@ -228,6 +237,7 @@ defineExpose({
     >
       <CmAudio
         v-model:src="urlFile"
+        :is-pause="isPause"
         width="100%"
       />
     </div>
@@ -236,16 +246,25 @@ defineExpose({
       v-if="typeFile === MediaType.VIDEO && urlFile"
       class="d-flex justify-center imageFullContainer"
     >
-      <embed
-        :src="`${SERVERFILE}${urlFile}`"
+      <video
+        ref="mediaVideo"
+        controls
+        :autoplay="autoplay"
+        name="media"
         class="imageFull"
       >
+        <source
+          :src="`${SERVERFILE}${urlFile}`"
+          type="video/mp4"
+        >
+      </video>
     </div>
     <div
       v-if="typeFile === MediaType.YOUTUBE && urlFile"
       class="d-flex justify-center imageFullContainer"
     >
       <embed
+        v-if="!isPause"
         :src="urlFile"
         style="--width-ratio: 1;"
         class="imageFull"

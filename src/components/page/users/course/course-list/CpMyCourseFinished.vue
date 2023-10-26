@@ -288,7 +288,7 @@ watch(queryParams, (val: Any) => {
               />
             </div>
             <div v-if="col === 'courseEndDate'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 {{ DateUtil.formatTimeToHHmm(context[col]) }} {{ DateUtil.formatDateToDDMM(context[col], '-') }}
               </div>
             </div>

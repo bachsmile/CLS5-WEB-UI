@@ -10,7 +10,7 @@ interface Props {
   progress: number
   timeCurrent: number
   time: number
-
+  isPause?: boolean
 }
 const props = withDefaults(defineProps<Props>(), ({
   src: '',
@@ -36,7 +36,7 @@ const progressValue = ref(props.progress)
 const timeCurrent = ref(props.progress)
 const time = ref(props.progress)
 const audioPlayer = ref()
-const isPause = ref(true)
+const isPauseValue = ref(true)
 
 /** method */
 function playAudio() {
@@ -54,16 +54,16 @@ function updateProgress(value?: any) {
   emit('update:progressValue', progressValue.value)
 }
 function ended(value: any) {
-  isPause.value = true
+  isPauseValue.value = true
   emit('end', value)
 }
 function pause(value: any) {
-  isPause.value = true
+  isPauseValue.value = true
   emit('pause', value)
   emit('update:pause', value)
 }
 function play(value: any) {
-  isPause.value = false
+  isPauseValue.value = false
   emit('play', value)
   emit('update:pause', value)
 }
@@ -83,6 +83,9 @@ function valueChange(value: any) {
 function durationchange(e: any) {
   updateProgress()
 }
+watch(() => props.isPause, (val: boolean) => {
+  isPauseValue.value = val
+})
 </script>
 
 <template>
@@ -102,7 +105,7 @@ function durationchange(e: any) {
     <!-- :src="SERVERFILE + src" -->
     <div class="setting-control d-flex flex-nowrap align-center">
       <VIcon
-        v-if="isPause"
+        v-if="isPauseValue"
         icon="ic:outline-play-circle"
         color="primary"
         size="42"

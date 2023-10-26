@@ -459,7 +459,7 @@ function getContentNameRef(context: any) {
             </CpQuestionName>
           </div>
           <div v-if="col === 'type'">
-            <div class="text-noWrap">
+            <div class="text-nowrap">
               {{ t((QuestionType as any)[context?.typeId.toString()]) }}
             </div>
             <div

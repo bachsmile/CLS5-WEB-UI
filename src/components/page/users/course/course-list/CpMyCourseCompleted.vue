@@ -280,7 +280,7 @@ watch(queryParams, (val: Any) => {
               {{ context?.topicName || '-' }}
             </div>
             <div v-if="col === 'courseEndDate'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 {{ DateUtil.formatTimeToHHmm(context[col]) }} {{ DateUtil.formatDateToDDMM(context[col], '-') }}
               </div>
             </div>
@@ -295,7 +295,7 @@ watch(queryParams, (val: Any) => {
                     :size="16"
                     class="mr-3"
                   />
-                  <div class="text-noWrap d-flex align-center">
+                  <div class="text-nowrap d-flex align-center">
                     <div>{{ StringUtil.decimalToFixed(Number(context.point), 2) }} {{ t('scores') }}</div>
                   </div>
                 </div>
@@ -310,7 +310,7 @@ watch(queryParams, (val: Any) => {
                     :size="16"
                     class="mr-3"
                   />
-                  <div class="text-noWrap d-flex align-center">
+                  <div class="text-nowrap d-flex align-center">
                     {{ t(context.ratingScaleName) }}
                   </div>
                 </div>

@@ -266,12 +266,12 @@ watch(queryParams, (val: Any) => {
               {{ context?.topicName || '-' }}
             </div>
             <div v-if="col === 'startDate'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 {{ DateUtil.formatTimeToHHmm(context[col]) }} {{ DateUtil.formatDateToDDMM(context[col], '-') }}
               </div>
             </div>
             <div v-if="col === 'endDate'">
-              <div class="text-noWrap">
+              <div class="text-nowrap">
                 {{ DateUtil.formatTimeToHHmm(context[col]) }} {{ DateUtil.formatDateToDDMM(context[col], '-') }}
               </div>
             </div>

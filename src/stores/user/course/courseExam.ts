@@ -1391,7 +1391,7 @@ export const myExamCourseManagerStore = defineStore('myExamCourseManager', () =>
       captureObj.video = document.createElement('video')
 
     const { video } = captureObj
-    video.autoplay = true
+    video.autoplay = false
     video.srcObject = captureObj.stream
     video.onplay = () => {
       canvas.width = video.videoWidth

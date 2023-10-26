@@ -71,6 +71,7 @@ interface Props {
   numberQuestion?: number | string // số thứ tự câu hỏi
   totalPoint?: number // tong diem
   isGroup?: boolean
+  isPause?: boolean
 }
 const dataValue = ref(props.data)
 function checkTypeQuestion() {
@@ -194,6 +195,7 @@ watch(() => props.data, (val: any) => {
       :is-show-ans-false="isShowAnsFalse"
       :is-hide-not-choose="isHideNotChoose"
       :is-group="isGroup"
+      :is-pause="isPause"
       @update:isAnswered="($value) => updateAnswered($value, dataValue)"
       @update:isDataChange="($value) => updateIsDataChange($value, dataValue)"
       @update:data="handleUpdateData"

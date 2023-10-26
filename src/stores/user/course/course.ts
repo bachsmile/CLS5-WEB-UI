@@ -205,6 +205,9 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
   const contentList = ref<any[]>([]) // cập nhật dữ liệu
   const studyTime = ref()
   const isCompletedContent = ref(false)
+  const isPause = ref(true)
+  const isVolume = ref(true)
+  const volume = ref(0)
   async function GetListContentCourseById(courseId: number) {
     const params = {
       courseId,
@@ -282,6 +285,18 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
         isShow: true,
         type: 1,
         action: setCompleteContent,
+        data: itemContent,
+      }
+    }
+    else if (itemContent.isAfterTime && itemContent.isAnswerTheQuestion) {
+      doingComplete.value = {
+        title: t('question'),
+        titleSub: t('content'),
+        color: 'warning',
+        isShow: true,
+        isBtn: false,
+        type: 4,
+        action: switchToAnswerQuestion,
         data: itemContent,
       }
     }
@@ -446,7 +461,6 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
   const lastPointer = ref(0)
   const currentProgressMedia = ref(0)
   const disableMediaProcessing = ref(false)
-  const isPause = ref(false)
   const noSaveLastPointer = ref(false) // không lưu lastPointer ( đối với nội dung video cho phép tua)
   const countTimeVideoAndAudio = ref(false) // trạng thái đang tính thời gian ( đối với nội dung video & audio sau khoản thời gian)
   /*
@@ -640,6 +654,10 @@ export const myCourseManagerStore = defineStore('myCourseManager', () => {
     /** Khóa học của tôi */
     isViewQuestion,
     isShowContent,
+    isPause,
+    isVolume,
+    lastPointer,
+    volume,
     studyTime,
     courseData, // nội dung khóa học
     contentList, // danh sách nội dung

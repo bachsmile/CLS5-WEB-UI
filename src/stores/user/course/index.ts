@@ -30,6 +30,12 @@ export const myCourseMainManagerStore = defineStore('myCourseMainManager', () =>
         getTestQuestion()
       })
     }
+    // eslint-disable-next-line sonarjs/no-duplicated-branches
+    else if (contentCurrent.value.isAnswerTheQuestion) {
+      await getExamInfo().then(() => {
+        getTestQuestion()
+      })
+    }
   }
   onMounted(() => {
     //

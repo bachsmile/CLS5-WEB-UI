@@ -14,7 +14,7 @@ const CmChip = defineAsyncComponent(() => import('@/components/common/CmChip.vue
 
 const { t } = window.i18n() // Khởi tạo biến đa ngôn ngữ
 const myCourseManagerManager = myCourseManagerStore()
-const { courseData, isShowContent, contentCurrent, doingComplete, isReview, isCompletedContent, contentRef, studyTimeFormat, studyTime, isViewQuestion } = storeToRefs(myCourseManagerManager)
+const { courseData, isShowContent, contentCurrent, doingComplete, isReview, isCompletedContent, lastPointer, contentRef, studyTimeFormat, studyTime, isViewQuestion, isPause, isVolume, volume } = storeToRefs(myCourseManagerManager)
 const { timeUpdateChange, GetListContentCourseById, changeStatusContent, saveUserLearningData } = myCourseManagerManager
 const myCourseMainManagerManager = myCourseMainManagerStore()
 const { isRenderedContent } = storeToRefs(myCourseMainManagerManager)
@@ -64,19 +64,32 @@ watch(studyTime, async newValue => {
     return
 
   // Hiển thị popover thông báo (nội dung có 2 điều kiện sau khoản thời gian & câu trả lời cuối bài)
-  // if (contentCurrent.value.isAnswerTheQuestion) {
-  //   if (!this.$refs.btnShowQuestion) {
-  //     this.$nextTick().then(() => {
-  //       this.showAnswerQuestionTooltip()
-  //     })
-  //   }
-  //   return
-  // }
+  if (contentCurrent.value.isAnswerTheQuestion) {
+    console.log('Bắt đầu')
+
+    // if (!this.$refs.btnShowQuestion) {
+    //   this.$nextTick().then(() => {
+    //     this.showAnswerQuestionTooltip()
+    //   })
+    // }
+    doingComplete.value.isBtn = true
+    return
+  }
   isCompletedContent.value = true
   await saveUserLearningData(contentCurrent.value)
   changeStatusContent(contentCurrent.value.courseContentId, 'CourseService.LearnerCompleted')
 })
 
+function handlePlayMedia() {
+  contentRef.value.play()
+}
+function handlePauseMedia() {
+  contentRef.value.pause()
+}
+function handleSeekMedia(value: number) {
+  // const timeCurrent = (value / 100) * time.value
+  // contentRef.value.seekTo(timeCurrent)
+}
 GetListContentCourseById(Number(route.params.id))
 changeContent(15182)
 </script>
@@ -87,10 +100,21 @@ changeContent(15182)
     class="my-course-learning"
   >
     <CpFrameLearning
+      v-model:is-pause="isPause"
+      v-model:is-volume="isVolume"
+      v-model:volume="volume"
       :title="courseData.courseName"
       :progress="courseData.progress"
       :disabled="!isRenderedContent"
+      :disabled-slider="!contentCurrent.isRewind"
+      :last-pointer="lastPointer"
+      :is-media-progress="isShowContent"
+      :is-media-play="[4].includes(contentCurrent.contentArchiveTypeId || 0) && isShowContent"
+      :is-media-volume="[4].includes(contentCurrent.contentArchiveTypeId || 0) && isShowContent"
       @open-infor="openInforContent"
+      @play="handlePlayMedia"
+      @pause="handlePauseMedia"
+      @seek="handleSeekMedia"
     >
       <template
         v-if="doingComplete && doingComplete.isShow && !isCompletedContent && !isReview"
@@ -98,7 +122,7 @@ changeContent(15182)
       >
         <div class="mr-3">
           <CmButton
-            v-if="[1, 3].includes(doingComplete.type)"
+            v-if="[1, 3].includes(doingComplete.type) || (doingComplete.type === 4 && doingComplete.isBtn)"
             variant="elevated"
             is-load
             :disabled="!isShowContent"
@@ -107,7 +131,7 @@ changeContent(15182)
             @click="handleActionContent"
           />
           <CmChip
-            v-if="doingComplete.type === 2"
+            v-if="doingComplete.type === 2 || (doingComplete.type === 4 && !doingComplete.isBtn)"
             :color="doingComplete?.color"
             height="32px"
             border-radius="16px"
@@ -159,8 +183,11 @@ changeContent(15182)
             @timeUpdateChange="timeUpdateChange"
           />
         </div>
-        <div v-show="isViewQuestion">
-          a
+        <div
+          v-show="isViewQuestion"
+          class="content-in-box"
+        >
+          <CpTestLearning />
         </div>
       </template>
     </CpFrameLearning>
@@ -174,7 +201,7 @@ changeContent(15182)
   justify-content: center;
   background: rgb(var(--v-theme-surface));
   .box {
-    height: inherit;
+    height: 100%;
     border-radius: var(--v-border-radius-xs);
     background: rgb(var(--v-theme-surface));
     width: 100%;

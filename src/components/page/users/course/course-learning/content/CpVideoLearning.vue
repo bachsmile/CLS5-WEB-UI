@@ -204,6 +204,8 @@ function videoStateChange(value: any) {
   // this.$emit('videoStateChange', videoState.value)
 }
 function timeUpdateChange(value: any) {
+  console.log(value)
+
   emit('timeUpdateChange', value)
 }
 function volumeUpdateChange(value: any) {
@@ -306,33 +308,34 @@ defineExpose({
 </script>
 
 <template>
-  <div>
+  <div class="h-100">
     <video
       id="my_video"
       ref="playerRef"
       class="video-js vjs-default-skin vjs-big-play-centered vjs-show-big-play-button-on-pause my-video"
-      oncontextmenu="return false;"
       preload="auto"
       controls
       playsinline
       :autoplay="false"
     />
 
-    <button @click="play">
+    <!--
+      <button @click="play">
       play
-    </button>
-    <button @click="pause">
+      </button>
+      <button @click="pause">
       pause
-    </button>
-    <button @click="seekTo(10)">
+      </button>
+      <button @click="seekTo(10)">
       seekTo
-    </button>
+      </button>
+    -->
   </div>
 </template>
 
 <style lang="scss">
 .my-video{
   width: 100% !important;
-  height: 75vh;
+  height: 100%;
 }
 </style>

@@ -100,7 +100,7 @@ watch(() => props.pageSize, (val: any) => {
         v-if="showPageSelect === true"
         class="d-flex align-center mr-4 pagination-select"
       >
-        <span class="text-noWrap text-regular-sm ">
+        <span class="text-nowrap text-regular-sm ">
           {{ t('show') }}
         </span>
         <VSelect
@@ -115,7 +115,7 @@ watch(() => props.pageSize, (val: any) => {
           single-line
           @update:modelValue="handlePageSizeChange"
         />
-        <span class="text-noWrap text-regular-sm ">{{ `${t('of')} ${totalItems} ${t('item')}` }}</span>
+        <span class="text-nowrap text-regular-sm ">{{ `${t('of')} ${totalItems} ${t('item')}` }}</span>
       </div>
       <div class="page-number d-flex align-center">
         <VPagination
